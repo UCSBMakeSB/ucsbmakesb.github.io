@@ -659,10 +659,6 @@ h1::after {
     display: none;
   }
 
-  .intro {
-    max-width: 520px;
-  }
-
   .hero-art {
     top: 355px;
     right: -25%;
@@ -720,10 +716,6 @@ h1::after {
   .event-meta {
     margin-top: 20px;
     font-size: 0.79rem;
-  }
-
-  .intro {
-    margin: 16px 0 23px;
   }
 
   .hero-actions {
