@@ -9,3 +9,10 @@ python3 -m http.server 8000
 ```
 
 Then visit `http://localhost:8000`.
+
+Build the production artifact and run the worker checks:
+
+```sh
+npm run build
+npm test
+```

@@ -5,18 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="MakeSB at UC Santa Barbara — January 16–17, 2027."
+      content="MakeSB 2027 — a weekend for people who make, January 16–17 at UC Santa Barbara."
     />
-    <meta name="theme-color" content="#f2eddf" />
+    <meta name="theme-color" content="#0b1930" />
     <meta property="og:title" content="MakeSB 2027" />
-    <meta property="og:description" content="January 16–17 at UC Santa Barbara." />
+    <meta
+      property="og:description"
+      content="A weekend for people who make. January 16–17 at UC Santa Barbara."
+    />
     <meta property="og:type" content="website" />
-    <title>MakeSB — January 16–17, 2027</title>
+    <meta property="og:image" content="assets/makesb-social-card.jpg" />
+    <meta property="og:image:width" content="1731" />
+    <meta property="og:image:height" content="909" />
+    <meta property="og:image:alt" content="MakeSB 2027 at UC Santa Barbara" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <title>MakeSB 2027 — January 16–17 at UC Santa Barbara</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link
+      rel="preload"
+      href="assets/makesb-storke-golden-hour.webp"
+      as="image"
+      type="image/webp"
+      fetchpriority="high"
+    />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&amp;family=Instrument+Serif:ital@0;1&amp;family=Syne:wght@500;600;700;800&amp;display=swap"
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&amp;family=Instrument+Serif:ital@0;1&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
@@ -24,153 +39,198 @@
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
 
-    <div class="site-frame">
-      <header class="site-header">
-        <a class="wordmark" href="#main" aria-label="MakeSB home">
-          <svg viewBox="0 0 48 48" aria-hidden="true">
-            <circle cx="24" cy="24" r="22" />
-            <path d="M8 27c6-8 12-8 18 0s11 8 16 0" />
-            <path d="M12 20c4-5 8-5 12 0" />
-          </svg>
-          <span>MAKE<em>SB</em></span>
-        </a>
+    <header class="site-header" aria-label="Primary navigation">
+      <a class="wordmark" href="#main" aria-label="MakeSB home">
+        <span class="wordmark-mark" aria-hidden="true"><i></i><i></i></span>
+        <span>MAKE<span>SB</span></span>
+      </a>
 
-        <div class="header-meta" aria-label="Event date and location">
-          <span>JAN 16—17</span>
-          <i></i>
-          <span>UC SANTA BARBARA</span>
+      <nav class="primary-nav" aria-label="Site sections">
+        <a href="#about">About</a>
+        <a href="#experience">Experience</a>
+        <a href="#details">Details</a>
+      </nav>
+
+      <a
+        class="header-apply"
+        href="https://docs.google.com/forms/d/e/1FAIpQLSc69LeujVIem99yf-DhmwljMJxpeXlxWjMpiGqNGNK5MQrKGQ/viewform?usp=publish-editor"
+        target="_blank"
+        rel="noreferrer"
+      >Apply <span aria-hidden="true">↗</span></a>
+    </header>
+
+    <main id="main">
+      <section class="hero" aria-labelledby="event-title">
+        <img
+          class="hero-art"
+          src="assets/makesb-storke-golden-hour.webp"
+          width="1672"
+          height="941"
+          alt="Illustration of Storke Tower and the UC Santa Barbara campus at golden hour"
+          fetchpriority="high"
+        />
+        <div class="hero-wash" aria-hidden="true"></div>
+
+        <div class="hero-kicker">
+          <span>001 / 2027</span>
+          <p>A weekend for people<br />who make</p>
         </div>
 
-        <a
-          class="header-apply"
-          href="https://docs.google.com/forms/d/e/1FAIpQLSc69LeujVIem99yf-DhmwljMJxpeXlxWjMpiGqNGNK5MQrKGQ/viewform?usp=publish-editor"
-          target="_blank"
-          rel="noreferrer"
-        >Apply</a>
-      </header>
+        <h1 id="event-title" class="hero-title">
+          <span class="hero-make">Make</span>
+          <span class="hero-sb">SB</span>
+        </h1>
 
-      <main id="main" class="hero">
-        <section class="hero-content" aria-labelledby="event-title">
-          <div class="edition-line">
-            <span>001</span>
-            <p>A weekend for makers<br />on the California coast</p>
+        <div class="hero-footer">
+          <div class="hero-date" aria-label="January 16 through 17, 2027">
+            <span>Jan</span>
+            <strong>16—17</strong>
+            <small>2027</small>
           </div>
 
-          <h1 id="event-title">
-            <span class="make">MAKE</span>
-            <span class="sb">SB</span>
-          </h1>
-
-          <div class="event-block">
-            <div class="date-lockup" aria-label="January 16 through 17, 2027">
-              <span class="month">JAN</span>
-              <div>
-                <p><strong>16</strong><span class="dash">—</span><strong>17</strong></p>
-                <span class="year">2027</span>
-              </div>
-            </div>
-
-            <div class="action-stack">
-              <a
-                class="apply-button"
-                href="https://docs.google.com/forms/d/e/1FAIpQLSc69LeujVIem99yf-DhmwljMJxpeXlxWjMpiGqNGNK5MQrKGQ/viewform?usp=publish-editor"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <span>Apply now</span>
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M5 12h14M13 6l6 6-6 6" />
-                </svg>
-              </a>
-              <a
-                class="sponsor-link"
-                href="mailto:patrick_liu@ucsb.edu?subject=MakeSB%202027%20Sponsorship"
-              >Interested in sponsoring? <span>↗</span></a>
-            </div>
+          <div class="hero-actions">
+            <a
+              class="button button-primary"
+              href="https://docs.google.com/forms/d/e/1FAIpQLSc69LeujVIem99yf-DhmwljMJxpeXlxWjMpiGqNGNK5MQrKGQ/viewform?usp=publish-editor"
+              target="_blank"
+              rel="noreferrer"
+            >Apply now <span aria-hidden="true">↗</span></a>
+            <a class="text-link" href="mailto:patrick_liu@ucsb.edu?subject=MakeSB%202027%20Sponsorship">
+              Sponsor MakeSB <span aria-hidden="true">→</span>
+            </a>
           </div>
 
-          <div class="content-footer">
-            <p>34.4139° N<br />119.8489° W</p>
-            <nav aria-label="Event links">
-              <a href="https://mlh.io/code-of-conduct" target="_blank" rel="noreferrer">Code of conduct</a>
-              <a href="mailto:patrick_liu@ucsb.edu">Contact</a>
-              <a href="https://www.instagram.com/ucsbmakesb/" target="_blank" rel="noreferrer">Instagram</a>
-            </nav>
-          </div>
-        </section>
+          <p class="hero-location">34.4139° N · 119.8489° W<br />UC Santa Barbara, California</p>
+        </div>
 
-        <section class="coast-panel" aria-label="Santa Barbara coast illustration">
-          <div class="panel-label top-label">PACIFIC / 2027</div>
-          <div class="panel-label side-label">SANTA BARBARA, CALIFORNIA</div>
-
-          <svg class="coast-art" viewBox="0 0 900 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-            <defs>
-              <clipPath id="art-clip">
-                <rect width="900" height="900" />
-              </clipPath>
-              <pattern id="dot-grid" width="28" height="28" patternUnits="userSpaceOnUse">
-                <circle cx="3" cy="3" r="1.8" fill="#173d74" opacity=".28" />
-              </pattern>
-            </defs>
-            <g clip-path="url(#art-clip)">
-              <rect width="900" height="900" fill="#f5c95f" />
-              <rect width="900" height="900" fill="url(#dot-grid)" />
-
-              <circle class="poster-sun" cx="690" cy="180" r="142" fill="#ef5b3f" />
-              <circle cx="690" cy="180" r="170" fill="none" stroke="#143664" stroke-width="3" opacity=".3" />
-
-              <path class="far-mountain" d="M-50 485 135 283l92 86 138-171 145 182 87-76 119 112 143-168 141 161v187H-50V485Z" />
-              <path class="near-mountain" d="M-40 518 116 387l89 64 132-118 148 127 103-86 165 112 177-145 92 87v151H-40V518Z" />
-
-              <path class="ocean" d="M-20 525c142-41 263-39 386 0 116 37 246 39 363 2 63-20 127-28 191-22v395H-20V525Z" />
-              <path class="ocean-line line-one" d="M-40 596c166-51 305-50 432-1 117 45 263 39 401-10 69-25 127-30 181-16" />
-              <path class="ocean-line line-two" d="M-40 675c132-40 250-35 366 7 135 48 287 46 431 2 83-26 154-29 212-13" />
-
-              <path class="sand" d="M-25 760c135-47 265-44 389 9 121 52 265 53 395 7 76-27 140-29 191-9v133H-25V760Z" />
-
-              <g class="tower">
-                <path d="M526 303h174l21 392H507l19-392Z" fill="#f7f0df" />
-                <path d="M613 303h87l21 392H613V303Z" fill="#e3d9c1" />
-                <rect x="503" y="278" width="220" height="54" fill="#173d74" />
-                <path d="m486 278 127-61 127 61H486Z" fill="#ef5b3f" />
-                <rect x="526" y="207" width="42" height="72" fill="#f7f0df" />
-                <rect x="592" y="188" width="42" height="91" fill="#f7f0df" />
-                <rect x="658" y="207" width="42" height="72" fill="#f7f0df" />
-                <rect x="539" y="223" width="16" height="40" fill="#173d74" />
-                <rect x="605" y="204" width="16" height="58" fill="#173d74" />
-                <rect x="671" y="223" width="16" height="40" fill="#173d74" />
-                <circle cx="613" cy="388" r="56" fill="#f5c95f" stroke="#ef5b3f" stroke-width="12" />
-                <path d="M613 388v-32m0 32 26 16" fill="none" stroke="#173d74" stroke-width="8" stroke-linecap="round" />
-                <circle cx="613" cy="388" r="7" fill="#173d74" />
-                <rect x="550" y="496" width="40" height="93" fill="#173d74" />
-                <rect x="636" y="496" width="40" height="93" fill="#173d74" />
-              </g>
-
-              <g class="palm">
-                <path d="M182 804c35-186 38-350 9-491" fill="none" stroke="#173d74" stroke-width="22" stroke-linecap="round" />
-                <path d="M190 324C99 243 53 178 35 118c68 25 119 93 155 206Zm2-2c11-119 52-190 118-226 9 78-29 154-118 226Zm-2 4c-96-41-170-43-223-7 64 52 139 54 223 7Zm5-3c100-1 173 34 219 103-85 14-157-21-219-103Zm-3-4c-48-103-54-188-18-253 55 68 61 152 18 253Z" fill="#173d74" />
-              </g>
-
-              <g class="birds" fill="none" stroke="#173d74" stroke-width="6" stroke-linecap="round">
-                <path d="M303 132c15-17 30-17 45 0 15-17 30-17 45 0" />
-                <path d="M360 173c10-12 21-12 32 0 11-12 22-12 33 0" />
-              </g>
-            </g>
-          </svg>
-
-          <div class="postcard-stamp">
-            <span>MAKE</span>
-            <strong>WAVES</strong>
-          </div>
-        </section>
-      </main>
+        <a class="scroll-cue" href="#about">
+          <span>Explore</span>
+          <i aria-hidden="true"></i>
+        </a>
+      </section>
 
       <div class="ticker" aria-hidden="true">
         <div>
-          <span>BUILD</span><i>✦</i><span>DESIGN</span><i>✦</i><span>CREATE</span><i>✦</i><span>SHIP</span><i>✦</i><span>MAKE WAVES</span><i>✦</i>
-          <span>BUILD</span><i>✦</i><span>DESIGN</span><i>✦</i><span>CREATE</span><i>✦</i><span>SHIP</span><i>✦</i><span>MAKE WAVES</span><i>✦</i>
+          <span>Build the thing</span><i>✦</i><span>On the California coast</span><i>✦</i><span>Make waves</span><i>✦</i>
+          <span>Build the thing</span><i>✦</i><span>On the California coast</span><i>✦</i><span>Make waves</span><i>✦</i>
         </div>
       </div>
-    </div>
+
+      <section id="about" class="about section-pad" aria-labelledby="about-title">
+        <div class="section-index">
+          <span>01</span>
+          <p>What we’re<br />making</p>
+        </div>
+
+        <div class="about-main">
+          <h2 id="about-title">Big ideas are easy.<br /><em>MakeSB</em> is for the part where you build them.</h2>
+          <div class="about-copy">
+            <p>
+              For one weekend, builders gather at UC Santa Barbara to turn rough
+              sketches, strange questions, and ambitious ideas into something real.
+            </p>
+            <p>
+              Come with a team or find one here. Bring a project or start from zero.
+              The point is simple: learn quickly, make together, and show your work.
+            </p>
+          </div>
+        </div>
+
+        <div class="discipline-list" aria-label="Ways to make">
+          <span>Hardware</span>
+          <span>Software</span>
+          <span>Design</span>
+          <span>Open ideas</span>
+        </div>
+      </section>
+
+      <section id="experience" class="experience" aria-labelledby="experience-title">
+        <div class="experience-heading section-pad">
+          <div class="section-index section-index-light">
+            <span>02</span>
+            <p>The<br />experience</p>
+          </div>
+          <h2 id="experience-title">Make something<br /><em>worth showing.</em></h2>
+        </div>
+
+        <div class="principles">
+          <article>
+            <span class="principle-number">01</span>
+            <div>
+              <h3>Start messy</h3>
+              <p>The first version should feel unfinished. That means you started.</p>
+            </div>
+          </article>
+          <article>
+            <span class="principle-number">02</span>
+            <div>
+              <h3>Build together</h3>
+              <p>Share skills, ask better questions, and make beyond your own discipline.</p>
+            </div>
+          </article>
+          <article>
+            <span class="principle-number">03</span>
+            <div>
+              <h3>Show the work</h3>
+              <p>A prototype creates momentum. Put yours in someone else’s hands.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="details" class="details section-pad" aria-labelledby="details-title">
+        <div class="section-index">
+          <span>03</span>
+          <p>Save<br />the date</p>
+        </div>
+
+        <div class="details-main">
+          <p class="details-month">January</p>
+          <h2 id="details-title"><span>16</span><i>—</i><span>17</span></h2>
+          <p class="details-year">Twenty twenty-seven</p>
+        </div>
+
+        <dl class="detail-grid">
+          <div>
+            <dt>Where</dt>
+            <dd>UC Santa Barbara<br />Santa Barbara, CA</dd>
+          </div>
+          <div>
+            <dt>When</dt>
+            <dd>Saturday—Sunday<br />January 16–17</dd>
+          </div>
+          <div>
+            <dt>What</dt>
+            <dd>Two days to build<br />something real</dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="closing" aria-labelledby="closing-title">
+        <div class="closing-orbit" aria-hidden="true"></div>
+        <p>Applications are open</p>
+        <h2 id="closing-title">Meet us<br /><em>at the edge.</em></h2>
+        <a
+          class="button button-sun"
+          href="https://docs.google.com/forms/d/e/1FAIpQLSc69LeujVIem99yf-DhmwljMJxpeXlxWjMpiGqNGNK5MQrKGQ/viewform?usp=publish-editor"
+          target="_blank"
+          rel="noreferrer"
+        >Apply to MakeSB <span aria-hidden="true">↗</span></a>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <a class="wordmark footer-wordmark" href="#main" aria-label="Back to the top">
+        <span class="wordmark-mark" aria-hidden="true"><i></i><i></i></span>
+        <span>MAKE<span>SB</span></span>
+      </a>
+      <p>January 16–17, 2027<br />UC Santa Barbara</p>
+      <nav aria-label="Footer links">
+        <a href="https://mlh.io/code-of-conduct" target="_blank" rel="noreferrer">Code of conduct</a>
+        <a href="mailto:patrick_liu@ucsb.edu">Contact</a>
+        <a href="https://www.instagram.com/ucsbmakesb/" target="_blank" rel="noreferrer">Instagram</a>
+      </nav>
+      <p class="footer-note">Made on the coast<br />© MakeSB 2027</p>
+    </footer>
   </body>
 </html>
