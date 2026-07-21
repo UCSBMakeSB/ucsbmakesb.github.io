@@ -260,9 +260,16 @@ a {
   bottom: 38px;
   left: clamp(24px, 4vw, 68px);
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: 1fr auto;
   gap: 30px;
   align-items: end;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  flex-direction: column;
 }
 
 .hero-bottom > p {
@@ -304,11 +311,9 @@ a {
 }
 
 .sponsor-link {
-  justify-self: end;
   font-family: var(--mono);
   font-size: 0.62rem;
   letter-spacing: 0.07em;
-  text-align: right;
   text-decoration: underline;
   text-underline-offset: 5px;
 }
@@ -343,10 +348,6 @@ a {
 
   .hero-bottom {
     grid-template-columns: 1fr auto;
-  }
-
-  .sponsor-link {
-    display: none;
   }
 }
 
