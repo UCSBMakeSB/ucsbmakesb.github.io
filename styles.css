@@ -369,12 +369,35 @@ a {
   font-family: var(--serif);
   font-size: clamp(2rem, 4vw, 2.8rem);
   font-weight: 400;
-  font-style: italic;
+  font-style: normal;
+  letter-spacing: 0.015em;
 }
 
 .page-section p {
   margin: 0 0 12px;
   line-height: 1.6;
+}
+
+#faqs details {
+  margin: 0 0 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 250, 240, 0.16);
+}
+
+#faqs details:last-of-type {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+#faqs summary {
+  font-size: 1.15rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#faqs details p {
+  margin: 14px 0 0;
 }
 
 .sponsor-row {
@@ -445,7 +468,7 @@ a {
   margin: 0 0 8px;
   color: var(--coral);
   font-family: var(--mono);
-  font-size: 0.65rem;
+  font-size: 0.8rem;
   font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
