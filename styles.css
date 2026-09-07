@@ -78,58 +78,12 @@ a {
   color: var(--coral);
 }
 
-.wordmark-mark {
-  position: relative;
-  display: inline-block;
+.wordmark-badge {
+  display: block;
   width: 38px;
   height: 38px;
-  border: 1px solid currentColor;
-  border-radius: 50%;
-}
-
-.wordmark-mark::before,
-.wordmark-mark::after,
-.wordmark-mark i {
-  position: absolute;
-  content: "";
-}
-
-.wordmark-mark::before,
-.wordmark-mark::after {
-  right: 7px;
-  left: 7px;
-  height: 1px;
-  background: currentColor;
-  transform-origin: center;
-}
-
-.wordmark-mark::before {
-  top: 14px;
-  transform: rotate(12deg);
-}
-
-.wordmark-mark::after {
-  top: 22px;
-  transform: rotate(-12deg);
-}
-
-.wordmark-mark i:first-child {
-  top: 6px;
-  bottom: 6px;
-  left: 50%;
-  width: 1px;
-  background: currentColor;
-  transform: rotate(27deg);
-}
-
-.wordmark-mark i:last-child {
-  top: 50%;
-  left: 50%;
-  width: 6px;
-  height: 6px;
-  background: var(--sun);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
+  object-fit: contain;
+  filter: drop-shadow(0 1px 4px rgba(3, 12, 29, 0.35));
 }
 
 .header-meta {
@@ -389,7 +343,7 @@ a {
     font-size: 0.9rem;
   }
 
-  .wordmark-mark {
+  .wordmark-badge {
     width: 34px;
     height: 34px;
   }
