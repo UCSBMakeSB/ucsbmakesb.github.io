@@ -153,6 +153,15 @@ a {
   text-decoration: underline;
 }
 
+.team-mobile-link {
+  display: none;
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.1em;
+  text-underline-offset: 5px;
+  text-transform: uppercase;
+}
+
 .header-apply {
   justify-self: end;
   padding: 11px 17px;
@@ -504,7 +513,12 @@ a {
   }
 
   .site-header {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr auto auto;
+    column-gap: 16px;
+  }
+
+  .team-mobile-link {
+    display: inline-block;
   }
 
   .hero-title {
@@ -538,6 +552,10 @@ a {
 
   .header-apply {
     padding: 9px 12px;
+  }
+
+  .team-mobile-link {
+    font-size: 0.58rem;
   }
 
   .hero::after {

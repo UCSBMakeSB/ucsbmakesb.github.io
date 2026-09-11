@@ -4,6 +4,7 @@ import test from "node:test";
 import worker from "../worker/index.js";
 
 const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
+const teamHtml = await readFile(new URL("../team/index.html", import.meta.url), "utf8");
 
 function makeEnvironment() {
   return {
@@ -13,6 +14,12 @@ function makeEnvironment() {
 
         if (pathname === "/index.html") {
           return new Response(html, {
+            headers: { "content-type": "text/html; charset=utf-8" },
+          });
+        }
+
+        if (pathname === "/team/index.html") {
+          return new Response(teamHtml, {
             headers: { "content-type": "text/html; charset=utf-8" },
           });
         }
@@ -46,4 +53,17 @@ test("returns 405 for write requests", async () => {
 
   assert.equal(response.status, 405);
   assert.equal(response.headers.get("allow"), "GET, HEAD");
+});
+
+test("serves the team page at its directory route", async () => {
+  const response = await worker.fetch(
+    new Request("https://makesb.test/team/"),
+    makeEnvironment(),
+  );
+  const responseHtml = await response.text();
+
+  assert.equal(response.status, 200);
+  assert.match(responseHtml, /Meet Our Team/);
+  assert.match(responseHtml, /Design &amp; Develop Team/);
+  assert.match(responseHtml, /MakeOps/);
 });
