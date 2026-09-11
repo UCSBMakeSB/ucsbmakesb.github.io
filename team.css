@@ -1,6 +1,15 @@
+html {
+  height: auto;
+  min-height: 100%;
+  overflow-y: auto;
+}
+
 .team-page {
   position: relative;
   isolation: isolate;
+  min-height: 100svh;
+  overflow-x: hidden;
+  overflow-y: auto;
   background: var(--ink);
 }
 
@@ -89,13 +98,15 @@
 }
 
 .team-content {
+  position: relative;
   width: min(1460px, 100%);
+  min-height: 100svh;
   margin: 0 auto;
   padding: 132px clamp(38px, 6vw, 104px) 58px;
 }
 
 .team-intro {
-  margin-bottom: clamp(70px, 8vw, 118px);
+  margin-bottom: 0;
 }
 
 .team-kicker {
@@ -133,10 +144,16 @@
 }
 
 .department-nav {
+  position: sticky;
+  z-index: 14;
+  top: 86px;
   display: flex;
-  margin-top: 44px;
+  margin: 38px 0 clamp(70px, 8vw, 110px);
+  padding: 16px 0 14px;
   gap: 18px 36px;
   flex-wrap: wrap;
+  background: linear-gradient(90deg, rgba(6, 20, 43, 0.98), rgba(6, 20, 43, 0.92));
+  border-bottom: 1px solid rgba(255, 250, 240, 0.16);
   font-size: 0.72rem;
   letter-spacing: 0.09em;
 }
@@ -147,7 +164,7 @@
   border-bottom: 1px solid rgba(255, 250, 240, 0.55);
 }
 
-.department-nav a:first-child {
+.department-nav a[aria-current="true"] {
   color: var(--sun);
   border-color: var(--sun);
 }
@@ -159,8 +176,10 @@
 }
 
 .department {
+  position: relative;
+  display: block;
   margin-bottom: clamp(86px, 9vw, 138px);
-  scroll-margin-top: 112px;
+  scroll-margin-top: 164px;
 }
 
 .department-heading {
@@ -323,9 +342,29 @@
   }
 
   .department-nav {
-    margin-top: 34px;
-    gap: 14px 22px;
+    top: 72px;
+    margin: 30px -20px 58px;
+    padding: 14px 20px 13px;
+    gap: 22px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
     font-size: 0.65rem;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .department-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .department-nav a {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  .department {
+    scroll-margin-top: 138px;
   }
 
   .department-heading {
