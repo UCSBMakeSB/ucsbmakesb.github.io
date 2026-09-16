@@ -53,19 +53,62 @@
         <h1 id="team-title"><span>The People</span><em>Behind MakeSB</em></h1>
       </section>
 
-      <nav class="department-nav" aria-label="Team departments">
-        <a href="#design-develop" aria-current="true">Design &amp; Develop</a>
-        <a href="#marketing-outreach-graphics">Marketing · Outreach · Graphics</a>
-        <a href="#sponsorships-finances">Sponsorships · Finances</a>
-        <a href="#makeops">MakeOps</a>
-      </nav>
+      <section class="team-arcade" aria-label="Choose a team and meet its members">
+        <div class="handheld-column">
+          <div class="handheld" tabindex="0" aria-label="Team selector. Use the up and down arrow keys or the buttons to change teams.">
+            <img
+              class="handheld-image"
+              src="../assets/team/retro-handheld.png"
+              width="922"
+              height="1356"
+              alt=""
+              aria-hidden="true"
+            />
 
-      <section id="design-develop" class="department" aria-labelledby="design-develop-title">
-        <div class="department-heading">
-          <span aria-hidden="true">01</span>
-          <h2 id="design-develop-title">Design &amp; Develop Team</h2>
+            <div class="handheld-screen" aria-live="polite" aria-atomic="true">
+              <span class="screen-label">Player Select</span>
+              <span class="screen-icon" aria-hidden="true">✦</span>
+              <strong class="screen-team">Design &amp; Develop</strong>
+              <span class="screen-count">Team 01 / 04</span>
+            </div>
+
+            <div class="d-pad" aria-label="Team controls">
+              <button class="team-control team-control-up" type="button" aria-label="Previous team">
+                <span aria-hidden="true">↑</span>
+              </button>
+              <button class="team-control team-control-down" type="button" aria-label="Next team">
+                <span aria-hidden="true">↓</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="selector-readout" aria-hidden="true">
+            <span>↑ Previous</span>
+            <span>Select Team</span>
+            <span>Next ↓</span>
+          </div>
+
+          <ol class="team-slots" aria-label="Teams">
+            <li><button type="button" data-team-index="0" aria-current="true"><span>01</span> Design &amp; Develop</button></li>
+            <li><button type="button" data-team-index="1"><span>02</span> Marketing · Outreach · Graphics</button></li>
+            <li><button type="button" data-team-index="2"><span>03</span> Sponsorships · Finances</button></li>
+            <li><button type="button" data-team-index="3"><span>04</span> MakeOps</button></li>
+          </ol>
         </div>
-        <ul class="member-grid">
+
+        <div class="team-display">
+          <div class="team-display-heading">
+            <div>
+              <p>Current Team <span class="status-light" aria-hidden="true"></span></p>
+              <h2 class="current-team-title">Design &amp; Develop Team</h2>
+            </div>
+            <span class="current-team-icon" aria-hidden="true">✦</span>
+          </div>
+
+          <div class="member-stage" aria-live="polite" aria-atomic="false">
+            <section id="design-develop" class="department" data-team-name="Design &amp; Develop" data-team-icon="✦" aria-labelledby="design-develop-title">
+              <h3 id="design-develop-title" class="visually-hidden">Design &amp; Develop Team members</h3>
+              <ul class="member-grid">
           <li>
             <figure class="member-card">
               <img src="../assets/team/member-01.jpg" width="250" height="312" alt="Fictional placeholder portrait for Maya Chen" />
@@ -90,15 +133,12 @@
               <figcaption>Noah Williams</figcaption>
             </figure>
           </li>
-        </ul>
-      </section>
+              </ul>
+            </section>
 
-      <section id="marketing-outreach-graphics" class="department" aria-labelledby="marketing-title">
-        <div class="department-heading">
-          <span aria-hidden="true">02</span>
-          <h2 id="marketing-title">Marketing · Outreach · Graphics</h2>
-        </div>
-        <ul class="member-grid">
+            <section id="marketing-outreach-graphics" class="department" data-team-name="Marketing · Outreach · Graphics" data-team-icon="◎" aria-labelledby="marketing-title" hidden>
+              <h3 id="marketing-title" class="visually-hidden">Marketing, Outreach, and Graphics members</h3>
+              <ul class="member-grid">
           <li>
             <figure class="member-card">
               <img src="../assets/team/member-05.jpg" width="250" height="312" alt="Fictional placeholder portrait for Aisha Patel" loading="lazy" />
@@ -123,15 +163,12 @@
               <figcaption>Daniel Brooks</figcaption>
             </figure>
           </li>
-        </ul>
-      </section>
+              </ul>
+            </section>
 
-      <section id="sponsorships-finances" class="department" aria-labelledby="sponsorships-title">
-        <div class="department-heading">
-          <span aria-hidden="true">03</span>
-          <h2 id="sponsorships-title">Sponsorships · Finances</h2>
-        </div>
-        <ul class="member-grid">
+            <section id="sponsorships-finances" class="department" data-team-name="Sponsorships · Finances" data-team-icon="$" aria-labelledby="sponsorships-title" hidden>
+              <h3 id="sponsorships-title" class="visually-hidden">Sponsorships and Finances members</h3>
+              <ul class="member-grid">
           <li>
             <figure class="member-card">
               <img src="../assets/team/member-09.jpg" width="250" height="312" alt="Fictional placeholder portrait for Emma Thompson" loading="lazy" />
@@ -156,15 +193,12 @@
               <figcaption>Owen Martinez</figcaption>
             </figure>
           </li>
-        </ul>
-      </section>
+              </ul>
+            </section>
 
-      <section id="makeops" class="department" aria-labelledby="makeops-title">
-        <div class="department-heading">
-          <span aria-hidden="true">04</span>
-          <h2 id="makeops-title">MakeOps</h2>
-        </div>
-        <ul class="member-grid">
+            <section id="makeops" class="department" data-team-name="MakeOps" data-team-icon="⚙" aria-labelledby="makeops-title" hidden>
+              <h3 id="makeops-title" class="visually-hidden">MakeOps members</h3>
+              <ul class="member-grid">
           <li>
             <figure class="member-card">
               <img src="../assets/team/member-13.jpg" width="250" height="312" alt="Fictional placeholder portrait for Jordan Kim" loading="lazy" />
@@ -189,7 +223,10 @@
               <figcaption>Zoe Wang</figcaption>
             </figure>
           </li>
-        </ul>
+              </ul>
+            </section>
+          </div>
+        </div>
       </section>
 
       <footer class="team-footer">
@@ -198,7 +235,6 @@
       </footer>
     </main>
 
-    <span class="scroll-cue" aria-hidden="true">Scroll to explore ↓</span>
     <script src="../team.js" defer></script>
   </body>
 </html>

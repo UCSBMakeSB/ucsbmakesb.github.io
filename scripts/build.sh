@@ -17,5 +17,6 @@ cp "$project_dir/favicon.svg" "$build_dir/client/favicon.svg"
 cp "$project_dir/assets/makesb-storke-golden-hour.webp" "$build_dir/client/assets/makesb-storke-golden-hour.webp"
 cp "$project_dir/assets/makesb-social-card.jpg" "$build_dir/client/assets/makesb-social-card.jpg"
 cp "$project_dir/assets/team/"*.jpg "$build_dir/client/assets/team/"
+cp "$project_dir/assets/team/"*.png "$build_dir/client/assets/team/"
 
 printf 'Built MakeSB site in %s\n' "$build_dir"
