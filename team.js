@@ -4,8 +4,8 @@ const nextButton = document.querySelector(".team-control-down");
 const handheld = document.querySelector(".handheld");
 const memberStage = document.querySelector(".member-stage");
 const handheldScreen = document.querySelector(".handheld-screen");
-const screenTeam = document.querySelector(".screen-team");
-const screenIcon = document.querySelector(".screen-icon");
+const screenMenu = document.querySelector(".screen-menu");
+const screenMenuItems = Array.from(document.querySelectorAll(".screen-menu li"));
 const screenCount = document.querySelector(".screen-count");
 const currentTeamTitle = document.querySelector(".current-team-title");
 const currentTeamIcon = document.querySelector(".current-team-icon");
@@ -23,11 +23,25 @@ function updateTeamLabels(index) {
   const teamName = department.dataset.teamName;
   const teamIcon = department.dataset.teamIcon;
 
-  screenTeam.textContent = teamName;
-  screenIcon.textContent = teamIcon;
-  screenCount.textContent = `Team ${paddedTeamNumber(index)} / ${paddedTeamNumber(departments.length - 1)}`;
+  screenCount.textContent = `${paddedTeamNumber(index)} / ${paddedTeamNumber(departments.length - 1)}`;
   currentTeamTitle.textContent = teamName;
   currentTeamIcon.textContent = teamIcon;
+
+  screenMenuItems.forEach((item, itemIndex) => {
+    const isCurrent = itemIndex === index;
+    item.classList.toggle("is-selected", isCurrent);
+
+    if (isCurrent) {
+      item.setAttribute("aria-current", "true");
+      const centeredOffset = item.offsetTop - (screenMenu.clientHeight - item.offsetHeight) / 2;
+      screenMenu.scrollTo({
+        top: Math.max(0, centeredOffset),
+        behavior: reduceMotion.matches ? "auto" : "smooth",
+      });
+    } else {
+      item.removeAttribute("aria-current");
+    }
+  });
 
 }
 

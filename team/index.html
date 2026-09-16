@@ -66,10 +66,18 @@
             />
 
             <div class="handheld-screen" aria-live="polite" aria-atomic="true">
-              <span class="screen-label">Player Select</span>
-              <span class="screen-icon" aria-hidden="true">✦</span>
-              <strong class="screen-team">Design &amp; Develop</strong>
-              <span class="screen-count">Team 01 / 04</span>
+              <div class="screen-toolbar">
+                <span>Team Groups</span>
+                <span class="screen-lights" aria-hidden="true"><i></i><i></i></span>
+              </div>
+              <ol class="screen-menu" aria-label="Team groups">
+                <li class="is-selected" data-menu-index="0" aria-current="true"><span aria-hidden="true">♡</span><strong>Presidents</strong></li>
+                <li data-menu-index="1"><span aria-hidden="true">✦</span><strong>Design &amp; Develop</strong></li>
+                <li data-menu-index="2"><span aria-hidden="true">◎</span><strong>Marketing · Outreach · Graphics</strong></li>
+                <li data-menu-index="3"><span aria-hidden="true">$</span><strong>Sponsorships · Finances</strong></li>
+                <li data-menu-index="4"><span aria-hidden="true">⚙</span><strong>MakeOps</strong></li>
+              </ol>
+              <span class="screen-count">01 / 05</span>
             </div>
 
             <div class="d-pad" aria-label="Team controls">
@@ -88,14 +96,32 @@
         <div class="team-display">
           <div class="team-display-heading">
             <div>
-              <p>Current Team <span class="status-light" aria-hidden="true"></span></p>
-              <h2 class="current-team-title">Design &amp; Develop Team</h2>
+              <p>Current Group <span class="status-light" aria-hidden="true"></span></p>
+              <h2 class="current-team-title">Presidents</h2>
             </div>
-            <span class="current-team-icon" aria-hidden="true">✦</span>
+            <span class="current-team-icon" aria-hidden="true">♡</span>
           </div>
 
           <div class="member-stage" aria-live="polite" aria-atomic="false">
-            <section id="design-develop" class="department" data-team-name="Design &amp; Develop" data-team-icon="✦" aria-labelledby="design-develop-title">
+            <section id="presidents" class="department" data-team-name="Presidents" data-team-icon="♡" aria-labelledby="presidents-title">
+              <h3 id="presidents-title" class="visually-hidden">Presidents</h3>
+              <ul class="member-grid member-grid-presidents">
+                <li>
+                  <figure class="member-card">
+                    <img src="../assets/team/member-01.jpg" width="250" height="312" alt="Placeholder portrait for Alex Morgan" />
+                    <figcaption>Alex Morgan</figcaption>
+                  </figure>
+                </li>
+                <li>
+                  <figure class="member-card">
+                    <img src="../assets/team/member-02.jpg" width="250" height="312" alt="Placeholder portrait for Taylor Chen" />
+                    <figcaption>Taylor Chen</figcaption>
+                  </figure>
+                </li>
+              </ul>
+            </section>
+
+            <section id="design-develop" class="department" data-team-name="Design &amp; Develop" data-team-icon="✦" aria-labelledby="design-develop-title" hidden>
               <h3 id="design-develop-title" class="visually-hidden">Design &amp; Develop Team members</h3>
               <ul class="member-grid">
           <li>

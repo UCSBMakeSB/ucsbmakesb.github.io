@@ -65,6 +65,9 @@ test("serves the team page at its directory route", async () => {
   assert.equal(response.status, 200);
   assert.match(responseHtml, /Meet Our Team/);
   assert.match(responseHtml, /Design &amp; Develop Team/);
+  assert.match(responseHtml, /Presidents/);
+  assert.match(responseHtml, /Alex Morgan/);
+  assert.match(responseHtml, /Taylor Chen/);
   assert.match(responseHtml, /MakeOps/);
   assert.match(responseHtml, /Previous team/);
   assert.match(responseHtml, /Next team/);

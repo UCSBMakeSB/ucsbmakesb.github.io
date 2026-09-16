@@ -186,21 +186,18 @@ html {
 
 .handheld-screen {
   position: absolute;
-  top: 13.7%;
-  left: 25.8%;
-  display: flex;
-  width: 62.2%;
-  height: 31.8%;
-  padding: clamp(13px, 2.1vw, 24px);
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
+  top: 15%;
+  left: 27%;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  width: 59%;
+  height: 29.3%;
+  padding: clamp(7px, 1.15vw, 12px);
   overflow: hidden;
   color: #111f43;
-  text-align: center;
   background:
     repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.05) 0 2px, rgba(20, 33, 75, 0.045) 2px 4px),
-    rgba(169, 187, 255, 0.9);
+    rgba(174, 191, 255, 0.94);
   border: 2px solid rgba(11, 25, 48, 0.72);
   border-radius: 9% 8% 13% 8%;
   box-shadow:
@@ -217,39 +214,120 @@ html {
   pointer-events: none;
 }
 
-.screen-label {
-  margin-bottom: auto;
-  align-self: flex-start;
-  font-size: clamp(0.42rem, 0.8vw, 0.58rem);
-  letter-spacing: 0.12em;
-}
-
-.screen-icon {
-  display: grid;
-  width: clamp(33px, 4vw, 48px);
-  aspect-ratio: 1;
-  place-items: center;
-  margin-bottom: 8px;
-  color: #f5d25e;
-  background: #1c765f;
-  border: 2px solid rgba(17, 31, 67, 0.8);
-  box-shadow: 3px 3px 0 rgba(17, 31, 67, 0.55);
-  font-size: clamp(1.1rem, 2vw, 1.65rem);
+.screen-toolbar {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  min-width: 0;
+  padding: 0 2px clamp(4px, 0.6vw, 7px);
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  border-bottom: 2px solid rgba(30, 55, 148, 0.78);
+  font-size: clamp(0.42rem, 0.7vw, 0.59rem);
+  font-weight: 700;
+  letter-spacing: 0.09em;
   line-height: 1;
 }
 
-.screen-team {
-  width: 100%;
-  font-size: clamp(0.54rem, 1vw, 0.78rem);
-  line-height: 1.25;
-  letter-spacing: 0.035em;
+.screen-lights {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 4px;
+}
+
+.screen-lights i {
+  display: block;
+  width: clamp(8px, 1.25vw, 13px);
+  aspect-ratio: 1;
+  background: #2bbd72;
+  border: 1px solid #1c2b65;
+  box-shadow: 1px 1px 0 rgba(17, 31, 67, 0.5);
+}
+
+.screen-lights i:last-child {
+  background: #ef4f57;
+}
+
+.screen-menu {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  align-content: start;
+  min-height: 0;
+  margin: 0;
+  padding: clamp(4px, 0.7vw, 8px) 2px;
+  gap: 2px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  list-style: none;
+}
+
+.screen-menu::-webkit-scrollbar {
+  display: none;
+}
+
+.screen-menu li {
+  position: relative;
+  display: grid;
+  grid-template-columns: clamp(16px, 2.5vw, 24px) minmax(0, 1fr);
+  min-height: clamp(22px, 3vw, 30px);
+  padding: 2px 5px;
+  align-items: center;
+  gap: 4px;
+  color: rgba(28, 48, 116, 0.68);
+  border: 1px solid transparent;
+  border-radius: 5px;
+  font-size: clamp(0.39rem, 0.66vw, 0.55rem);
+  line-height: 1.1;
+  transition: color 180ms ease, background 180ms ease, border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.screen-menu li > span {
+  font-size: 1.22em;
+  text-align: center;
+}
+
+.screen-menu li strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.screen-menu li.is-selected {
+  color: #fff;
+  background: linear-gradient(90deg, rgba(69, 97, 229, 0.9), rgba(103, 127, 248, 0.94));
+  border-color: rgba(255, 255, 255, 0.9);
+  box-shadow:
+    0 0 0 1px rgba(43, 67, 170, 0.58),
+    0 0 12px rgba(255, 255, 255, 0.82),
+    inset 0 0 8px rgba(255, 255, 255, 0.22);
+  transform: translateX(2px);
+}
+
+.screen-menu li.is-selected::before {
+  position: absolute;
+  top: 50%;
+  left: -3px;
+  content: "›";
+  color: #fff;
+  font-size: clamp(0.7rem, 1.3vw, 1rem);
+  text-shadow: 0 0 6px #fff;
+  transform: translate(-2px, -50%);
 }
 
 .screen-count {
-  margin-top: auto;
-  align-self: flex-end;
-  font-size: clamp(0.42rem, 0.72vw, 0.54rem);
-  letter-spacing: 0.08em;
+  position: relative;
+  z-index: 1;
+  padding-top: clamp(3px, 0.45vw, 5px);
+  color: rgba(30, 55, 148, 0.82);
+  border-top: 1px solid rgba(30, 55, 148, 0.48);
+  font-size: clamp(0.38rem, 0.58vw, 0.48rem);
+  letter-spacing: 0.12em;
+  text-align: right;
 }
 
 .d-pad {
