@@ -1,5 +1,4 @@
 const departments = Array.from(document.querySelectorAll(".department"));
-const slotButtons = Array.from(document.querySelectorAll(".team-slots button"));
 const previousButton = document.querySelector(".team-control-up");
 const nextButton = document.querySelector(".team-control-down");
 const handheld = document.querySelector(".handheld");
@@ -30,13 +29,6 @@ function updateTeamLabels(index) {
   currentTeamTitle.textContent = teamName;
   currentTeamIcon.textContent = teamIcon;
 
-  slotButtons.forEach((button, buttonIndex) => {
-    if (buttonIndex === index) {
-      button.setAttribute("aria-current", "true");
-    } else {
-      button.removeAttribute("aria-current");
-    }
-  });
 }
 
 function showTeam(index) {
@@ -105,10 +97,6 @@ async function switchTeam(nextIndex) {
 
 previousButton.addEventListener("click", () => switchTeam(currentIndex - 1));
 nextButton.addEventListener("click", () => switchTeam(currentIndex + 1));
-
-slotButtons.forEach((button) => {
-  button.addEventListener("click", () => switchTeam(Number(button.dataset.teamIndex)));
-});
 
 handheld.addEventListener("keydown", (event) => {
   if (event.key === "ArrowUp") {

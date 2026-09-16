@@ -63,8 +63,7 @@ html {
 .back-home,
 .team-kicker,
 .handheld-screen,
-.selector-readout,
-.team-slots,
+.control-hint,
 .team-display-heading,
 .member-card figcaption,
 .team-footer {
@@ -147,8 +146,8 @@ html {
 
 .team-arcade {
   display: grid;
-  grid-template-columns: minmax(310px, 0.82fr) minmax(520px, 1.58fr);
-  gap: clamp(42px, 5vw, 82px);
+  grid-template-columns: minmax(280px, 0.78fr) minmax(0, 1.42fr);
+  gap: clamp(34px, 4.6vw, 76px);
   align-items: start;
   margin-bottom: clamp(76px, 8vw, 120px);
 }
@@ -161,7 +160,7 @@ html {
 
 .handheld {
   position: relative;
-  width: min(100%, 430px);
+  width: min(100%, 410px);
   margin: 0 auto;
   outline: none;
   filter: drop-shadow(0 30px 38px rgba(0, 0, 0, 0.34));
@@ -181,18 +180,17 @@ html {
   display: block;
   width: 100%;
   height: auto;
-  border-radius: 22px;
-  mix-blend-mode: screen;
-  opacity: 0.9;
+  object-fit: contain;
+  filter: drop-shadow(0 24px 24px rgba(0, 0, 0, 0.28));
 }
 
 .handheld-screen {
   position: absolute;
-  top: 12.6%;
-  left: 21.5%;
+  top: 13.7%;
+  left: 25.8%;
   display: flex;
-  width: 59%;
-  height: 29.4%;
+  width: 62.2%;
+  height: 31.8%;
   padding: clamp(13px, 2.1vw, 24px);
   align-items: center;
   justify-content: center;
@@ -256,13 +254,13 @@ html {
 
 .d-pad {
   position: absolute;
-  top: 58.5%;
-  left: 25.3%;
+  top: 58.6%;
+  left: 30.2%;
   display: grid;
   grid-template-rows: 1fr 1fr;
-  width: 18.8%;
-  aspect-ratio: 0.62;
-  gap: 2px;
+  width: 17.5%;
+  aspect-ratio: 0.66;
+  gap: 4px;
 }
 
 .team-control {
@@ -270,14 +268,15 @@ html {
   min-width: 0;
   padding: 0;
   place-items: center;
-  color: #fff4df;
+  color: #07142d;
   cursor: pointer;
-  background: rgba(22, 21, 24, 0.88);
-  border: 1px solid rgba(255, 250, 240, 0.55);
+  background: rgba(243, 191, 82, 0.96);
+  border: 2px solid #07142d;
   box-shadow:
-    inset 0 0 0 2px rgba(255, 255, 255, 0.07),
-    2px 3px 0 rgba(0, 0, 0, 0.42);
-  font: 700 clamp(1rem, 2.2vw, 1.5rem) / 1 var(--mono);
+    inset 0 0 0 2px rgba(255, 255, 255, 0.34),
+    3px 4px 0 rgba(7, 20, 45, 0.72),
+    0 0 15px rgba(243, 191, 82, 0.55);
+  font: 800 clamp(1.05rem, 2.3vw, 1.6rem) / 1 var(--mono);
   transition: color 160ms ease, background 160ms ease, transform 100ms ease;
 }
 
@@ -291,8 +290,8 @@ html {
 
 .team-control:hover,
 .team-control:focus-visible {
-  color: #0b1930;
-  background: var(--sun);
+  color: #fffaf0;
+  background: var(--coral);
   outline: 2px solid #fff4df;
   outline-offset: 2px;
 }
@@ -301,72 +300,17 @@ html {
   transform: translate(2px, 2px);
 }
 
-.selector-readout {
-  display: flex;
-  max-width: 430px;
-  margin: -22px auto 20px;
-  padding: 10px 12px;
-  align-items: center;
-  justify-content: space-between;
-  color: rgba(255, 250, 240, 0.72);
-  background: rgba(5, 18, 39, 0.9);
-  border: 1px solid rgba(255, 250, 240, 0.26);
-  font-size: clamp(0.48rem, 0.72vw, 0.6rem);
-  letter-spacing: 0.08em;
+.control-hint {
+  margin: -2px auto 0;
+  color: rgba(255, 250, 240, 0.68);
+  text-align: center;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
 }
 
-.selector-readout span:nth-child(2) {
+.control-hint span {
+  margin-right: 8px;
   color: var(--sun);
-}
-
-.team-slots {
-  display: grid;
-  max-width: 430px;
-  margin: 0 auto;
-  padding: 0;
-  gap: 6px;
-  list-style: none;
-}
-
-.team-slots button {
-  display: grid;
-  grid-template-columns: 32px 1fr;
-  width: 100%;
-  padding: 8px 10px;
-  align-items: center;
-  color: rgba(255, 250, 240, 0.62);
-  text-align: left;
-  cursor: pointer;
-  background: rgba(4, 14, 33, 0.54);
-  border: 1px solid rgba(255, 250, 240, 0.13);
-  font: inherit;
-  font-size: 0.58rem;
-  line-height: 1.35;
-  letter-spacing: 0.045em;
-  transition: color 180ms ease, border-color 180ms ease, background 180ms ease, transform 180ms ease;
-}
-
-.team-slots button span {
-  color: rgba(243, 191, 82, 0.65);
-}
-
-.team-slots button:hover,
-.team-slots button:focus-visible {
-  color: #fffaf0;
-  border-color: rgba(243, 191, 82, 0.62);
-  outline: none;
-}
-
-.team-slots button[aria-current="true"] {
-  color: #07142d;
-  background: var(--sun);
-  border-color: var(--sun);
-  box-shadow: 5px 5px 0 rgba(242, 109, 79, 0.72);
-  transform: translateX(5px);
-}
-
-.team-slots button[aria-current="true"] span {
-  color: #07142d;
 }
 
 .team-display {
@@ -531,12 +475,12 @@ html {
 
 @media (max-width: 1050px) {
   .team-arcade {
-    grid-template-columns: minmax(280px, 0.74fr) minmax(440px, 1.26fr);
-    gap: 36px;
+    grid-template-columns: minmax(250px, 0.72fr) minmax(0, 1.28fr);
+    gap: 30px;
   }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 720px) {
   .team-header {
     grid-template-columns: 1fr auto;
   }
@@ -560,11 +504,6 @@ html {
 
   .handheld {
     width: min(100%, 390px);
-  }
-
-  .selector-readout,
-  .team-slots {
-    max-width: 520px;
   }
 
   .team-display {
@@ -626,15 +565,6 @@ html {
     width: min(100%, 350px);
   }
 
-  .selector-readout {
-    margin-top: -17px;
-  }
-
-  .team-slots button {
-    padding: 9px 10px;
-    font-size: 0.54rem;
-  }
-
   .team-display-heading {
     min-height: 92px;
     padding-right: 7px;
@@ -676,7 +606,6 @@ html {
 
 @media (prefers-reduced-motion: reduce) {
   .team-control,
-  .team-slots button,
   .member-card img {
     transition: none;
   }
