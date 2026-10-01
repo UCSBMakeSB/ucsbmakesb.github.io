@@ -222,11 +222,17 @@
             <div class="faq-mascot">
               <div class="faq-mascot-stage" aria-hidden="true">
                 <svg class="faq-mascot-art" viewBox="0 0 622 710" focusable="false">
-                  <!-- The intact bird is drawn last so its wing always covers the fish. -->
-                  <g class="faq-fish">
-                    <image href="assets/faq-fish.png" x="405" y="205" width="210" height="103.36" transform="rotate(-20 500 255)" />
+                  <!-- Move the fish with its holding wing, behind the body at the shoulder. -->
+                  <g class="faq-wing-raised">
+                    <g class="faq-fish">
+                      <image href="assets/faq-fish.png" x="405" y="205" width="210" height="103.36" transform="rotate(-20 500 255)" />
+                    </g>
+                    <image href="assets/faq-wing-raised.png" x="431" y="245" width="109" height="170" />
                   </g>
-                  <image href="assets/faq-bird.png" width="540" height="710" />
+                  <image href="assets/faq-body.png" width="513" height="710" />
+                  <g class="faq-wing-side">
+                    <image href="assets/faq-wing-side.png" x="80" y="331" width="284" height="182" />
+                  </g>
                 </svg>
                 <span class="faq-mascot-shadow"></span>
               </div>
@@ -290,5 +296,6 @@
         </div>
       </section>
     </main>
+    <script src="faq-animation.js" defer></script>
   </body>
 </html>

@@ -406,6 +406,7 @@ a {
 
 .faq-mascot-art {
   display: block;
+  overflow: visible;
   width: 100%;
   height: auto;
   transform-origin: 50% 90%;
@@ -425,13 +426,14 @@ a {
 
 .faq-fish {
   transform-origin: 490px 260px;
-  animation: faq-fish-wiggle 2.4s ease-in-out infinite;
 }
 
-@keyframes faq-fish-wiggle {
-  0%, 60%, 100% { transform: rotate(0deg); }
-  15%, 40% { transform: rotate(-5deg); }
-  28%, 50% { transform: rotate(3deg); }
+.faq-wing-raised {
+  transform-origin: 450px 400px;
+}
+
+.faq-wing-side {
+  transform-origin: 318px 371px;
 }
 
 @keyframes faq-mascot-bob {
@@ -451,7 +453,7 @@ a {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .faq-mascot-stage > *, .faq-fish { animation: none; }
+  .faq-mascot-stage > *, .faq-fish, .faq-wing-raised, .faq-wing-side { animation: none; }
 }
 
 #faqs details {
