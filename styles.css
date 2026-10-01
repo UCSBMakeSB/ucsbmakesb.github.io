@@ -381,6 +381,79 @@ a {
   line-height: 1.6;
 }
 
+.faq-layout {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: clamp(32px, 5vw, 72px);
+  align-items: start;
+  max-width: 1100px;
+}
+
+.faq-mascot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.faq-mascot-stage {
+  position: relative;
+  order: -1;
+  width: 100%;
+  padding: 18px 8px 24px;
+}
+
+.faq-mascot-art {
+  display: block;
+  width: 100%;
+  height: auto;
+  transform-origin: 50% 90%;
+  animation: faq-mascot-bob 4s ease-in-out infinite;
+}
+
+.faq-mascot-shadow {
+  position: absolute;
+  bottom: 8px;
+  left: 25%;
+  width: 50%;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.22);
+  animation: faq-shadow-breathe 4s ease-in-out infinite;
+}
+
+.faq-fish {
+  transform-origin: 490px 260px;
+  animation: faq-fish-wiggle 2.4s ease-in-out infinite;
+}
+
+@keyframes faq-fish-wiggle {
+  0%, 60%, 100% { transform: rotate(0deg); }
+  15%, 40% { transform: rotate(-5deg); }
+  28%, 50% { transform: rotate(3deg); }
+}
+
+@keyframes faq-mascot-bob {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-10px) rotate(2deg); }
+}
+
+@keyframes faq-shadow-breathe {
+  0%, 100% { transform: scaleX(1); opacity: 1; }
+  50% { transform: scaleX(0.85); opacity: 0.65; }
+}
+
+@media (max-width: 700px) {
+  .faq-layout { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .faq-intro { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+  .faq-mascot { width: 140px; flex-shrink: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .faq-mascot-stage > *, .faq-fish { animation: none; }
+}
+
 #faqs details {
   margin: 0 0 20px;
   padding-bottom: 20px;

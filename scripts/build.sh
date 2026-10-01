@@ -13,5 +13,7 @@ cp "$project_dir/styles.css" "$build_dir/client/styles.css"
 cp "$project_dir/favicon.svg" "$build_dir/client/favicon.svg"
 cp "$project_dir/assets/makesb-storke-golden-hour.webp" "$build_dir/client/assets/makesb-storke-golden-hour.webp"
 cp "$project_dir/assets/makesb-social-card.jpg" "$build_dir/client/assets/makesb-social-card.jpg"
+cp "$project_dir/assets/faq-bird.png" "$build_dir/client/assets/faq-bird.png"
+cp "$project_dir/assets/faq-fish.png" "$build_dir/client/assets/faq-fish.png"
 
 printf 'Built MakeSB site in %s\n' "$build_dir"
