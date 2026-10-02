@@ -506,21 +506,6 @@ a {
   margin: 14px 0 0;
 }
 
-.faq-smile {
-  opacity: 0;
-  transition: opacity 180ms ease;
-}
-
-.faq-mascot-art.smiling .faq-smile {
-  opacity: 1;
-}
-
-.faq-mascot-art.smiling .faq-fish,
-.faq-mascot-art.smiling .faq-wing-raised,
-.faq-mascot-art.smiling .faq-wing-side {
-  opacity: 0;
-}
-
 .sponsor-row {
   display: flex;
   flex-wrap: wrap;
