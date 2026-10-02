@@ -1,4 +1,4 @@
-html {
+.team-page {
   min-height: 100%;
   overflow-y: auto;
 }
@@ -426,7 +426,7 @@ html {
   box-shadow: 0 0 12px #62db9c;
 }
 
-.team-display-heading h2 {
+.team-display-heading .current-team-title {
   max-width: 760px;
   margin: 0;
   color: #fffaf0;
@@ -649,7 +649,7 @@ html {
     padding-right: 7px;
   }
 
-  .team-display-heading h2 {
+  .team-display-heading .current-team-title {
     font-size: clamp(1.08rem, 5vw, 1.5rem);
   }
 
@@ -688,4 +688,84 @@ html {
   .member-card img {
     transition: none;
   }
+}
+
+/* Homepage layout shares the surrounding sections' width and spacing. */
+#team .team-description {
+  color: rgba(255, 250, 240, 0.72);
+  margin-bottom: 32px;
+}
+
+#team .team-arcade {
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: 36px;
+  margin-bottom: 0;
+}
+
+#team .handheld-column {
+  position: static;
+}
+
+#team .team-display {
+  padding-top: 0;
+}
+
+#team .team-display-heading {
+  min-height: 0;
+  padding: 0 0 20px;
+  border-top: 0;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+#team .current-team-title {
+  font-family: var(--sans);
+  font-size: 1.25rem;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+#team .member-stage {
+  min-height: 0;
+}
+
+#team .member-grid {
+  gap: 24px;
+}
+
+#team .member-card img {
+  border-color: rgba(255, 250, 240, 0.22);
+  box-shadow: none;
+}
+
+#team .member-card::before {
+  display: none;
+}
+
+#team .member-card figcaption {
+  width: auto;
+  margin: 12px 0 0;
+  padding: 0;
+  background: transparent;
+  color: var(--paper);
+  border: 0;
+  box-shadow: none;
+  font-family: var(--sans);
+  font-size: 0.9rem;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+#team .current-team-icon {
+  width: 42px;
+  font-size: 1.4rem;
+  border: 0;
+  box-shadow: none;
+  border-radius: 50%;
+}
+
+@media (max-width: 720px) {
+  #team .team-arcade { grid-template-columns: minmax(0, 1fr); }
+  #team .handheld { max-width: 320px; }
+  #team .member-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
 }

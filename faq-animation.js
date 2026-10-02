@@ -62,6 +62,8 @@ if (mascot) {
   document.querySelectorAll('#faqs details').forEach(question => {
     question.addEventListener('toggle', () => {
       if (!question.open || !canAnimate()) return;
+      mascot.classList.add('smiling');
+      window.setTimeout(() => mascot.classList.remove('smiling'), 1600);
       // Let an ongoing catch land before gesturing with the free wing.
       if (animations.some(animation => animation.playState === 'running')) return;
       stop();

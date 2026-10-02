@@ -32,6 +32,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="team.css" />
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -48,10 +49,10 @@
         <a href="#faqs">FAQs</a>
         <a href="#sponsors">Sponsors</a>
         <a href="#contact">Contact</a>
-        <a href="team/">Meet Our Team</a>
+        <a href="#team">Meet Our Team</a>
       </nav>
 
-      <a class="team-mobile-link" href="team/">Team</a>
+      <a class="team-mobile-link" href="#team">Team</a>
 
       <a
         class="header-apply"
@@ -233,6 +234,7 @@
                     <image href="assets/faq-wing-raised.png" x="431" y="245" width="109" height="170" />
                   </g>
                   <image href="assets/faq-body.png" width="513" height="710" />
+                  <image class="faq-smile" href="assets/faq-smile.png" width="513" height="710" />
                   <g class="faq-wing-side">
                     <image href="assets/faq-wing-side.png" x="80" y="331" width="284" height="182" />
                   </g>
@@ -274,6 +276,203 @@
         </div>
       </section>
 
+      <section id="team" class="page-section" aria-labelledby="team-title">
+        <div class="page-section-inner">
+          <h2 id="team-title">Meet Our Team</h2>
+          <p class="team-description">Meet the students making MakeSB happen.</p>
+      <section class="team-arcade" aria-label="Choose a team and meet its members">
+        <div class="handheld-column">
+          <div class="handheld" tabindex="0" aria-label="Team selector. Use the up and down arrow keys or the buttons to change teams.">
+            <img
+              class="handheld-image"
+              src="assets/team/retro-handheld-cutout.png"
+              width="1038"
+              height="1515"
+              alt=""
+              aria-hidden="true"
+            />
+
+            <div class="handheld-screen" aria-live="polite" aria-atomic="true">
+              <div class="screen-toolbar">
+                <span>Team Groups</span>
+                <span class="screen-lights" aria-hidden="true"><i></i><i></i></span>
+              </div>
+              <ol class="screen-menu" aria-label="Team groups">
+                <li class="is-selected" data-menu-index="0" aria-current="true"><span aria-hidden="true">♡</span><strong>Presidents</strong></li>
+                <li data-menu-index="1"><span aria-hidden="true">✦</span><strong>Design &amp; Develop</strong></li>
+                <li data-menu-index="2"><span aria-hidden="true">◎</span><strong>Marketing · Outreach · Graphics</strong></li>
+                <li data-menu-index="3"><span aria-hidden="true">$</span><strong>Sponsorships · Finances</strong></li>
+                <li data-menu-index="4"><span aria-hidden="true">⚙</span><strong>MakeOps</strong></li>
+              </ol>
+              <span class="screen-count">01 / 05</span>
+            </div>
+
+            <div class="d-pad" aria-label="Team controls">
+              <button class="team-control team-control-up" type="button" aria-label="Previous team">
+                <span aria-hidden="true">↑</span>
+              </button>
+              <button class="team-control team-control-down" type="button" aria-label="Next team">
+                <span aria-hidden="true">↓</span>
+              </button>
+            </div>
+          </div>
+
+          <p class="control-hint"><span aria-hidden="true">↑ / ↓</span> Select team</p>
+        </div>
+
+        <div class="team-display">
+          <div class="team-display-heading">
+            <div>
+              <p>Current Group <span class="status-light" aria-hidden="true"></span></p>
+              <h3 class="current-team-title">Presidents</h3>
+            </div>
+            <span class="current-team-icon" aria-hidden="true">♡</span>
+          </div>
+
+          <div class="member-stage" aria-live="polite" aria-atomic="false">
+            <section id="presidents" class="department" data-team-name="Presidents" data-team-icon="♡" aria-labelledby="presidents-title">
+              <h3 id="presidents-title" class="visually-hidden">Presidents</h3>
+              <ul class="member-grid member-grid-presidents">
+                <li>
+                  <figure class="member-card">
+                    <img src="assets/team/member-01.jpg" width="250" height="312" alt="Placeholder portrait for Alex Morgan" />
+                    <figcaption>Alex Morgan</figcaption>
+                  </figure>
+                </li>
+                <li>
+                  <figure class="member-card">
+                    <img src="assets/team/member-02.jpg" width="250" height="312" alt="Placeholder portrait for Taylor Chen" />
+                    <figcaption>Taylor Chen</figcaption>
+                  </figure>
+                </li>
+              </ul>
+            </section>
+
+            <section id="design-develop" class="department" data-team-name="Design &amp; Develop" data-team-icon="✦" aria-labelledby="design-develop-title" hidden>
+              <h3 id="design-develop-title" class="visually-hidden">Design &amp; Develop Team members</h3>
+              <ul class="member-grid">
+          <li>
+            <figure class="member-card">
+              <img src="assets/team/member-01.jpg" width="250" height="312" alt="Fictional placeholder portrait for Maya Chen" />
+              <figcaption>Maya Chen</figcaption>
+            </figure>
+          </li>
+          <li>
+            <figure class="member-card">
+              <img src="assets/team/member-02.jpg" width="250" height="312" alt="Fictional placeholder portrait for Ethan Park" />
+              <figcaption>Ethan Park</figcaption>
+            </figure>
+          </li>
+          <li>
+            <figure class="member-card">
+              <img src="assets/team/member-03.jpg" width="250" height="312" alt="Fictional placeholder portrait for Sofia Ramirez" />
+              <figcaption>Sofia Ramirez</figcaption>
+            </figure>
+          </li>
+          <li>
+            <figure class="member-card">
+              <img src="assets/team/member-04.jpg" width="250" height="312" alt="Fictional placeholder portrait for Noah Williams" />
+              <figcaption>Noah Williams</figcaption>
+            </figure>
+          </li>
+              </ul>
+            </section>
+
+            <section id="marketing-outreach-graphics" class="department" data-team-name="Marketing · Outreach · Graphics" data-team-icon="◎" aria-labelledby="marketing-title" hidden>
+              <h3 id="marketing-title" class="visually-hidden">Marketing, Outreach, and Graphics members</h3>
+              <ul class="member-grid">
+          <li>
+            <figure class="member-card">
+              <img src="assets/team/member-05.jpg" width="250" height="312" alt="Fictional placeholder portrait for Aisha Patel" loading="lazy" />
+              <figcaption>Aisha Patel</figcaption>
+            </figure>
+          </li>
+          <li>
+            <figure class="member-card">
+              <img src="assets/team/member-06.jpg" width="250" height="312" alt="Fictional placeholder portrait for Lucas Martin" loading="lazy" />
+              <figcaption>Lucas Martin</figcaption>
+            </figure>
+          </li>
+          <li>
+            <figure class="member-card">
+              <img src="assets/team/member-07.jpg" width="250" height="312" alt="Fictional placeholder portrait for Chloe Nguyen" loading="lazy" />
+              <figcaption>Chloe Nguyen</figcaption>
+            </figure>
+          </li>
+          <li>
+            <figure class="member-card">
+              <img src="assets/team/member-08.jpg" width="250" height="312" alt="Fictional placeholder portrait for Daniel Brooks" loading="lazy" />
+              <figcaption>Daniel Brooks</figcaption>
+            </figure>
+          </li>
+              </ul>
+            </section>
+
+            <section id="sponsorships-finances" class="department" data-team-name="Sponsorships · Finances" data-team-icon="$" aria-labelledby="sponsorships-title" hidden>
+              <h3 id="sponsorships-title" class="visually-hidden">Sponsorships and Finances members</h3>
+              <ul class="member-grid">
+          <li>
+            <figure class="member-card">
+              <img src="assets/team/member-09.jpg" width="250" height="312" alt="Fictional placeholder portrait for Emma Thompson" loading="lazy" />
+              <figcaption>Emma Thompson</figcaption>
+            </figure>
+          </li>
+          <li>
+            <figure class="member-card">
+              <img src="assets/team/member-10.jpg" width="250" height="312" alt="Fictional placeholder portrait for Ryan Lee" loading="lazy" />
+              <figcaption>Ryan Lee</figcaption>
+            </figure>
+          </li>
+          <li>
+            <figure class="member-card">
+              <img src="assets/team/member-11.jpg" width="250" height="312" alt="Fictional placeholder portrait for Priya Shah" loading="lazy" />
+              <figcaption>Priya Shah</figcaption>
+            </figure>
+          </li>
+          <li>
+            <figure class="member-card">
+              <img src="assets/team/member-12.jpg" width="250" height="312" alt="Fictional placeholder portrait for Owen Martinez" loading="lazy" />
+              <figcaption>Owen Martinez</figcaption>
+            </figure>
+          </li>
+              </ul>
+            </section>
+
+            <section id="makeops" class="department" data-team-name="MakeOps" data-team-icon="⚙" aria-labelledby="makeops-title" hidden>
+              <h3 id="makeops-title" class="visually-hidden">MakeOps members</h3>
+              <ul class="member-grid">
+          <li>
+            <figure class="member-card">
+              <img src="assets/team/member-13.jpg" width="250" height="312" alt="Fictional placeholder portrait for Jordan Kim" loading="lazy" />
+              <figcaption>Jordan Kim</figcaption>
+            </figure>
+          </li>
+          <li>
+            <figure class="member-card">
+              <img src="assets/team/member-14.jpg" width="250" height="312" alt="Fictional placeholder portrait for Lily Anderson" loading="lazy" />
+              <figcaption>Lily Anderson</figcaption>
+            </figure>
+          </li>
+          <li>
+            <figure class="member-card">
+              <img src="assets/team/member-15.jpg" width="250" height="312" alt="Fictional placeholder portrait for Mateo Garcia" loading="lazy" />
+              <figcaption>Mateo Garcia</figcaption>
+            </figure>
+          </li>
+          <li>
+            <figure class="member-card">
+              <img src="assets/team/member-16.jpg" width="250" height="312" alt="Fictional placeholder portrait for Zoe Wang" loading="lazy" />
+              <figcaption>Zoe Wang</figcaption>
+            </figure>
+          </li>
+              </ul>
+            </section>
+          </div>
+        </div>
+      </section>
+        </div>
+      </section>
+
       <section id="sponsors" class="page-section" aria-labelledby="sponsors-title">
         <div class="page-section-inner">
           <h2 id="sponsors-title">Sponsors</h2>
@@ -299,6 +498,10 @@
         </div>
       </section>
     </main>
+    <footer class="site-footer">
+      <p>Made with <span aria-hidden="true">♥</span> from MakeSB</p>
+    </footer>
     <script src="faq-animation.js" defer></script>
+    <script src="team.js" defer></script>
   </body>
 </html>
