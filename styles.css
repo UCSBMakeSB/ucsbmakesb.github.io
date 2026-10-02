@@ -260,6 +260,10 @@ a {
   text-transform: uppercase;
 }
 
+.hero-date {
+  font-size: 1rem;
+}
+
 .hero-bottom {
   position: absolute;
   right: clamp(24px, 4vw, 68px);
@@ -763,6 +767,10 @@ a {
   .hero-title > p {
     margin-top: 32px;
     font-size: 0.57rem;
+  }
+
+  .hero-date {
+    font-size: 0.82rem;
   }
 
   .hero-bottom {
