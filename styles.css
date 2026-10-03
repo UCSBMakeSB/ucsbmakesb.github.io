@@ -4,6 +4,10 @@
   --sun: #f3bf52;
   --coral: #f26d4f;
   --panel: #142238;
+  --layer1: #784e5f;
+  --layer2: #4a375f;
+  --layer3: #2e2a5f;
+  --layer4: #1b1843;
   --sans: "Manrope", Arial, sans-serif;
   --serif: "Instrument Serif", Georgia, serif;
   --mono: "DM Mono", monospace;
@@ -379,6 +383,30 @@ a {
 .page-section {
   padding: 80px clamp(20px, 4vw, 68px);
   border-top: 1px solid rgba(255, 250, 240, 0.28);
+}
+
+#about.page-section {
+  background: var(--layer1);
+}
+
+#schedule.page-section {
+  background: var(--layer2);
+}
+
+#faqs.page-section {
+  background: var(--layer3);
+}
+
+#sponsors.page-section {
+  background: var(--layer4);
+}
+
+#contact.page-section {
+  background: var(--panel);
+}
+
+#team.page-section {
+  background: var(--ink);
 }
 
 .page-section-inner {
