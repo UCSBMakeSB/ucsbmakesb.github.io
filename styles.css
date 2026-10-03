@@ -202,15 +202,6 @@ a {
   object-position: 50% 50%;
 }
 
-.hero-wash {
-  position: absolute;
-  z-index: -2;
-  inset: 0;
-  background:
-    linear-gradient(180deg, rgba(3, 12, 29, 0.58) 0%, rgba(3, 12, 29, 0.02) 37%, rgba(3, 12, 29, 0.2) 61%, rgba(3, 12, 29, 0.88) 100%),
-    linear-gradient(90deg, rgba(3, 12, 29, 0.4), transparent 28%, transparent 75%, rgba(3, 12, 29, 0.3));
-}
-
 .hero::after {
   position: absolute;
   z-index: -1;
@@ -842,12 +833,6 @@ a {
 
   .hero-art {
     object-position: 51% 50%;
-  }
-
-  .hero-wash {
-    background:
-      linear-gradient(180deg, rgba(3, 12, 29, 0.68) 0%, rgba(3, 12, 29, 0.05) 34%, rgba(3, 12, 29, 0.28) 57%, rgba(3, 12, 29, 0.92) 100%),
-      linear-gradient(90deg, rgba(3, 12, 29, 0.28), transparent 72%);
   }
 
   .hero-title {
