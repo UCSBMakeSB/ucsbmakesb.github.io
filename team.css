@@ -12,6 +12,36 @@
   background: var(--ink);
 }
 
+.home-team {
+  position: relative;
+  isolation: isolate;
+  min-height: 100svh;
+  overflow: hidden;
+  background: var(--ink);
+  border-top: 1px solid rgba(255, 250, 240, 0.28);
+}
+
+.home-team > .team-art,
+.home-team > .team-art-wash {
+  position: absolute;
+}
+
+.home-team .team-content {
+  min-height: auto;
+}
+
+.team-section-loading {
+  display: grid;
+  min-height: 100svh;
+  margin: 0;
+  place-items: center;
+  color: rgba(255, 250, 240, 0.68);
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
 .team-art,
 .team-art-wash {
   position: fixed;
@@ -615,7 +645,7 @@
 .team-display-heading {
   display: flex;
   min-height: 102px;
-  margin-bottom: clamp(24px, 3vw, 40px);
+  margin-bottom: 30px;
   padding: 18px 20px 18px 0;
   align-items: flex-end;
   justify-content: space-between;
@@ -673,10 +703,11 @@
 
 .member-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 240px));
   margin: 0;
   padding: 0;
-  gap: clamp(24px, 3vw, 42px);
+  justify-content: space-between;
+  gap: clamp(18px, 2vw, 26px);
   list-style: none;
 }
 
@@ -702,7 +733,7 @@
   display: block;
   width: 100%;
   height: auto;
-  aspect-ratio: 4 / 4.65;
+  aspect-ratio: 4 / 4.35;
   object-fit: cover;
   border: 1px solid var(--sun);
   box-shadow: 7px 7px 0 rgba(7, 20, 45, 0.8), 8px 8px 0 rgba(243, 191, 82, 0.35);
@@ -772,6 +803,10 @@
     grid-template-columns: minmax(250px, 0.72fr) minmax(0, 1.28fr);
     gap: 30px;
   }
+
+  .member-grid {
+    grid-template-columns: repeat(2, minmax(0, 240px));
+  }
 }
 
 @media (max-width: 720px) {
@@ -797,7 +832,11 @@
   }
 
   .handheld {
-    width: min(100%, 390px);
+    width: min(100%, 340px);
+  }
+
+  .control-hint {
+    margin-top: 20px;
   }
 
   .team-display {
@@ -856,7 +895,7 @@
   }
 
   .handheld {
-    width: min(100%, 350px);
+    width: min(100%, 320px);
   }
 
   .team-display-heading {
@@ -884,7 +923,8 @@
   }
 
   .member-card {
-    max-width: 430px;
+    width: min(100%, 320px);
+    margin-inline: auto;
   }
 
   .member-card figcaption {
@@ -945,6 +985,7 @@
 }
 
 #team .member-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 24px;
 }
 
