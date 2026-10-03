@@ -209,10 +209,21 @@ a {
 .hero::after {
   position: absolute;
   z-index: -1;
-  inset: 12px;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: clamp(72px, 12svh, 120px);
   content: "";
   pointer-events: none;
-  border: 1px solid rgba(255, 250, 240, 0.28);
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--layer1) 0%, transparent) 0%,
+    color-mix(in srgb, var(--layer1) 4%, transparent) 25%,
+    color-mix(in srgb, var(--layer1) 18%, transparent) 50%,
+    color-mix(in srgb, var(--layer1) 45%, transparent) 70%,
+    color-mix(in srgb, var(--layer1) 78%, transparent) 87%,
+    var(--layer1) 100%
+  );
 }
 
 .hero-title {
@@ -382,27 +393,27 @@ a {
 
 .page-section {
   padding: 80px clamp(20px, 4vw, 68px);
-  border-top: 1px solid rgba(255, 250, 240, 0.28);
 }
 
 #about.page-section {
-  background: var(--layer1);
+  border-top: 0;
+  background: linear-gradient(to bottom, var(--layer1), var(--layer2));
 }
 
 #schedule.page-section {
-  background: var(--layer2);
+  background: linear-gradient(to bottom, var(--layer2), var(--layer3));
 }
 
 #faqs.page-section {
-  background: var(--layer3);
+  background: linear-gradient(to bottom, var(--layer3), var(--layer4));
 }
 
 #sponsors.page-section {
-  background: var(--layer4);
+  background: linear-gradient(to bottom, var(--layer4), var(--panel));
 }
 
 #contact.page-section {
-  background: var(--panel);
+  background: linear-gradient(to bottom, var(--panel), var(--ink));
 }
 
 #team.page-section {
@@ -853,10 +864,6 @@ a {
 
   .team-mobile-link {
     font-size: 0.58rem;
-  }
-
-  .hero::after {
-    inset: 7px;
   }
 
   .hero-art {
