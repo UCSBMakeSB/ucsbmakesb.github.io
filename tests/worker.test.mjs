@@ -71,6 +71,6 @@ test("serves the team page at its directory route", async () => {
   assert.match(responseHtml, /MakeOps/);
   assert.match(responseHtml, /Previous team/);
   assert.match(responseHtml, /Next team/);
-  assert.match(responseHtml, /retro-handheld-cutout\.png/);
+  assert.match(responseHtml, /gameboy-screen-bezel/);
   assert.match(responseHtml, /team\.js/);
 });

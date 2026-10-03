@@ -160,50 +160,117 @@
 
 .handheld {
   position: relative;
-  width: min(100%, 410px);
+  width: min(100%, 340px);
+  aspect-ratio: 0.7;
   margin: 0 auto;
+  overflow: hidden;
+  background:
+    linear-gradient(155deg, rgba(255, 255, 255, 0.52) 0 8%, transparent 25%),
+    linear-gradient(135deg, rgba(255, 244, 211, 0.82), rgba(231, 165, 63, 0.72) 55%, rgba(194, 113, 34, 0.78));
+  border: 1px solid rgba(255, 246, 218, 0.86);
+  border-radius: 9% 9% 16% 10% / 6% 6% 10% 8%;
+  box-shadow:
+    inset 10px 8px 18px rgba(255, 255, 255, 0.38),
+    inset -14px -18px 30px rgba(100, 50, 5, 0.22),
+    0 26px 42px rgba(0, 0, 0, 0.32);
   outline: none;
-  filter: drop-shadow(0 30px 38px rgba(0, 0, 0, 0.34));
 }
 
-.handheld:focus-visible::after {
+.handheld::before,
+.handheld::after {
   position: absolute;
-  inset: 3%;
+  z-index: 0;
   content: "";
-  border: 2px solid var(--sun);
-  border-radius: 36px;
-  box-shadow: 0 0 0 4px rgba(243, 191, 82, 0.2);
   pointer-events: none;
 }
 
-.handheld-image {
-  display: block;
-  width: 100%;
-  height: auto;
-  object-fit: contain;
-  filter: drop-shadow(0 24px 24px rgba(0, 0, 0, 0.28));
+.handheld::before {
+  inset: 1.8%;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px rgba(92, 50, 12, 0.15);
+}
+
+.handheld::after {
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 28%;
+  background: linear-gradient(180deg, transparent, rgba(116, 56, 4, 0.12));
+}
+
+.handheld:focus-visible {
+  outline: 2px solid var(--sun);
+  outline-offset: 5px;
+}
+
+.gameboy-glass-highlight {
+  position: absolute;
+  z-index: 1;
+  top: 2.4%;
+  right: 5%;
+  left: 5%;
+  height: 2.2%;
+  background: rgba(255, 255, 255, 0.32);
+  border-radius: 999px;
+  box-shadow: 0 1px 0 rgba(92, 50, 12, 0.22);
+}
+
+.gameboy-brand,
+.gameboy-model,
+.system-buttons {
+  position: absolute;
+  z-index: 2;
+  color: rgba(10, 28, 60, 0.76);
+  font-family: var(--mono);
+  text-transform: uppercase;
+}
+
+.gameboy-brand {
+  top: 4.1%;
+  left: 9%;
+  font-size: clamp(0.42rem, 0.7vw, 0.58rem);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.gameboy-brand span {
+  color: #b62935;
+}
+
+.gameboy-screen-bezel {
+  position: absolute;
+  z-index: 3;
+  top: 7.2%;
+  right: 7.5%;
+  left: 7.5%;
+  height: 39%;
+  overflow: hidden;
+  background: linear-gradient(150deg, #102541, #061226 72%);
+  border: 2px solid rgba(4, 14, 31, 0.96);
+  border-radius: 8% 8% 13% 8% / 12% 12% 17% 13%;
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.08),
+    0 5px 10px rgba(74, 38, 4, 0.34);
 }
 
 .handheld-screen {
   position: absolute;
-  top: 13%;
-  left: 24.8%;
+  inset: 8% 6.5% 9%;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
   box-sizing: border-box;
-  width: 62%;
-  height: 34.8%;
-  padding: clamp(7px, 1.15vw, 12px);
+  padding: clamp(6px, 0.9vw, 10px);
   overflow: hidden;
   color: #111f43;
   background:
-    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.05) 0 2px, rgba(20, 33, 75, 0.045) 2px 4px),
-    rgba(174, 191, 255, 0.94);
-  border: 2px solid rgba(11, 25, 48, 0.72);
-  border-radius: 9% 8% 12% 9%;
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.08) 0 2px, rgba(20, 33, 75, 0.055) 2px 4px),
+    linear-gradient(145deg, rgba(194, 205, 255, 0.98), rgba(137, 158, 239, 0.96));
+  border: 2px solid rgba(8, 21, 49, 0.82);
+  border-radius: 4px 4px 9px 5px;
   box-shadow:
     inset 0 0 28px rgba(17, 31, 67, 0.2),
-    0 0 24px rgba(142, 170, 255, 0.26);
+    0 0 18px rgba(142, 170, 255, 0.28);
   text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.38);
 }
 
@@ -272,12 +339,8 @@
 
 .screen-menu li {
   position: relative;
-  display: grid;
-  grid-template-columns: clamp(16px, 2.5vw, 24px) minmax(0, 1fr);
-  min-height: clamp(22px, 3vw, 30px);
-  padding: 2px 5px;
-  align-items: center;
-  gap: 4px;
+  min-height: clamp(20px, 2.5vw, 27px);
+  padding: 0;
   color: rgba(28, 48, 116, 0.68);
   border: 1px solid transparent;
   border-radius: 5px;
@@ -286,12 +349,31 @@
   transition: color 180ms ease, background 180ms ease, border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
 }
 
-.screen-menu li > span {
+.screen-menu button {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+  padding: 2px 5px;
+  grid-template-columns: clamp(16px, 2.5vw, 24px) minmax(0, 1fr);
+  align-items: center;
+  gap: 4px;
+  color: inherit;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: inherit;
+  font: inherit;
+  line-height: inherit;
+  text-align: left;
+}
+
+.screen-menu button > span {
   font-size: 1.22em;
   text-align: center;
 }
 
-.screen-menu li strong {
+.screen-menu button strong {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -320,6 +402,11 @@
   transform: translate(-2px, -50%);
 }
 
+.screen-menu button:focus-visible {
+  outline: 1px solid #fff;
+  outline-offset: -2px;
+}
+
 .screen-count {
   position: relative;
   z-index: 1;
@@ -333,54 +420,182 @@
 
 .d-pad {
   position: absolute;
-  top: 58.6%;
-  left: 30.2%;
+  z-index: 4;
+  top: 54%;
+  left: 12.5%;
   display: grid;
-  grid-template-rows: 1fr 1fr;
-  width: 17.5%;
-  aspect-ratio: 0.66;
-  gap: 4px;
+  width: 30%;
+  aspect-ratio: 1;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  filter: drop-shadow(3px 5px 4px rgba(80, 39, 5, 0.36));
 }
 
-.team-control {
+.team-control,
+.d-pad-arm,
+.d-pad-center {
   display: grid;
   min-width: 0;
   padding: 0;
   place-items: center;
-  color: #07142d;
+  color: rgba(255, 255, 255, 0.62);
+  background: linear-gradient(145deg, #162238, #050b15 70%);
+  border: 1px solid #020712;
+  box-shadow: inset 1px 1px 2px rgba(255, 255, 255, 0.12);
+  font: 700 clamp(0.5rem, 1vw, 0.72rem) / 1 var(--mono);
+}
+
+.team-control {
   cursor: pointer;
-  background: rgba(243, 191, 82, 0.96);
-  border: 2px solid #07142d;
-  box-shadow:
-    inset 0 0 0 2px rgba(255, 255, 255, 0.34),
-    3px 4px 0 rgba(7, 20, 45, 0.72),
-    0 0 15px rgba(243, 191, 82, 0.55);
-  font: 800 clamp(1.05rem, 2.3vw, 1.6rem) / 1 var(--mono);
-  transition: color 160ms ease, background 160ms ease, transform 100ms ease;
+  transition: color 160ms ease, background 160ms ease, box-shadow 160ms ease, transform 100ms ease;
 }
 
 .team-control-up {
-  border-radius: 8px 8px 2px 2px;
+  grid-area: 1 / 2;
+  border-radius: 7px 7px 0 0;
 }
 
 .team-control-down {
-  border-radius: 2px 2px 8px 8px;
+  grid-area: 3 / 2;
+  border-radius: 0 0 7px 7px;
+}
+
+.d-pad-left {
+  grid-area: 2 / 1;
+  border-radius: 7px 0 0 7px;
+}
+
+.d-pad-center {
+  position: relative;
+  grid-area: 2 / 2;
+}
+
+.d-pad-center::after {
+  width: 42%;
+  aspect-ratio: 1;
+  content: "";
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.72);
+  border-radius: 50%;
+}
+
+.d-pad-right {
+  grid-area: 2 / 3;
+  border-radius: 0 7px 7px 0;
 }
 
 .team-control:hover,
 .team-control:focus-visible {
-  color: #fffaf0;
-  background: var(--coral);
-  outline: 2px solid #fff4df;
-  outline-offset: 2px;
+  z-index: 1;
+  color: #fff;
+  background: linear-gradient(145deg, #263a5e, #091222 72%);
+  outline: 2px solid rgba(255, 250, 240, 0.82);
+  outline-offset: 1px;
 }
 
 .team-control:active {
-  transform: translate(2px, 2px);
+  box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.72);
+  transform: translateY(1px);
+}
+
+.action-buttons {
+  position: absolute;
+  z-index: 4;
+  top: 57%;
+  right: 10%;
+  width: 31%;
+  aspect-ratio: 1.45;
+  transform: rotate(-12deg);
+}
+
+.action-button {
+  position: absolute;
+  display: grid;
+  width: 45%;
+  aspect-ratio: 1;
+  place-items: center;
+  background: radial-gradient(circle at 34% 28%, #ff6572, #bb1830 62%, #720b1c);
+  border: 2px solid rgba(68, 7, 18, 0.88);
+  border-radius: 50%;
+  box-shadow:
+    inset 3px 3px 5px rgba(255, 255, 255, 0.34),
+    3px 5px 6px rgba(84, 38, 4, 0.3);
+}
+
+.action-button-a {
+  top: 0;
+  right: 0;
+}
+
+.action-button-b {
+  bottom: 0;
+  left: 0;
+}
+
+.action-button i {
+  position: absolute;
+  top: 105%;
+  color: rgba(10, 28, 60, 0.82);
+  font: 700 clamp(0.48rem, 0.9vw, 0.67rem) / 1 var(--mono);
+  font-style: normal;
+  transform: rotate(12deg);
+}
+
+.system-buttons {
+  top: 79%;
+  left: 29%;
+  display: flex;
+  gap: 13%;
+  font-size: clamp(0.38rem, 0.65vw, 0.52rem);
+  letter-spacing: 0.06em;
+  transform: rotate(-8deg);
+}
+
+.system-buttons span {
+  display: grid;
+  gap: 4px;
+  justify-items: center;
+}
+
+.system-buttons i {
+  display: block;
+  width: clamp(34px, 5.4vw, 46px);
+  height: clamp(7px, 1vw, 9px);
+  background: linear-gradient(#1d2a3c, #080e18);
+  border: 1px solid rgba(2, 7, 18, 0.86);
+  border-radius: 999px;
+  box-shadow: 2px 3px 3px rgba(86, 42, 4, 0.28);
+}
+
+.speaker-vents {
+  position: absolute;
+  z-index: 3;
+  right: 8%;
+  bottom: 7%;
+  display: flex;
+  gap: 6px;
+  transform: rotate(-28deg);
+}
+
+.speaker-vents i {
+  display: block;
+  width: 7px;
+  height: clamp(33px, 5vw, 43px);
+  background: rgba(73, 40, 10, 0.52);
+  border: 1px solid rgba(255, 244, 211, 0.28);
+  border-radius: 999px;
+  box-shadow: inset 1px 1px 2px rgba(38, 18, 2, 0.52);
+}
+
+.gameboy-model {
+  bottom: 4.5%;
+  left: 9%;
+  font-size: clamp(0.36rem, 0.6vw, 0.48rem);
+  letter-spacing: 0.1em;
 }
 
 .control-hint {
-  margin: -2px auto 0;
+  margin: 24px auto 0;
   color: rgba(255, 250, 240, 0.68);
   text-align: center;
   font-size: 0.68rem;

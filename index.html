@@ -305,39 +305,64 @@
           <p class="team-description">Meet the students making MakeSB happen.</p>
       <section class="team-arcade" aria-label="Choose a team and meet its members">
         <div class="handheld-column">
-          <div class="handheld" tabindex="0" aria-label="Team selector. Use the up and down arrow keys or the buttons to change teams.">
-            <img
-              class="handheld-image"
-              src="assets/team/retro-handheld-cutout.png"
-              width="1038"
-              height="1515"
-              alt=""
-              aria-hidden="true"
-            />
+          <div class="handheld gameboy" tabindex="0" aria-label="Team selector. Use the up and down arrow keys, the D-pad, or the screen menu to change teams.">
+            <span class="gameboy-glass-highlight" aria-hidden="true"></span>
+            <span class="gameboy-brand" aria-hidden="true">MAKE<span>SB</span> POCKET</span>
 
-            <div class="handheld-screen" aria-live="polite" aria-atomic="true">
-              <div class="screen-toolbar">
-                <span>Team Groups</span>
-                <span class="screen-lights" aria-hidden="true"><i></i><i></i></span>
+            <div class="gameboy-screen-bezel">
+              <div class="handheld-screen" aria-live="polite" aria-atomic="true">
+                <div class="screen-toolbar">
+                  <span>Team Groups</span>
+                  <span class="screen-lights" aria-hidden="true"><i></i><i></i></span>
+                </div>
+                <ol class="screen-menu" aria-label="Team groups">
+                  <li class="is-selected" data-menu-index="0" aria-current="true">
+                    <button type="button" aria-pressed="true"><span aria-hidden="true">♡</span><strong>Presidents</strong></button>
+                  </li>
+                  <li data-menu-index="1">
+                    <button type="button" aria-pressed="false"><span aria-hidden="true">✦</span><strong>Design &amp; Develop</strong></button>
+                  </li>
+                  <li data-menu-index="2">
+                    <button type="button" aria-pressed="false"><span aria-hidden="true">◎</span><strong>Marketing · Outreach · Graphics</strong></button>
+                  </li>
+                  <li data-menu-index="3">
+                    <button type="button" aria-pressed="false"><span aria-hidden="true">$</span><strong>Sponsorships · Finances</strong></button>
+                  </li>
+                  <li data-menu-index="4">
+                    <button type="button" aria-pressed="false"><span aria-hidden="true">⚙</span><strong>MakeOps</strong></button>
+                  </li>
+                </ol>
+                <span class="screen-count">01 / 05</span>
               </div>
-              <ol class="screen-menu" aria-label="Team groups">
-                <li class="is-selected" data-menu-index="0" aria-current="true"><span aria-hidden="true">♡</span><strong>Presidents</strong></li>
-                <li data-menu-index="1"><span aria-hidden="true">✦</span><strong>Design &amp; Develop</strong></li>
-                <li data-menu-index="2"><span aria-hidden="true">◎</span><strong>Marketing · Outreach · Graphics</strong></li>
-                <li data-menu-index="3"><span aria-hidden="true">$</span><strong>Sponsorships · Finances</strong></li>
-                <li data-menu-index="4"><span aria-hidden="true">⚙</span><strong>MakeOps</strong></li>
-              </ol>
-              <span class="screen-count">01 / 05</span>
             </div>
 
             <div class="d-pad" aria-label="Team controls">
               <button class="team-control team-control-up" type="button" aria-label="Previous team">
-                <span aria-hidden="true">↑</span>
+                <span aria-hidden="true">▲</span>
               </button>
+              <span class="d-pad-arm d-pad-left" aria-hidden="true">◀</span>
+              <span class="d-pad-center" aria-hidden="true"></span>
+              <span class="d-pad-arm d-pad-right" aria-hidden="true">▶</span>
               <button class="team-control team-control-down" type="button" aria-label="Next team">
-                <span aria-hidden="true">↓</span>
+                <span aria-hidden="true">▼</span>
               </button>
             </div>
+
+            <div class="action-buttons" aria-hidden="true">
+              <span class="action-button action-button-b"><i>B</i></span>
+              <span class="action-button action-button-a"><i>A</i></span>
+            </div>
+
+            <div class="system-buttons" aria-hidden="true">
+              <span><i></i>Select</span>
+              <span><i></i>Start</span>
+            </div>
+
+            <div class="speaker-vents" aria-hidden="true">
+              <i></i><i></i><i></i><i></i><i></i>
+            </div>
+
+            <span class="gameboy-model" aria-hidden="true">TEAM SELECT · 01</span>
           </div>
 
           <p class="control-hint"><span aria-hidden="true">↑ / ↓</span> Select team</p>
