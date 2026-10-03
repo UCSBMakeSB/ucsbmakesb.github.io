@@ -32,6 +32,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="team.css" />
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -48,10 +49,10 @@
         <a href="#faqs">FAQs</a>
         <a href="#sponsors">Sponsors</a>
         <a href="#contact">Contact</a>
-        <a href="team/">Meet Our Team</a>
+        <a href="#team">Meet Our Team</a>
       </nav>
 
-      <a class="team-mobile-link" href="team/">Team</a>
+      <a class="team-mobile-link" href="#team">Team</a>
 
       <a
         class="header-apply"
@@ -284,6 +285,20 @@
           <a class="sponsor-link" href="mailto:patrick_liu@ucsb.edu?subject=MakeSB%202027%20Sponsorship">Sponsor MakeSB <span aria-hidden="true">→</span></a>
         </div>
       </section>
+
+      <section id="team" class="home-team" aria-label="Meet Our Team" aria-busy="true">
+        <img
+          class="team-art"
+          src="assets/makesb-storke-golden-hour.webp"
+          alt=""
+          aria-hidden="true"
+          loading="lazy"
+        />
+        <div class="team-art-wash" aria-hidden="true"></div>
+        <p class="team-section-loading" role="status">Loading the MakeSB team…</p>
+      </section>
     </main>
+
+    <script src="team-home.js" type="module"></script>
   </body>
 </html>

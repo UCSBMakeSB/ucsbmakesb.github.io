@@ -29,7 +29,9 @@ function updateTeamLabels(index) {
 
   screenMenuItems.forEach((item, itemIndex) => {
     const isCurrent = itemIndex === index;
+    const itemButton = item.querySelector("button");
     item.classList.toggle("is-selected", isCurrent);
+    itemButton?.setAttribute("aria-pressed", String(isCurrent));
 
     if (isCurrent) {
       item.setAttribute("aria-current", "true");
@@ -111,6 +113,10 @@ async function switchTeam(nextIndex) {
 
 previousButton.addEventListener("click", () => switchTeam(currentIndex - 1));
 nextButton.addEventListener("click", () => switchTeam(currentIndex + 1));
+
+screenMenuItems.forEach((item, itemIndex) => {
+  item.addEventListener("click", () => switchTeam(itemIndex));
+});
 
 handheld.addEventListener("keydown", (event) => {
   if (event.key === "ArrowUp") {

@@ -42,6 +42,10 @@ test("serves the homepage with an absolute social image URL", async () => {
     responseHtml,
     /content="https:\/\/makesb\.test\/assets\/makesb-social-card\.jpg"/,
   );
+  assert.match(responseHtml, /href="#team">Meet Our Team<\/a>/);
+  assert.match(responseHtml, /class="team-mobile-link" href="#team">Team<\/a>/);
+  assert.match(responseHtml, /<section id="team" class="home-team"/);
+  assert.doesNotMatch(responseHtml, /href="team\/">Meet Our Team<\/a>/);
   assert.equal(response.headers.get("x-content-type-options"), "nosniff");
 });
 
@@ -71,6 +75,11 @@ test("serves the team page at its directory route", async () => {
   assert.match(responseHtml, /MakeOps/);
   assert.match(responseHtml, /Previous team/);
   assert.match(responseHtml, /Next team/);
-  assert.match(responseHtml, /retro-handheld-cutout\.png/);
+  assert.doesNotMatch(responseHtml, /retro-handheld-cutout\.png/);
+  assert.match(responseHtml, /class="handheld gameboy"/);
+  assert.match(responseHtml, /class="gameboy-screen-bezel"/);
+  assert.match(responseHtml, /class="d-pad"/);
+  assert.match(responseHtml, /class="action-buttons"/);
+  assert.match(responseHtml, /class="speaker-vents"/);
   assert.match(responseHtml, /team\.js/);
 });
