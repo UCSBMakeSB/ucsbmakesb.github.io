@@ -40,7 +40,7 @@ test("serves the homepage with an absolute social image URL", async () => {
   assert.equal(response.status, 200);
   assert.match(
     responseHtml,
-    /content="https:\/\/makesb\.test\/assets\/makesb-social-card\.jpg"/,
+    /content="https:\/\/makesb\.test\/assets\/makesb-storke-golden-hour\.webp"/,
   );
   assert.match(responseHtml, /href="#team">Meet Our Team<\/a>/);
   assert.match(responseHtml, /class="team-mobile-link" href="#team">Team<\/a>/);
@@ -69,6 +69,7 @@ test("serves the team page at its directory route", async () => {
 
   assert.equal(response.status, 200);
   assert.match(responseHtml, /Meet Our Team/);
+  assert.match(responseHtml, /content="https:\/\/makesb\.test\/assets\/makesb-storke-golden-hour\.webp"/);
   assert.match(responseHtml, /Design &amp; Develop Team/);
   assert.match(responseHtml, /Presidents/);
   assert.match(responseHtml, /Alex Morgan/);
