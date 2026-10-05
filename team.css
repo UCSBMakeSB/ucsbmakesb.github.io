@@ -985,7 +985,7 @@
 }
 
 #team .member-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 24px;
 }
 
@@ -1020,8 +1020,16 @@
   border-radius: 50%;
 }
 
+@media (max-width: 1050px) {
+  #team .member-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
 @media (max-width: 720px) {
   #team .team-arcade { grid-template-columns: minmax(0, 1fr); }
   #team .handheld { max-width: 320px; }
   #team .member-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+}
+
+@media (max-width: 600px) {
+  #team .member-grid { grid-template-columns: minmax(0, 1fr); gap: 36px; }
 }
