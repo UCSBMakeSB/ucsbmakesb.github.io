@@ -155,7 +155,7 @@ button {
   gap: 42px;
   align-items: center;
   font-family: var(--mono);
-  font-size: 0.7rem;
+  font-size: 1 rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
