@@ -389,7 +389,7 @@
   align-items: center;
   gap: 4px;
   color: inherit;
-  cursor: pointer;
+  cursor: var(--cursor-arrow-active), pointer;
   background: transparent;
   border: 0;
   border-radius: inherit;
@@ -476,7 +476,7 @@
 }
 
 .team-control {
-  cursor: pointer;
+  cursor: var(--cursor-arrow-active), pointer;
   transition: color 160ms ease, background 160ms ease, box-shadow 160ms ease, transform 100ms ease;
 }
 
