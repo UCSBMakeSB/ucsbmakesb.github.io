@@ -1,15 +1,45 @@
-const departments = Array.from(document.querySelectorAll(".department"));
+const TEAM_GROUP_CONFIG = Object.freeze({
+  makeops: { enabled: false },
+});
+
+const allDepartments = Array.from(document.querySelectorAll(".department"));
+const allScreenMenuItems = Array.from(document.querySelectorAll(".screen-menu li"));
 const previousButton = document.querySelector(".team-control-up");
 const nextButton = document.querySelector(".team-control-down");
 const handheld = document.querySelector(".handheld");
 const memberStage = document.querySelector(".member-stage");
 const handheldScreen = document.querySelector(".handheld-screen");
 const screenMenu = document.querySelector(".screen-menu");
-const screenMenuItems = Array.from(document.querySelectorAll(".screen-menu li"));
 const screenCount = document.querySelector(".screen-count");
 const currentTeamTitle = document.querySelector(".current-team-title");
 const currentTeamIcon = document.querySelector(".current-team-icon");
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+const visibleTeamEntries = allDepartments
+  .map((department, index) => ({
+    department,
+    menuItem: allScreenMenuItems[index],
+    enabled: TEAM_GROUP_CONFIG[department.id]?.enabled !== false,
+  }))
+  .filter(({ enabled }) => enabled);
+
+allDepartments.forEach((department) => {
+  department.hidden = true;
+});
+
+allScreenMenuItems.forEach((item) => {
+  item.hidden = true;
+  item.classList.remove("is-selected");
+  item.removeAttribute("aria-current");
+  item.querySelector("button")?.setAttribute("aria-pressed", "false");
+});
+
+visibleTeamEntries.forEach(({ menuItem }) => {
+  menuItem.hidden = false;
+});
+
+const departments = visibleTeamEntries.map(({ department }) => department);
+const screenMenuItems = visibleTeamEntries.map(({ menuItem }) => menuItem);
 
 let currentIndex = 0;
 let isSwitching = false;
