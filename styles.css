@@ -382,19 +382,11 @@ a {
 
 #about.page-section {
   border-top: 0;
-  background: linear-gradient(to bottom, var(--layer1), var(--layer2));
-}
-
-#schedule.page-section {
-  background: linear-gradient(to bottom, var(--layer2), var(--layer3));
+  background: linear-gradient(to bottom, var(--layer1), var(--layer3));
 }
 
 #faqs.page-section {
-  background: linear-gradient(to bottom, var(--layer3), var(--layer4));
-}
-
-#sponsors.page-section {
-  background: linear-gradient(to bottom, var(--layer4), var(--panel));
+  background: linear-gradient(to bottom, var(--layer3), var(--panel));
 }
 
 #contact.page-section {
