@@ -1,4 +1,4 @@
-const SOCIAL_IMAGE_PATH = "/assets/makesb-storke-golden-hour.webp";
+const SOCIAL_IMAGE_PATH = "/assets/makesb-social-card.jpg";
 
 function withSecurityHeaders(response) {
   const headers = new Headers(response.headers);
@@ -50,7 +50,7 @@ const worker = {
       const html = await response.text();
       const absoluteSocialImage = new URL(SOCIAL_IMAGE_PATH, request.url).href;
       const renderedHtml = html.replaceAll(
-        /content="(?:\.\.\/)?assets\/makesb-storke-golden-hour\.webp"/g,
+        /content="(?:\.\.\/)?assets\/(?:makesb-social-card\.jpg|makesb-storke-golden-hour\.webp)"/g,
         `content="${absoluteSocialImage}"`,
       );
 
