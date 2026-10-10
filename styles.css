@@ -179,26 +179,6 @@ button {
   text-transform: uppercase;
 }
 
-.header-apply {
-  justify-self: end;
-  padding: 11px 17px;
-  color: var(--paper);
-  background: var(--coral);
-  border: 1px solid var(--coral);
-  font-family: var(--mono);
-  font-size: 0.68rem;
-  font-weight: 500;
-  letter-spacing: 0.12em;
-  text-decoration: none;
-  text-transform: uppercase;
-}
-
-.header-apply:hover,
-.header-apply:focus-visible {
-  color: var(--paper);
-  background: transparent;
-}
-
 .hero {
   position: relative;
   min-height: 100svh;
@@ -214,24 +194,6 @@ button {
   height: 100%;
   object-fit: cover;
   object-position: 50% 50%;
-}
-
-.hero-wash {
-  position: absolute;
-  z-index: -2;
-  inset: 0;
-  background:
-    linear-gradient(180deg, rgba(3, 12, 29, 0.58) 0%, rgba(3, 12, 29, 0.02) 37%, rgba(3, 12, 29, 0.2) 61%, rgba(3, 12, 29, 0.88) 100%),
-    linear-gradient(90deg, rgba(3, 12, 29, 0.4), transparent 28%, transparent 75%, rgba(3, 12, 29, 0.3));
-}
-
-.hero::before {
-  position: absolute;
-  z-index: 2;
-  inset: 12px;
-  content: "";
-  pointer-events: none;
-  border: 1px solid rgba(255, 250, 240, 0.28);
 }
 
 .hero::after {
@@ -867,7 +829,7 @@ button {
   }
 
   .site-header {
-    grid-template-columns: 1fr auto auto;
+    grid-template-columns: 1fr auto;
     column-gap: 16px;
   }
 
@@ -906,20 +868,6 @@ button {
 
   .team-mobile-link {
     font-size: 0.58rem;
-  }
-
-  .header-apply {
-    padding: 9px 12px;
-  }
-
-  .hero::before {
-    inset: 7px;
-  }
-
-  .hero-wash {
-    background:
-      linear-gradient(180deg, rgba(3, 12, 29, 0.68) 0%, rgba(3, 12, 29, 0.05) 34%, rgba(3, 12, 29, 0.28) 57%, rgba(3, 12, 29, 0.92) 100%),
-      linear-gradient(90deg, rgba(3, 12, 29, 0.28), transparent 72%);
   }
 
   .hero-art {
