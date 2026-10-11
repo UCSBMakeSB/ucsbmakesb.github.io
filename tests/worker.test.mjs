@@ -43,7 +43,7 @@ test("serves the homepage with an absolute social image URL", async () => {
     /content="https:\/\/makesb\.test\/assets\/makesb-social-card\.jpg"/,
   );
   assert.match(responseHtml, /href="#team">Meet Our Team<\/a>/);
-  assert.match(responseHtml, /class="team-mobile-link" href="#team">Team<\/a>/);
+  assert.match(responseHtml, /<details class="mobile-menu">[\s\S]*?<nav aria-label="Mobile section navigation">[\s\S]*?href="#team">Meet Our Team<\/a>/);
   assert.match(responseHtml, /<section id="team" class="page-section"/);
   assert.match(responseHtml, /class="handheld gameboy"/);
   assert.doesNotMatch(responseHtml, /href="team\/">Meet Our Team<\/a>/);
