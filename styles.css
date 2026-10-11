@@ -990,20 +990,24 @@ button {
   }
 
   .hero-title h1 {
-    display: block;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: baseline;
+    gap: 3vw;
+    white-space: nowrap;
   }
 
   .hero-title h1 span {
     display: block;
-    font-size: clamp(4rem, 24vw, 9rem);
+    font-size: clamp(2.5rem, 15vw, 5.625rem);
   }
 
   .hero-title h1 em {
     display: block;
-    margin-top: 0.12em;
-    margin-left: 17vw;
-    font-size: clamp(6rem, 36vw, 13rem);
-    line-height: 0.6;
+    margin-top: 0;
+    margin-left: 0;
+    font-size: clamp(3.25rem, 20vw, 7.5rem);
+    line-height: 0.8;
   }
 
   .hero-title > p {
