@@ -92,6 +92,12 @@ button {
   text-decoration: none;
 }
 
+.wordmark-logo {
+  display: block;
+  width: 110px;
+  height: auto;
+}
+
 .wordmark > span:last-child > span {
   color: var(--coral);
 }
