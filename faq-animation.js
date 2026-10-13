@@ -7,9 +7,10 @@ if (mascot) {
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   let visible = false;
   let timer;
+  let smileTimer;
   let animations = [];
 
-  const canAnimate = () => visible && !document.hidden && !reducedMotion.matches;
+  const canAnimate = () => visible && !document.hidden && !reducedMotion.matches && !mascot.classList.contains('smiling');
   const stop = () => {
     clearTimeout(timer);
     animations.forEach(animation => animation.cancel());
@@ -49,6 +50,8 @@ if (mascot) {
 
   function resume() {
     stop();
+    clearTimeout(smileTimer);
+    mascot.classList.remove('smiling');
     if (canAnimate()) timer = setTimeout(escapeAndCatch, 3500);
   }
 
@@ -61,17 +64,20 @@ if (mascot) {
 
   document.querySelectorAll('#faqs details').forEach(question => {
     question.addEventListener('toggle', () => {
-      if (!question.open || !canAnimate()) return;
-      mascot.classList.add('smiling');
-      window.setTimeout(() => mascot.classList.remove('smiling'), 1600);
-      // Let an ongoing catch land before gesturing with the free wing.
-      if (animations.some(animation => animation.playState === 'running')) return;
+      if (!question.open || !visible || document.hidden) return;
       stop();
-      animate(sideWing, [
-        'rotate(0deg)', 'rotate(14deg)', 'rotate(9deg)',
-        'rotate(14deg)', 'rotate(0deg)',
-      ], 1000);
-      timer = setTimeout(escapeAndCatch, 12000);
+      clearTimeout(smileTimer);
+      mascot.classList.add('smiling');
+      if (!reducedMotion.matches) {
+        animate(sideWing, [
+          'rotate(0deg)', 'rotate(14deg)', 'rotate(9deg)',
+          'rotate(14deg)', 'rotate(0deg)',
+        ], 1000);
+      }
+      smileTimer = setTimeout(() => {
+        mascot.classList.remove('smiling');
+        if (canAnimate()) timer = setTimeout(escapeAndCatch, 12000);
+      }, 1600);
     });
   });
 }
