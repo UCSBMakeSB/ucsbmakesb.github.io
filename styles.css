@@ -247,7 +247,7 @@ button {
 }
 
 .hero-title h1 span {
-  font-size: clamp(6.6rem, 15vw, 16rem);
+  font-size: clamp(6.6rem, 13vw, 14rem);
   font-weight: 800;
   letter-spacing: -0.105em;
   text-shadow: 0 7px 35px rgba(3, 12, 29, 0.35);
@@ -257,7 +257,7 @@ button {
   margin-left: clamp(8px, 1.8vw, 40px);
   color: var(--sun);
   font-family: var(--serif);
-  font-size: clamp(9.2rem, 19vw, 20rem);
+  font-size: clamp(9.2rem, 17vw, 18rem);
   font-style: italic;
   font-weight: 400;
   letter-spacing: -0.09em;
@@ -385,7 +385,7 @@ button {
 
 .sponsor-link {
   font-family: var(--mono);
-  font-size: 0.7rem;
+  font-size: 0.875rem;
   letter-spacing: 0.07em;
   text-decoration: underline;
   text-underline-offset: 5px;
@@ -398,6 +398,7 @@ button {
 
 .page-section {
   padding: 80px clamp(20px, 4vw, 68px);
+  font-size: clamp(1.0625rem, 0.95rem + 0.4vw, 1.1875rem);
 }
 
 #about.page-section {
@@ -431,9 +432,9 @@ button {
 }
 
 .page-section h2 {
-  margin: 0 0 16px;
+  margin: 0 0 24px;
   font-family: var(--serif);
-  font-size: clamp(2.2125rem, 4.3vw, 3.1125rem);
+  font-size: clamp(2.75rem, 5vw, 4rem);
   font-weight: 400;
   font-style: normal;
   letter-spacing: 0.015em;
@@ -532,7 +533,8 @@ button {
 }
 
 #faqs summary {
-  font-size: 1.15rem;
+  font-size: clamp(1.125rem, 1rem + 0.4vw, 1.3125rem);
+  line-height: 1.5;
   font-weight: 600;
   cursor: var(--cursor-arrow-active), pointer;
 }
@@ -562,7 +564,7 @@ button {
   padding: 14px 20px;
   border: 1px solid rgba(255, 250, 240, 0.28);
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: 0.875rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -582,7 +584,7 @@ button {
   gap: 9px;
   color: rgba(255, 250, 240, 0.75);
   font-family: var(--mono);
-  font-size: 0.7rem;
+  font-size: 0.8125rem;
   font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -743,16 +745,16 @@ button {
 .piece-time {
   margin: 0 0 8px;
   font-family: var(--mono);
-  font-size: 0.72rem;
+  font-size: 0.8125rem;
   font-weight: 500;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
 .piece-title {
   margin: 0;
   font-family: var(--sans);
-  font-size: 1.08rem;
+  font-size: 1.1875rem;
   font-weight: 700;
   line-height: 1.32;
 }
@@ -788,7 +790,7 @@ button {
   margin: 1px 0 0;
   color: rgba(255, 250, 240, 0.42);
   font-family: var(--mono);
-  font-size: 0.66rem;
+  font-size: 0.8125rem;
   font-weight: 500;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -1060,6 +1062,6 @@ button {
   }
 
   .piece-title {
-    font-size: 1rem;
+    font-size: 1.125rem;
   }
 }
