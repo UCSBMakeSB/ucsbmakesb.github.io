@@ -1,12 +1,13 @@
-import { cp, mkdir } from "node:fs/promises";
 import { spawn } from "node:child_process";
+import { fileURLToPath } from "node:url";
 
 const root = new URL("../", import.meta.url);
-const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
+const rootPath = fileURLToPath(root);
+const nextCommand = fileURLToPath(new URL("node_modules/next/dist/bin/next", root));
 
 await new Promise((resolve, reject) => {
-  const child = spawn(npmCommand, ["exec", "next", "build"], {
-    cwd: root,
+  const child = spawn(process.execPath, [nextCommand, "build"], {
+    cwd: rootPath,
     stdio: "inherit",
     shell: false,
   });
@@ -14,6 +15,4 @@ await new Promise((resolve, reject) => {
   child.on("exit", (code) => code === 0 ? resolve() : reject(new Error(`next build exited with code ${code}`)));
 });
 
-await mkdir(new URL(".next/server-worker/", root), { recursive: true });
-await cp(new URL("worker/index.js", root), new URL(".next/server-worker/index.js", root));
 console.log("Built MakeSB Next.js site");

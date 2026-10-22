@@ -1,10 +1,17 @@
 import "../styles.css";
 import "../team.css";
 
+import { mono, serif, sans } from "./fonts";
+
+const domain = process.env.NEXT_SITE_URL || "https://localhost:3000";
+
 export const metadata = {
-  title: "MakeSB 2027 — January 16–17 at UC Santa Barbara",
-  description: "MakeSB 2027 — January 16–17 at UC Santa Barbara.",
-  // metadataBase: new URL('https://makesb.com')
+  title: "MakeSB 2027 — January 15–17 at UC Santa Barbara",
+  description: "MakeSB 2027 — January 15–17 at UC Santa Barbara.",
+  metadataBase: new URL(domain),
+  icons: {
+    icon: "/assets/makesb-favicon-v2.png",
+  },
   openGraph: {
     title: "MakeSB 2027",
     description: "January 16–17 at UC Santa Barbara.",
@@ -18,16 +25,33 @@ export const metadata = {
       },
     ],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "MakeSB 2027",
+    description: "January 15–17 at UC Santa Barbara.",
+    images: ["/assets/makesb-social-card.jpg"],
+  },
 };
 
 export const viewport = {
-  themeColor: "#0b1930"
-}
+  themeColor: "#0b1930",
+};
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <head>
+        <link
+          rel="preload"
+          href="/assets/homepage.png"
+          as="image"
+          type="image/png"
+          fetchPriority="high"
+        />
+      </head>
+      <body className={`${mono.variable} ${serif.variable} ${sans.variable}`}>
+        {children}
+      </body>
     </html>
   );
 }

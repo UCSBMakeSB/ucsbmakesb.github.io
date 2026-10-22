@@ -19,3 +19,10 @@ npm test
 ```
 
 The page is rendered from `app/page.jsx`, shared metadata is in `app/layout.jsx`, and static assets are served from `public/assets`. 
+
+
+## Specifications
+
+* Indentation: `2`-space tabs
+* Use the Prettier Code formatter, with the default JSX specifications
+

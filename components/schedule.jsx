@@ -58,7 +58,7 @@ export function Schedule() {
               >
                 <svg
                   className="piece-face"
-                  viewBox="0 0 222 208"
+                  viewBox={`0 0 ${index === schedule.length - 1 ? 200 : 222} 208`}
                   aria-hidden="true"
                 >
                   <path
@@ -85,7 +85,10 @@ export function Schedule() {
         </div>
         <div className="page-section-inner">
           <p className="puzzle-hint puzzle-hint-group-child">
-            <span aria-hidden="true" className="phgc-arrow">→</span> Scroll to explore the weekend
+            <span aria-hidden="true" className="phgc-arrow">
+              →
+            </span>{" "}
+            Scroll to explore the weekend
           </p>
         </div>
       </div>

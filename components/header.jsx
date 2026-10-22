@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 
 const links = [
   ["about", "About"],
@@ -40,7 +41,7 @@ export function Header() {
   return (
     <header className="site-header" aria-label="MakeSB navigation">
       <a className="wordmark" href="#main" aria-label="MakeSB home">
-        <img className="wordmark-logo" src="/assets/makesb-logo-v2.png" width="1688" height="1040" alt="MakeSB" />
+        <Image className="wordmark-logo" src="/assets/makesb-logo-v2.png" width="1688" height="1040" alt="MakeSB" />
       </a>
       <nav className="header-nav" aria-label="Section navigation">
         {links.map(([id, label]) => <a key={id} href={`#${id}`}>{label}</a>)}
