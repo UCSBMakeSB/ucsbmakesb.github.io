@@ -18,6 +18,4 @@ npm run build
 npm test
 ```
 
-The page is rendered from `app/page.jsx`, shared metadata is in `app/layout.jsx`, and static assets are served from `public/assets`. Existing CSS is imported globally during this first migration so the current visual design can be converted to Tailwind incrementally.
-
-`npm run build` runs the Next.js production build and preserves the optional worker at `.next/server-worker/index.js`. Vercel detects the Next.js application automatically.
+The page is rendered from `app/page.jsx`, shared metadata is in `app/layout.jsx`, and static assets are served from `public/assets`. 
