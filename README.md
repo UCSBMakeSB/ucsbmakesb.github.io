@@ -1,28 +1,20 @@
-# MakeSB 2027 website
+# MakeSB 2027 landing page
 
-A responsive Next.js App Router website for MakeSB at UC Santa Barbara, taking place January 16–17, 2027.
+A static, responsive landing page for MakeSB at UC Santa Barbara, taking place January 16–17, 2027.
 
-Install dependencies and start the development server:
+Open `index.html` directly or run a local static server:
 
 ```sh
-npm install
-npm run dev
+python3 -m http.server 8000
 ```
 
-Then visit `http://localhost:3000`.
+Then visit `http://localhost:8000`.
 
-Build the production site and run the checks:
+Build the production artifact and run the worker checks:
 
 ```sh
 npm run build
 npm test
 ```
 
-The page is rendered from `app/page.jsx`, shared metadata is in `app/layout.jsx`, and static assets are served from `public/assets`. 
-
-
-## Specifications
-
-* Indentation: `2`-space tabs
-* Use the Prettier Code formatter, with the default JSX specifications
-
+The build uses Node.js and works on Windows, macOS, and Linux without Bash. Vercel builds and serves dist/client using vercel.json. The optional asset worker is built separately into dist/server. Preview the artifact with: python3 -m http.server 8000 --directory dist/client.

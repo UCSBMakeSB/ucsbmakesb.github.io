@@ -8,13 +8,15 @@
   --layer2: #4a375f;
   --layer3: #2e2a5f;
   --layer4: #1b1843;
+  --sans: "Manrope", Arial, sans-serif;
+  --serif: "Instrument Serif", Georgia, serif;
+  --mono: "DM Mono", monospace;
   --piece-w: 200px;
   --piece-tab: 22px;
   --cursor-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpolygon points='6,4 6,30 13,24 18,34 22,32 17,22 26,22' fill='%23f26d4f' stroke='%23ffffff' stroke-width='2' stroke-linejoin='round' paint-order='stroke'/%3E%3C/svg%3E")
     6 4;
   --cursor-arrow-active: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpolygon points='6,4 6,30 13,24 18,34 22,32 17,22 26,22' fill='%23f26d4f' stroke='%23ffffff' stroke-width='2' stroke-linejoin='round' paint-order='stroke'/%3E%3Ccircle cx='32' cy='29' r='3.5' fill='%23ffffff' stroke='%23f26d4f' stroke-width='1.5'/%3E%3C/svg%3E")
     6 4;
-
 }
 
 * {
@@ -27,9 +29,6 @@ html {
 }
 
 body {
-  --sans: var(--font-sans, "Manrope"), Arial, sans-serif;
-  --serif: var(--font-serif, "Instrument Serif"), Georgia, serif;
-  --mono: var(--font-mono, "DM Mono"), monospace;
   min-width: 320px;
   min-height: 100svh;
   margin: 0;
@@ -343,7 +342,7 @@ button {
 }
 
 .site-footer p {
-  margin: 4px;
+  margin: 0;
   color: rgba(255, 250, 240, 0.65);
   font-family: var(--mono);
   font-size: 0.62rem;
@@ -502,128 +501,46 @@ button {
 }
 
 @keyframes faq-mascot-bob {
-  0%,
-  100% {
-    transform: translateY(0) rotate(-2deg);
-  }
-  50% {
-    transform: translateY(-10px) rotate(2deg);
-  }
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-10px) rotate(2deg); }
 }
 
 @keyframes faq-shadow-breathe {
-  0%,
-  100% {
-    transform: scaleX(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scaleX(0.85);
-    opacity: 0.65;
-  }
+  0%, 100% { transform: scaleX(1); opacity: 1; }
+  50% { transform: scaleX(0.85); opacity: 0.65; }
 }
 
 @media (max-width: 700px) {
-  .faq-layout {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 28px;
-  }
-  .faq-intro {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-  }
-  .faq-mascot {
-    width: 140px;
-    flex-shrink: 0;
-  }
+  .faq-layout { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .faq-intro { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+  .faq-mascot { width: 140px; flex-shrink: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .faq-mascot-stage > *,
-  .faq-fish,
-  .faq-wing-raised,
-  .faq-wing-side {
-    animation: none;
-  }
+  .faq-mascot-stage > *, .faq-fish, .faq-wing-raised, .faq-wing-side { animation: none; }
 }
 
-#faqs .faq-item {
+#faqs details {
   margin: 0 0 20px;
   padding-bottom: 20px;
   border-bottom: 1px solid rgba(255, 250, 240, 0.16);
 }
 
-#faqs .faq-item:last-child {
+#faqs details:last-of-type {
   margin-bottom: 0;
   padding-bottom: 0;
   border-bottom: none;
 }
 
-#faqs .faq-question {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  width: 100%;
-  padding: 0;
-  border: 0;
-  color: inherit;
-  background: none;
-  font: inherit;
+#faqs summary {
   font-size: clamp(1.125rem, 1rem + 0.4vw, 1.3125rem);
   line-height: 1.5;
   font-weight: 600;
-  text-align: left;
   cursor: var(--cursor-arrow-active), pointer;
 }
 
-#faqs .faq-question-arrow {
-  display: inline-block;
-  flex: 0 0 auto;
-  transform: rotate(0deg);
-  transition: transform 360ms ease;
-}
-
-#faqs .faq-item.is-open .faq-question-arrow {
-  transform: rotate(90deg);
-}
-
-#faqs .faq-answer {
-  display: grid;
-  grid-template-rows: 0fr;
-  opacity: 0;
-  transition:
-    grid-template-rows 360ms ease,
-    opacity 240ms ease;
-}
-
-#faqs .faq-answer-inner {
-  overflow: hidden;
-}
-
-#faqs .faq-answer p {
+#faqs details p {
   margin: 14px 0 0;
-  transform: translateY(-6px);
-  transition: transform 360ms ease;
-}
-
-#faqs .faq-item.is-open .faq-answer {
-  grid-template-rows: 1fr;
-  opacity: 1;
-}
-
-#faqs .faq-item.is-open .faq-answer p {
-  transform: translateY(0);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  #faqs .faq-answer,
-  #faqs .faq-answer p,
-  #faqs .faq-question-arrow {
-    transition: none;
-    transform: none;
-  }
 }
 
 .faq-smile {
@@ -698,25 +615,6 @@ button {
   border: 1.5px solid var(--sun);
 }
 
-.puzzle-hint-group-child {
-  position: absolute;
-}
-
-.puzzle-hint-group .puzzle-hint-group-child {
-  opacity: 0;
-  visibility: hidden;
-
-
-  transition:
-    opacity 0.1s ease-in-out,
-    visibility 0.1s ease-in-out;
-}
-
-.puzzle-hint-group:hover .puzzle-hint-group-child {
-  opacity: 1;
-  visibility: visible;
-}
-
 .puzzle-shell {
   position: relative;
   margin-inline: clamp(-68px, -4vw, -20px);
@@ -789,39 +687,39 @@ button {
 .piece-face {
   position: absolute;
   inset: 0;
-  overflow: visible;
+  clip-path: path(
+    "M16,0 L184,0 A16,16 0 0 1 200,16 L200,73 A22,22 0 0 1 200,117 L200,174 A16,16 0 0 1 184,190 L16,190 A16,16 0 0 1 0,174 L0,117 A22,22 0 0 0 0,73 L0,16 A16,16 0 0 1 16,0 Z"
+  );
+}
+
+.puzzle-piece.is-start .piece-face {
+  clip-path: path(
+    "M16,0 L184,0 A16,16 0 0 1 200,16 L200,73 A22,22 0 0 1 200,117 L200,174 A16,16 0 0 1 184,190 L16,190 A16,16 0 0 1 0,174 L0,16 A16,16 0 0 1 16,0 Z"
+  );
+}
+
+.puzzle-piece.is-end .piece-face {
+  clip-path: path(
+    "M16,0 L184,0 A16,16 0 0 1 200,16 L200,174 A16,16 0 0 1 184,190 L16,190 A16,16 0 0 1 0,174 L0,117 A22,22 0 0 0 0,73 L0,16 A16,16 0 0 1 16,0 Z"
+  );
 }
 
 .puzzle-piece.phase-kickoff .piece-face {
-  color: var(--coral);
+  background: var(--coral);
 }
 
 .puzzle-piece.phase-judge .piece-face {
-  color: var(--sun);
+  background: var(--sun);
 }
 
 .puzzle-piece.phase-build .piece-face {
-  color: var(--panel);
+  background: var(--panel);
+  border: 1.5px solid var(--coral);
 }
 
 .puzzle-piece.phase-wrap .piece-face {
-  color: var(--panel);
-}
-
-.piece-face path {
-  stroke: transparent;
-  stroke-width: 0;
-  vector-effect: non-scaling-stroke;
-}
-
-.puzzle-piece.phase-build .piece-face path {
-  stroke: var(--coral);
-  stroke-width: 8;
-}
-
-.puzzle-piece.phase-wrap .piece-face path {
-  stroke: var(--sun);
-  stroke-width: 8;
+  background: var(--panel);
+  border: 1.5px solid var(--sun);
 }
 
 .piece-content {
@@ -977,28 +875,6 @@ button {
     height: 2px;
     border-radius: 2px;
     background: currentColor;
-    transform-origin: center;
-    transition:
-      transform 220ms ease,
-      opacity 180ms ease;
-  }
-
-  .mobile-menu[open] .hamburger span:first-child {
-    transform: translateY(7px) rotate(45deg);
-  }
-
-  .mobile-menu[open] .hamburger span:nth-child(2) {
-    opacity: 0;
-    transform: scaleX(0);
-  }
-
-  .mobile-menu[open] .hamburger span:last-child {
-    transform: translateY(-7px) rotate(-45deg);
-  }
-
-  .mobile-menu[open].is-closing .hamburger span {
-    transform: none;
-    opacity: 1;
   }
 
   .mobile-menu nav {
@@ -1013,51 +889,12 @@ button {
     border-radius: 12px;
     background: var(--ink);
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
-    transform-origin: top center;
-  }
-
-  .mobile-menu[open] nav {
-    animation: mobile-menu-unfurl 220ms ease both;
-  }
-
-  .mobile-menu.is-closing nav {
-    animation: mobile-menu-refurl 220ms ease both;
   }
 
   .mobile-menu nav a {
     padding: 12px;
     min-height: 44px;
     text-decoration: none;
-  }
-
-  @keyframes mobile-menu-unfurl {
-    from {
-      opacity: 0;
-      transform: scaleY(0);
-    }
-    to {
-      opacity: 1;
-      transform: scaleY(1);
-    }
-  }
-
-  @keyframes mobile-menu-refurl {
-    from {
-      opacity: 1;
-      transform: scaleY(1);
-    }
-    to {
-      opacity: 0;
-      transform: scaleY(0);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .hamburger span,
-    .mobile-menu[open] nav {
-      animation: none;
-      transition: none;
-    }
   }
 
   .hero-title {
@@ -1071,11 +908,6 @@ button {
 
   .hero-bottom {
     grid-template-columns: 1fr auto;
-  }
-
-  .puzzle-hint-group .puzzle-hint-group-child {
-    left: 50%;
-    transform: translateX(-50%);
   }
 }
 
@@ -1103,7 +935,7 @@ button {
     overflow-wrap: anywhere;
   }
 
-  #faqs .faq-question {
+  #faqs summary {
     min-height: 44px;
     font-size: 1rem;
     line-height: 1.5;
@@ -1223,16 +1055,6 @@ button {
 
   .puzzle-piece {
     height: 232px;
-  }
-
-  .puzzle-hint-group .puzzle-hint-group-child {
-    opacity: 1;
-    visibility: visible;
-    transition: none;
-  }
-
-  .phgc-arrow {
-    display: none;
   }
 
   .piece-content {
