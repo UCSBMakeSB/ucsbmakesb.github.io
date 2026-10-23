@@ -1,9 +1,10 @@
 import { FaqSection } from "../components/faq-section";
-import { Header } from "../components/header";
+import { Header, Footer } from "../components/page-layout";
 import { TeamSelector } from "../components/team-selector";
 import { Schedule } from "../components/schedule";
 
 import Image from "next/image";
+import Link from "next/link";
 
 const applyUrl =
   "https://docs.google.com/forms/d/e/1FAIpQLSc69LeujVIem99yf-DhmwljMJxpeXlxWjMpiGqNGNK5MQrKGQ/viewform?usp=publish-editor";
@@ -141,17 +142,7 @@ export default function HomePage() {
           </div>
         </section>
       </main>
-      <footer className="site-footer">
-        <p> © 2026 MakeSB.com - All Rights Reserved. </p>
-        <p>
-          <a href={applyUrl}>Apply</a>&emsp;&emsp;&emsp;&emsp;
-          <a href={sponsorUrl}>Sponsor</a>
-        </p>
-        <p>
-          Please contact us here:{" "}
-          <a href="https://linktr.ee/ucsbmakesb">LinkTree</a>
-        </p>
-      </footer>
+      <Footer applyUrl={applyUrl} sponsorUrl={sponsorUrl} />
     </>
   );
 }

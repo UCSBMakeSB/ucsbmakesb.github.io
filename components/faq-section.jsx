@@ -12,12 +12,14 @@ const questions = [
   ["I have a question or idea. Who do I contact?", <>We are always looking for feedback! Please reach us at <a href="mailto:ucsbmakesb@gmail.com">ucsbmakesb@gmail.com</a>.</>],
 ];
 
-function FaqItem({ question, answer }) {
+export function FaqItem({ question, answer, inline = false }) {
   const [open, setOpen] = useState(false);
   const answerId = useId();
 
   return (
-    <div className={`faq-item${open ? " is-open" : ""}`}>
+    <div
+      className={`faq-item${open ? " is-open" : ""}${inline ? " is-inline" : ""}`}
+    >
       <button
         className="faq-question"
         type="button"
@@ -35,7 +37,7 @@ function FaqItem({ question, answer }) {
         aria-hidden={!open}
         inert={!open}
       >
-        <div className="faq-answer-inner">
+        <div className={`faq-answer-inner${inline ? " faq-answer-inner-tabbed" : ""}`}>
           <p>{answer}</p>
         </div>
       </div>

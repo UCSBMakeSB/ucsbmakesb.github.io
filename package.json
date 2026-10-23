@@ -12,6 +12,7 @@
   "dependencies": {
     "next": "^16.4.2",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "survey-creator-react": "^3.2.2"
   }
 }

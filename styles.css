@@ -82,6 +82,12 @@ button {
   border-bottom: 1px solid rgba(255, 250, 240, 0.28);
 }
 
+.site-header-fixed {
+  position: fixed;
+  top: 0;
+  z-index: 1000;
+}
+
 .wordmark {
   display: inline-flex;
   gap: 11px;
@@ -549,19 +555,19 @@ button {
   }
 }
 
-#faqs .faq-item {
+.faq-item {
   margin: 0 0 20px;
   padding-bottom: 20px;
   border-bottom: 1px solid rgba(255, 250, 240, 0.16);
 }
 
-#faqs .faq-item:last-child {
+.faq-item:last-child {
   margin-bottom: 0;
   padding-bottom: 0;
   border-bottom: none;
 }
 
-#faqs .faq-question {
+.faq-question {
   display: flex;
   align-items: flex-start;
   gap: 10px;
@@ -578,18 +584,22 @@ button {
   cursor: var(--cursor-arrow-active), pointer;
 }
 
-#faqs .faq-question-arrow {
+.faq-item.is-inline .faq-question {
+  font-size: 1rem;
+}
+
+.faq-question-arrow {
   display: inline-block;
   flex: 0 0 auto;
   transform: rotate(0deg);
   transition: transform 360ms ease;
 }
 
-#faqs .faq-item.is-open .faq-question-arrow {
+.faq-item.is-open .faq-question-arrow {
   transform: rotate(90deg);
 }
 
-#faqs .faq-answer {
+.faq-answer {
   display: grid;
   grid-template-rows: 0fr;
   opacity: 0;
@@ -598,29 +608,34 @@ button {
     opacity 240ms ease;
 }
 
-#faqs .faq-answer-inner {
+.faq-answer-inner {
   overflow: hidden;
 }
 
-#faqs .faq-answer p {
+.faq-answer-inner-tabbed {
+  margin-left: 25px; 
+}
+
+.faq-answer p {
   margin: 14px 0 0;
+  white-space: pre-line;
   transform: translateY(-6px);
   transition: transform 360ms ease;
 }
 
-#faqs .faq-item.is-open .faq-answer {
+.faq-item.is-open .faq-answer {
   grid-template-rows: 1fr;
   opacity: 1;
 }
 
-#faqs .faq-item.is-open .faq-answer p {
+.faq-item.is-open .faq-answer p {
   transform: translateY(0);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  #faqs .faq-answer,
-  #faqs .faq-answer p,
-  #faqs .faq-question-arrow {
+  .faq-answer,
+  .faq-answer p,
+  .faq-question-arrow {
     transition: none;
     transform: none;
   }
@@ -1103,7 +1118,7 @@ button {
     overflow-wrap: anywhere;
   }
 
-  #faqs .faq-question {
+  .faq-question {
     min-height: 44px;
     font-size: 1rem;
     line-height: 1.5;
@@ -1241,5 +1256,166 @@ button {
 
   .piece-title {
     font-size: 1.125rem;
+  }
+}
+
+
+/***
+
+APPLY Page
+
+***/
+
+
+
+.apply-hero {
+  position: relative;
+  min-height: 100svh;
+  overflow: hidden;
+  isolation: isolate;
+
+  background-image: url("/assets/homepage.png");
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+.form-main {
+  position: relative;
+  left: 10%;
+  margin-top: 10%;
+  margin-bottom: 10%;
+
+  padding: 32px;
+
+
+  background-color: var(--ink);
+  border-radius: 24px;
+
+  width: 55%;
+
+}
+
+.form-header {
+  display: flex;
+  justify-content: space-evenly;
+  font-family: var(--serif);
+  font-size:x-large;
+  column-gap: 24px;
+  padding-right: 46px;
+}
+
+.form-header h2 {
+  font-size: large;
+  font-family: var(--sans);
+  font-weight:500
+}
+
+.form-header-text {
+  margin: 10px 0;
+}
+
+.form-header-text span {
+  color:#f26d4f;
+  font-style: italic;
+}
+
+.application-form {
+  display: grid;
+  gap: 24px;
+  margin-top: 32px;
+}
+
+.application-form-fields {
+  display: grid;
+  gap: 24px;
+}
+
+.application-form-field {
+  display: grid;
+  gap: 8px;
+  font-family: var(--mono);
+}
+
+.application-checkbox {
+  display: flex;
+  align-items: center;
+}
+
+.application-checkbox-input {
+    accent-color: var(--coral); 
+}
+
+.application-form-input {
+  width: 100%;
+  padding: 8px 0;
+  color: var(--paper);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid rgba(255, 250, 240, 0.4);
+  outline: none;
+  font-family: var(--mono);
+  transition: border-color 180ms ease;
+}
+
+.application-form-input:focus {
+  border-bottom-color: var(--sun);
+}
+
+.application-form-select {
+  cursor: var(--cursor-arrow-active), pointer;
+}
+
+.application-form-select option {
+  color: var(--paper);
+  background: var(--ink);
+}
+
+.application-form-submit {
+  width: fit-content;
+  padding: 12px 20px;
+  color: var(--ink);
+  background: var(--sun);
+  border: 0;
+  border-radius: 6px;
+  font-family: var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+@media (min-width: 640px) {
+  .application-form-fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.apply-bird {
+  animation: apply-bird-jump 2.0s ease-in-out infinite;
+}
+
+@keyframes apply-bird-jump {
+  0%,
+  100% {
+    transform: translateY(-20px);
+  }
+
+  50% {
+    transform: translateY(-55px);
+  }
+}
+
+.apply-bird-shadow {
+  position: sticky;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.22);
+  animation: faq-shadow-breathe 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .apply-bird,
+  .apply-bird-shadow {
+    animation: none;
   }
 }
