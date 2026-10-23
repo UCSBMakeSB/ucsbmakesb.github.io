@@ -1,5 +1,5 @@
 const TEAM_GROUP_CONFIG = Object.freeze({
-  makeops: { enabled: false },
+  makeops: { enabled: true },
 });
 
 const allDepartments = Array.from(document.querySelectorAll(".department"));
