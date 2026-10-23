@@ -23,6 +23,6 @@ The page is rendered from `app/page.jsx`, shared metadata is in `app/layout.jsx`
 
 ## Specifications
 
-* Indentation: `2`-space tabs
+* Indentation: `2` space tabs
 * Use the Prettier Code formatter, with the default JSX specifications
 
