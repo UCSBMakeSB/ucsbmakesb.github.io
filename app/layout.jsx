@@ -3,7 +3,7 @@ import "../team.css";
 
 import { mono, serif, sans } from "./fonts";
 
-const domain = process.env.NEXT_SITE_URL || "https://localhost:3000";
+const domain = "https://" + (process.env.VERCEL_URL || "localhost:3000");
 
 export const metadata = {
   title: "MakeSB 2027 — January 15–17 at UC Santa Barbara",
@@ -14,8 +14,10 @@ export const metadata = {
   },
   openGraph: {
     title: "MakeSB 2027",
-    description: "January 16–17 at UC Santa Barbara.",
+    siteName: "MakeSB 2027",
+    description: "January 15–17 at UC Santa Barbara.",
     type: "website",
+    url: domain,
     images: [
       {
         url: "/assets/makesb-social-card.jpg",
@@ -40,15 +42,6 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <head>
-        <link
-          rel="preload"
-          href="/assets/homepage.png"
-          as="image"
-          type="image/png"
-          fetchPriority="high"
-        />
-      </head>
       <body className={`${mono.variable} ${serif.variable} ${sans.variable}`}>
         {children}
       </body>
