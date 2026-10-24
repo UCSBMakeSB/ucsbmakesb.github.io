@@ -3,7 +3,7 @@ import "../team.css";
 
 import { mono, serif, sans } from "./fonts";
 
-const domain = "https://" + (process.env.VERCEL_URL || "localhost:3000");
+const domain = "https://" + (process.env.VERCEL_PROJECT_PRODUCTION_URL || "localhost:3000");
 
 export const metadata = {
   title: "MakeSB 2027 — January 15–17 at UC Santa Barbara",
