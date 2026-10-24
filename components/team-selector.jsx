@@ -22,6 +22,7 @@ const teams = [
       ["/assets/team/celine.jpg", "Celine Zhao"],
       ["/assets/team/Rocco Eyerman.JPG", "Rocco Eyerman"],
       ["/assets/team/amanda.jpg", "Amanda Tian"],
+      ["/assets/team/Gautam.jpeg", "Gautam Khajuria"]
     ],
   },
   {
@@ -36,6 +37,14 @@ const teams = [
     icon: "$",
     members: [["/assets/team/youthika.png", "Youthika Anbu"]],
   },
+  {
+    id: "makeops",
+    name: "MakeOps",
+    icon: "⚙",
+    members: [
+      [["/assets/team/Shaikh.png", "Mu'Aaz Shaikh"]]
+    ]
+  }
 ];
 
 export function TeamSelector() {
