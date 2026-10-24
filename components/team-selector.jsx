@@ -42,7 +42,7 @@ const teams = [
     name: "MakeOps",
     icon: "⚙",
     members: [
-      [["/assets/team/Shaikh.png", "Mu'Aaz Shaikh"]]
+      ["/assets/team/Shaikh.png", "Mu'Aaz Shaikh"]
     ]
   }
 ];

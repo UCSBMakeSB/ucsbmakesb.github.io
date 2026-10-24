@@ -26,7 +26,7 @@ export default function HomePage() {
             width={1672}
             height={941}
             alt="Illustration of Storke Tower and the UC Santa Barbara campus at golden hour"
-            priority
+            preload
           />
           <div className="hero-title">
             <h1 id="event-title">
