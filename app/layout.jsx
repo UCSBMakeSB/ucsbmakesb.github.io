@@ -40,15 +40,6 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <head>
-        <link
-          rel="preload"
-          href="/assets/homepage.png"
-          as="image"
-          type="image/png"
-          fetchPriority="high"
-        />
-      </head>
       <body className={`${mono.variable} ${serif.variable} ${sans.variable}`}>
         {children}
       </body>
