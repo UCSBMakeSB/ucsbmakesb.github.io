@@ -5,20 +5,28 @@ frontend preview with sample data, not a sign-up page or an authenticated portal
 It does not store passwords or send account updates. Profile edits last only until
 the page reloads. Email and password forms validate input but do not change an account.
 
-`components/account-settings.jsx` is independent of the page wrapper so Gautam can
-place it within the shared portal frame. Styles are scoped with a CSS module.
-The current standalone header and sidebar can be moved into that frame.
+`app/portal/layout.jsx` owns the shared portal frame and mounts
+`PortalAccountProvider`. Portal client components should call
+`usePortalAccount()` instead of receiving the account through every page's props.
+The provider currently starts with a preview account; the authenticated portal
+should pass the server-loaded account and action implementations to the provider.
+Portal styles are loaded globally from `app/portal/layout.jsx` and use the
+`portal-` class prefix to avoid collisions with site-wide styles.
 
 ## Backend contract
 
-Mount `AccountSettings` after the authenticated account has loaded, passing:
+Configure the provider after the authenticated account has loaded:
 
 ```jsx
-<AccountSettings
-  account={{ firstName, lastName, email }}
+<PortalAccountProvider
+  initialAccount={{ firstName, lastName, email }}
   actions={{ updateProfile, updateEmail, updatePassword }}
 />
 ```
+
+`AccountSettings` and the shared portal sidebar read this value with
+`usePortalAccount()`. Any other client component under `/portal` can use the same
+hook, and profile updates update both the settings page and shared navigation.
 
 - `updateProfile({ firstName, lastName })` resolves to the persisted profile fields.
 - `updateEmail({ email, currentPassword })` reauthenticates and requests a confirmed

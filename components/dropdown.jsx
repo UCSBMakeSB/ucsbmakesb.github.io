@@ -5,11 +5,17 @@ export function Dropdown({
   options,
   placeholder = "...",
   required = false,
+  requirementText,
   ...props
 }) {
   return (
     <label className="application-form-field" htmlFor={id}>
       <span>{label}</span>
+      {requirementText && (
+        <small className="application-field-requirement">
+          {requirementText}
+        </small>
+      )}
       <select
         id={id}
         name={name}
@@ -18,9 +24,7 @@ export function Dropdown({
         defaultValue=""
         {...props}
       >
-        <option value="">
-          {placeholder}
-        </option>
+        <option value="">{placeholder}</option>
         {options.map(({ value, label: optionLabel }) => (
           <option key={value} value={value}>
             {optionLabel}
