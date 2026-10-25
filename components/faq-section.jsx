@@ -9,15 +9,17 @@ const questions = [
   ["Do I need a team?", "No! We'll help you find a team or pair you up with other builders looking for teammates — you don't need to show up with one already formed."],
   ["What should I bring?", "Just yourself and a laptop! We provide meals, sleeping accommodations, and hardware to build with. If you'd like extra comfort, feel free to bring a sleeping bag or pillow, plus any personal items you need for the weekend."],
   ["Do you provide travel reimbursements?", <>At the moment, no. However, we are working hard to try to get travel reimbursements. If attending MakeSB poses a financial burden, please contact <a href="mailto:patrick_liu@ucsb.edu">patrick_liu@ucsb.edu</a>.</>],
-  ["I have a question or idea. Who do I contact?", <>We are always looking for feedback! Please reach us at <a href="mailto:ucsbmakesb@gmail.com">ucsbmakesb@gmail.com</a>.</>],
+  ["I have a question or idea. Who do I contact?", <>We are always looking for feedback! Please reach us at <a href="mailto:team@makesb.org">team@makesb.org</a>.</>],
 ];
 
-function FaqItem({ question, answer }) {
+export function FaqItem({ question, answer, inline = false }) {
   const [open, setOpen] = useState(false);
   const answerId = useId();
 
   return (
-    <div className={`faq-item${open ? " is-open" : ""}`}>
+    <div
+      className={`faq-item${open ? " is-open" : ""}${inline ? " is-inline" : ""}`}
+    >
       <button
         className="faq-question"
         type="button"
@@ -35,7 +37,7 @@ function FaqItem({ question, answer }) {
         aria-hidden={!open}
         inert={!open}
       >
-        <div className="faq-answer-inner">
+        <div className={`faq-answer-inner${inline ? " faq-answer-inner-tabbed" : ""}`}>
           <p>{answer}</p>
         </div>
       </div>
