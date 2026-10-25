@@ -6,10 +6,14 @@ export function Dropdown({
   placeholder = "...",
   required = false,
   requirementText,
+  portal = false,
   ...props
 }) {
   return (
-    <label className="application-form-field" htmlFor={id}>
+    <label
+      className={portal ? "portal-field" : "application-form-field"}
+      htmlFor={id}
+    >
       <span>{label}</span>
       {requirementText && (
         <small className="application-field-requirement">
@@ -20,7 +24,11 @@ export function Dropdown({
         id={id}
         name={name}
         required={required}
-        className="application-form-input application-form-select"
+        className={
+          portal
+            ? "portal-field-input portal-field-select"
+            : "application-form-input application-form-select"
+        }
         defaultValue=""
         {...props}
       >

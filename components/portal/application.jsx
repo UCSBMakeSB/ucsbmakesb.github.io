@@ -1,82 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import FieldRenderer, { formFields } from "../field-renderer";
+import FieldRenderer from "../field-renderer";
 import { usePortalAccount } from "./account";
-
-const applicationQuestions = [
-  {
-    type: "essay",
-    id: "application-question-1",
-    name: "applicationQuestion1",
-    label: "Why do you want to come to MakeSB?",
-    rows: 8,
-    requirement: "required",
-  },
-  {
-    type: "essay",
-    id: "application-question-2",
-    name: "applicationQuestion2",
-    label:
-      "Tell us about a project you're proud of. What specific decisions did you make and why?",
-    rows: 8,
-    requirement: "required",
-  },
-  {
-    type: "essay",
-    id: "application-question-3",
-    name: "applicationQuestion3",
-    label: "What skills do you want to use, and what's your background?",
-    rows: 8,
-    requirement: "required",
-  },
-  {
-    type: "essay",
-    id: "application-question-4",
-    name: "applicationQuestion4",
-    label: "What kinds of problems are you interested in solving?",
-    rows: 4,
-    requirement: "required",
-  },
-  {
-    type: "essay",
-    id: "application-question-5",
-    name: "applicationQuestion5",
-    label: "Is there anything else you'd like to share?",
-    rows: 4,
-    requirement: "recommended",
-  },
-  {
-    type: "essay",
-    id: "application-question-6",
-    name: "applicationQuestion6",
-    label:
-      "If you're flying in, please share your travel details (i.e. flight times, etc.).",
-    rows: 4,
-    requirement: "optional",
-  },
-  {
-    type: "essay",
-    id: "application-question-7",
-    name: "applicationQuestion7",
-    label:
-      "Are there any students whose skills, passion, or projects you admire that are potentially applying to MakeSB? Please enter names and emails (max 3, or enter N/A).",
-    rows: 4,
-    requirement: "optional",
-  },
-  {
-    type: "essay",
-    id: "application-question-8",
-    name: "applicationQuestion8",
-    label:
-      "What would you say to an LLM grading your app? (we won't use LLMs)",
-    rows: 4,
-    requirement: "fun",
-  },
-];
-
-const waiver = formFields.find((field) => field.name === "waiver");
-const resume = formFields.find((field) => field.name === "resume");
+import {
+  applicationGroups,
+  applicationQuestions,
+  applicationSupplements,
+} from "./application-data";
 
 export default function Application() {
   const { account, setAccount } = usePortalAccount();
@@ -105,21 +36,44 @@ export default function Application() {
       <h1>Application</h1>
       <p className="portal-intro">Complete your application for MakeSB 2027.</p>
       <form className="portal-application-form" onSubmit={submit}>
-        {applicationQuestions.map((field) => (
-          <FieldRenderer
-            key={field.id}
-            field={{ ...field, defaultValue: account[field.name] }}
-          />
+        {applicationGroups.map((group) => (
+          <section className="portal-form-section" key={group.title}>
+            <div className="portal-card-heading">
+              <h2>{group.title}</h2>
+              <p>{group.description}</p>
+            </div>
+            <div className="portal-form-section-fields">
+              {group.questions.map((field) => (
+                <FieldRenderer
+                  key={field.id}
+                  portal
+                  field={{ ...field, defaultValue: account[field.name] }}
+                />
+              ))}
+            </div>
+          </section>
         ))}
-        <FieldRenderer
-          field={{
-            ...resume,
-            existingFileName: account.resume?.name,
-          }}
-        />
-        <FieldRenderer
-          field={{ ...waiver, defaultValue: account.waiver }}
-        />
+        <section className="portal-form-section">
+          <div className="portal-card-heading">
+            <h2>{applicationSupplements.title}</h2>
+            <p>{applicationSupplements.description}</p>
+          </div>
+          <div className="portal-form-section-fields">
+            {applicationSupplements.fields.map((field) => (
+              <FieldRenderer
+                key={field.name}
+                portal
+                field={{
+                  ...field,
+                  defaultValue:
+                    field.name === "waiver" ? account.waiver : undefined,
+                  existingFileName:
+                    field.name === "resume" ? account.resume?.name : undefined,
+                }}
+              />
+            ))}
+          </div>
+        </section>
         {feedback && (
           <p className="portal-success" role="status">
             {feedback}

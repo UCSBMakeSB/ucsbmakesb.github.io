@@ -4,9 +4,28 @@ import { useState } from "react";
 import FieldRenderer, { formFields } from "../field-renderer";
 import { usePortalAccount } from "./account";
 
-const profileFields = formFields.filter(
-  (field) => field.section === "primary",
-);
+const profileGroups = [
+  {
+    title: "Personal Details",
+    description: "How we will contact you about MakeSB.",
+    names: ["preferredFirstName", "lastName", "mobileNumber"],
+  },
+  {
+    title: "Emergency Info",
+    description: "Someone we can contact in an emergency.",
+    names: ["emergencyContactName", "emergencyContactMobileNumber"],
+  },
+  {
+    title: "Demographics",
+    description: "Information about your background and education.",
+    names: ["major", "year", "age", "country", "school"],
+  },
+  {
+    title: "Food Details",
+    description: "Tell us about any food allergies or restrictions.",
+    names: ["food-allergies"],
+  },
+];
 
 export default function Profile() {
   const { account, actions, setAccount } = usePortalAccount();
@@ -60,15 +79,30 @@ export default function Profile() {
         View and update the information on your applicant profile.
       </p>
       <form className="portal-profile-form" onSubmit={submit}>
-        {profileFields.map((field) => (
-          <FieldRenderer
-            key={field.id}
-            field={{
-              ...field,
-              defaultValue: getDefaultValue(field),
-              required: field.name !== "food-allergies",
-            }}
-          />
+        {profileGroups.map((group) => (
+            <section className="portal-form-section" key={group.title}>
+              <div className="portal-card-heading">
+                <h2>{group.title}</h2>
+                <p>{group.description}</p>
+              </div>
+              <div className="portal-form-section-fields">
+                {group.names.map((name) => {
+                  const field = formFields.find(
+                    (candidate) => candidate.name === name,
+                  );
+                  return (
+                    <FieldRenderer
+                      key={field.id}
+                      portal
+                      field={{
+                        ...field,
+                        defaultValue: getDefaultValue(field),
+                      }}
+                    />
+                  );
+                })}
+              </div>
+            </section>
         ))}
         {feedback && (
           <p

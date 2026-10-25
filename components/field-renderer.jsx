@@ -291,7 +291,7 @@ export const formFields = [
         : "primary",
 }));
 
-export default function FieldRenderer({ field }) {
+export default function FieldRenderer({ field, portal = false }) {
   const requirement = field.requirement ?? "required";
   const required = requirement === "required";
   const requirementText =
@@ -310,7 +310,10 @@ export default function FieldRenderer({ field }) {
   switch (field.type) {
     case "input":
       return (
-        <label className="application-form-field" htmlFor={field.id}>
+        <label
+          className={portal ? "portal-field" : "application-form-field"}
+          htmlFor={field.id}
+        >
           <span>{field.label}</span>
           <RequirementText />
           <input
@@ -321,13 +324,16 @@ export default function FieldRenderer({ field }) {
             defaultValue={field.defaultValue}
             aria-label={field.ariaLabel}
             required={required}
-            className="application-form-input"
+            className={portal ? "portal-field-input" : "application-form-input"}
           />
         </label>
       );
     case "essay":
       return (
-        <label className="application-form-field" htmlFor={field.id}>
+        <label
+          className={portal ? "portal-field" : "application-form-field"}
+          htmlFor={field.id}
+        >
           <span>{field.label}</span>
           <RequirementText />
           <textarea
@@ -337,7 +343,11 @@ export default function FieldRenderer({ field }) {
             aria-label={field.ariaLabel}
             required={required}
             rows={field.rows ?? 8}
-            className="application-form-input application-form-textarea"
+            className={
+              portal
+                ? "portal-field-input portal-field-textarea"
+                : "application-form-input application-form-textarea"
+            }
           />
         </label>
       );
@@ -350,13 +360,18 @@ export default function FieldRenderer({ field }) {
           required={required}
           defaultValue={field.defaultValue}
           requirementText={requirementText}
+          portal={portal}
           options={field.options}
         />
       );
     case "checkbox":
       return (
         <label
-          className="application-form-field application-checkbox"
+          className={
+            portal
+              ? "portal-field portal-checkbox"
+              : "application-form-field application-checkbox"
+          }
           htmlFor={field.id}
         >
           <input
@@ -365,7 +380,11 @@ export default function FieldRenderer({ field }) {
             name={field.name}
             required={required}
             defaultChecked={field.defaultValue}
-            className="application-checkbox-input"
+            className={
+              portal
+                ? "portal-checkbox-input"
+                : "application-checkbox-input"
+            }
           />
           <span>
           {field.label}
@@ -375,13 +394,23 @@ export default function FieldRenderer({ field }) {
       );
     case "radio":
       return (
-        <fieldset className="application-form-field application-experience">
+        <fieldset
+          className={
+            portal
+              ? "portal-field portal-radio"
+              : "application-form-field application-experience"
+          }
+        >
           <legend>{field.legend}</legend>
           <RequirementText />
           <div className="application-radio-options">
             {field.options.map((option) => (
               <label
-                className="application-radio-option"
+                className={
+                  portal
+                    ? "portal-radio-option"
+                    : "application-radio-option"
+                }
                 htmlFor={option.id}
                 key={option.id}
               >
@@ -392,7 +421,11 @@ export default function FieldRenderer({ field }) {
                   value={option.value}
                   required={required}
                   defaultChecked={field.defaultValue === option.value}
-                  className="application-radio-input"
+                  className={
+                    portal
+                      ? "portal-radio-input"
+                      : "application-radio-input"
+                  }
                 />
                 <span>{option.label}</span>
               </label>
@@ -402,7 +435,13 @@ export default function FieldRenderer({ field }) {
       );
     case "file":
       return (
-        <div className="application-form-field application-resume">
+        <div
+          className={
+            portal
+              ? "portal-field portal-file"
+              : "application-form-field application-resume"
+          }
+        >
           <span id={field.labelId ?? `${field.id}-label`}>{field.label}</span>
           <RequirementText />
           <label className="application-file-button" htmlFor={field.id}>
