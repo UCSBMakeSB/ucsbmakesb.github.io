@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Form from "next/form";
+import { ApplicationForm } from "../../components/application-form";
 import { Dropdown } from "../../components/dropdown";
 import { FaqItem } from "../../components/faq-section";
 import { Header, Footer } from "../../components/page-layout";
@@ -206,7 +206,7 @@ export default function Apply() {
 
 					<FaqItem question="Have questions?" answer={info} inline />
 
-					<Form action="/apply" className="application-form">
+					<ApplicationForm className="application-form">
 						<div className="application-form-fields">
 							<label
 								className="application-form-field"
@@ -407,11 +407,7 @@ export default function Apply() {
 								<small>PDF, DOC, or DOCX</small>
 							</div>
 						</div>
-
-						<button type="submit" className="application-form-submit">
-							Continue
-						</button>
-					</Form>
+					</ApplicationForm>
 				</ScrollClippedForm>
 			</main>
 

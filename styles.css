@@ -1560,6 +1560,36 @@ APPLY Page
 	text-transform: uppercase;
 }
 
+.application-form-submit:disabled {
+	opacity: 0.6;
+	cursor: wait;
+}
+
+.application-form-status {
+	justify-self: center;
+	max-width: 36rem;
+	padding: 12px 16px;
+	color: var(--paper);
+	border: 1px solid var(--sun);
+	border-radius: 6px;
+	text-align: center;
+}
+
+.application-form-status[data-status="error"] {
+	border-color: var(--coral);
+}
+
+.application-form-status p {
+	margin: 0;
+}
+
+.application-form-status ul {
+	margin: 8px 0 0;
+	padding: 0;
+	list-style: none;
+	font-size: 0.9em;
+}
+
 @media (min-width: 640px) {
 	.application-form-fields {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
