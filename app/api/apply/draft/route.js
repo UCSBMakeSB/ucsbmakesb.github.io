@@ -1,0 +1,122 @@
+import { randomUUID } from "node:crypto";
+import { NextResponse } from "next/server";
+import { getResumeExtension, validateApplication } from "../../../../lib/application-validation";
+import { getSupabaseAdmin } from "../../../../lib/supabase-server";
+
+export const runtime = "nodejs";
+
+const DRAFT_COOKIE = "makesb_application_draft";
+const DRAFT_MAX_AGE = 30 * 60;
+const RESUME_CONTENT_TYPES = {
+  pdf: "application/pdf",
+  doc: "application/msword",
+  docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+};
+
+function draftCookieOptions() {
+  return {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: DRAFT_MAX_AGE,
+  };
+}
+
+export async function GET(request) {
+  const draftId = request.cookies.get(DRAFT_COOKIE)?.value;
+  if (!draftId) {
+    return NextResponse.json({ error: "No application draft found." }, { status: 404 });
+  }
+
+  const { data, error } = await getSupabaseAdmin()
+    .from("application_drafts")
+    .select("email, expires_at, claimed_at")
+    .eq("id", draftId)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Application draft lookup failed:", error);
+    return NextResponse.json({ error: "Couldn't load your application draft." }, { status: 500 });
+  }
+
+  if (!data || data.claimed_at || new Date(data.expires_at) <= new Date()) {
+    const response = NextResponse.json(
+      { error: "Your application draft has expired. Please start again." },
+      { status: 410 },
+    );
+    response.cookies.delete(DRAFT_COOKIE);
+    return response;
+  }
+
+  return NextResponse.json({ email: data.email });
+}
+
+export async function POST(request) {
+  let formData;
+  try {
+    formData = await request.formData();
+  } catch {
+    return NextResponse.json(
+      { error: "Couldn't read the submitted form." },
+      { status: 400 },
+    );
+  }
+
+  const result = validateApplication(formData);
+  if (!result.ok) {
+    return NextResponse.json(
+      { error: "Please fix the highlighted fields.", fields: result.errors },
+      { status: 400 },
+    );
+  }
+
+  const { row, resume } = result;
+  const id = randomUUID();
+  const ext = resume ? getResumeExtension(resume) : null;
+  const resumePath = ext ? `drafts/${id}.${ext}` : null;
+  const supabase = getSupabaseAdmin();
+
+  const { error: insertError } = await supabase.from("application_drafts").insert({
+    id,
+    email: row.email,
+    payload: row,
+    resume_path: resumePath,
+  });
+
+  if (insertError) {
+    if (insertError.code === "23505") {
+      return NextResponse.json(
+        { error: "An application with this email already exists." },
+        { status: 409 },
+      );
+    }
+    console.error("Application draft insert failed:", insertError);
+    return NextResponse.json(
+      { error: "Something went wrong saving your application. Please try again." },
+      { status: 500 },
+    );
+  }
+
+  if (resume) {
+    const { error: uploadError } = await supabase.storage
+      .from("resumes")
+      .upload(resumePath, await resume.arrayBuffer(), {
+        contentType: RESUME_CONTENT_TYPES[ext],
+        upsert: false,
+      });
+
+    if (uploadError) {
+      console.error("Application draft resume upload failed:", uploadError);
+      await supabase.from("application_drafts").delete().eq("id", id);
+      return NextResponse.json(
+        { error: "We couldn't upload your resume. Please try again." },
+        { status: 500 },
+      );
+    }
+  }
+
+  const response = NextResponse.json({ ok: true }, { status: 201 });
+  response.cookies.set(DRAFT_COOKIE, id, draftCookieOptions());
+  return response;
+}

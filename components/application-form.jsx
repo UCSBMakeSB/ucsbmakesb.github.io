@@ -35,16 +35,14 @@ export function ApplicationForm({ children, className, submitLabel = "Continue" 
     setFieldErrors([]);
 
     try {
-      const response = await fetch("/api/apply", {
+      const response = await fetch("/api/apply/draft", {
         method: "POST",
         body: new FormData(form),
       });
       const data = await response.json().catch(() => ({}));
 
       if (response.ok) {
-        form.reset();
-        setStatus("success");
-        setMessage("Thanks for applying! Your application has been received.");
+        window.location.assign("/auth");
         return;
       }
 

@@ -5,6 +5,7 @@
 create table if not exists public.applications (
   id uuid primary key default gen_random_uuid(),
   created_at timestamptz not null default now(),
+  user_id uuid references auth.users(id) on delete cascade,
 
   preferred_first_name text not null,
   last_name text not null,
@@ -30,6 +31,32 @@ create table if not exists public.applications (
 -- One application per email, case-insensitive.
 create unique index if not exists applications_email_unique
   on public.applications (lower(email));
+
+alter table public.applications
+  add column if not exists user_id uuid
+  references auth.users(id)
+  on delete cascade;
+
+create unique index if not exists applications_user_id_unique
+  on public.applications(user_id);
+
+create table if not exists public.application_drafts (
+  id uuid primary key default gen_random_uuid(),
+  email text not null,
+  payload jsonb not null,
+  resume_path text,
+  created_at timestamptz not null default now(),
+  expires_at timestamptz not null default (now() + interval '30 minutes'),
+  claimed_at timestamptz
+);
+
+create index if not exists application_drafts_expires_at_idx
+  on public.application_drafts(expires_at);
+
+alter table public.application_drafts enable row level security;
+
+revoke all on public.application_drafts from anon, authenticated;
+grant select, insert, update, delete on public.application_drafts to service_role;
 
 -- Lock the table down. With RLS on and NO policies, the public (anon) key can't
 -- read or write anything. Only the server, using the secret/service-role key
