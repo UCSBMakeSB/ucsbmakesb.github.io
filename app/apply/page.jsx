@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Form from "next/form";
+import { ApplicationForm } from "../../components/application-form";
 import { FaqItem } from "../../components/faq-section";
 import { Header, Footer } from "../../components/page-layout";
 import { ScrollClippedForm } from "../../components/scroll-clipped-form";
@@ -59,7 +59,7 @@ export default function Apply() {
 
           <FaqItem question="Have questions?" answer={info} inline />
 
-          <Form action="/apply" className="application-form">
+          <ApplicationForm className="application-form">
             <div className="application-form-fields">
               {formFields
                 .filter((field) => field.section === "primary")
@@ -81,7 +81,7 @@ export default function Apply() {
             <button type="submit" className="application-form-submit">
               Continue
             </button>
-          </Form>
+          </ApplicationForm>
         </ScrollClippedForm>
       </main>
 
