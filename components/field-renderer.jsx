@@ -1,4 +1,5 @@
 import { Dropdown } from "./dropdown";
+import { FileUploadField } from "./file-upload-field";
 
 export const majors = [
   { value: "electrical-engineering", label: "Electrical Engineering" },
@@ -444,17 +445,14 @@ export default function FieldRenderer({ field, portal = false }) {
         >
           <span id={field.labelId ?? `${field.id}-label`}>{field.label}</span>
           <RequirementText />
-          <label className="application-file-button" htmlFor={field.id}>
-            Add File
-            <input
-              id={field.id}
-              name={field.name}
-              type="file"
-              accept={field.accept}
-              required={required}
-              aria-labelledby={field.ariaLabelledby}
-            />
-          </label>
+          <FileUploadField
+            id={field.id}
+            name={field.name}
+            accept={field.accept}
+            required={required}
+            ariaLabelledby={field.ariaLabelledby}
+            existingFileName={field.existingFileName}
+          />
           {field.existingFileName && <small>Current file: {field.existingFileName}</small>}
           <small>{field.helpText}</small>
         </div>

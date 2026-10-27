@@ -383,6 +383,20 @@
 .portal-file input {
   color: var(--paper);
 }
+.portal-file .application-file-button {
+  display: inline-flex;
+  width: min(100%, 32rem);
+  max-width: 100%;
+  min-width: 0;
+  align-items: center;
+  justify-content: center;
+}
+.portal-file .application-file-button-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .portal-preview {
   border-left: 2px solid var(--sun);
   background: rgba(11, 25, 48, 0.45);
