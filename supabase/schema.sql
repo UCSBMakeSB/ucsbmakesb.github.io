@@ -18,7 +18,7 @@ create table if not exists public.applications (
   age text not null,
   country text not null,
   school text not null,
-  food_allergies text not null,
+  food_allergies text,
 
   waiver_accepted boolean not null check (waiver_accepted),
   prior_hackathon_experience boolean not null,
@@ -36,6 +36,9 @@ create unique index if not exists applications_email_unique
 -- (which bypasses RLS), can touch this data. That matters: it holds phone
 -- numbers, emergency contacts, and allergy info.
 alter table public.applications enable row level security;
+
+alter table public.applications
+  alter column food_allergies drop not null;
 
 -- Explicit privileges, so this works whether or not "Automatically expose new
 -- tables" was enabled when the project was created: the public roles get

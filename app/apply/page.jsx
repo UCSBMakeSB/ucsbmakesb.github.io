@@ -77,10 +77,6 @@ export default function Apply() {
                   <FieldRenderer key={field.id || field.name} field={field} />
                 ))}
             </div>
-
-            <button type="submit" className="application-form-submit">
-              Continue
-            </button>
           </ApplicationForm>
         </ScrollClippedForm>
       </main>

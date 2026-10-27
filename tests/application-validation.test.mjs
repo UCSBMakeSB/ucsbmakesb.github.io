@@ -52,6 +52,15 @@ test("maps 'no' experience to false", () => {
   assert.equal(result.row.prior_hackathon_experience, false);
 });
 
+test("accepts empty optional fields", () => {
+  const result = validateApplication(
+    validForm({ "food-allergies": "", resume: undefined }),
+  );
+  assert.equal(result.ok, true);
+  assert.equal(result.row.food_allergies, null);
+  assert.equal(result.resume, null);
+});
+
 test("rejects missing and blank required fields", () => {
   const result = validateApplication(
     validForm({ lastName: "   ", major: undefined }),
@@ -79,16 +88,12 @@ test("rejects over-long text", () => {
   assert.ok(result.errors.lastName);
 });
 
-test("requires a resume", () => {
-  const result = validateApplication(validForm({ resume: undefined }));
-  assert.equal(result.ok, false);
-  assert.ok(result.errors.resume);
-});
-
-test("rejects an empty resume file", () => {
-  const result = validateApplication(validForm({ resume: pdf("resume.pdf", 0) }));
-  assert.equal(result.ok, false);
-  assert.ok(result.errors.resume);
+test("accepts a missing or empty optional resume", () => {
+  for (const resume of [undefined, pdf("resume.pdf", 0)]) {
+    const result = validateApplication(validForm({ resume }));
+    assert.equal(result.ok, true);
+    assert.equal(result.resume, null);
+  }
 });
 
 test("rejects unsupported resume extensions", () => {

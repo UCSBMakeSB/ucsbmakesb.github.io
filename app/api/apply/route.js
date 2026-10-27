@@ -32,10 +32,10 @@ export async function POST(request) {
 
   const { row, resume } = result;
   const id = randomUUID();
-  const ext = getResumeExtension(resume);
+  const ext = resume ? getResumeExtension(resume) : null;
   // Never use the user's filename in the path: it's the applicant's data and
   // could contain path tricks. The row id is enough to find it again.
-  const resumePath = `${id}.${ext}`;
+  const resumePath = ext ? `${id}.${ext}` : null;
 
   try {
     const supabase = getSupabaseAdmin();
@@ -59,21 +59,23 @@ export async function POST(request) {
       );
     }
 
-    const { error: uploadError } = await supabase.storage
-      .from("resumes")
-      .upload(resumePath, await resume.arrayBuffer(), {
-        contentType: RESUME_CONTENT_TYPES[ext],
-        upsert: false,
-      });
+    if (resume) {
+      const { error: uploadError } = await supabase.storage
+        .from("resumes")
+        .upload(resumePath, await resume.arrayBuffer(), {
+          contentType: RESUME_CONTENT_TYPES[ext],
+          upsert: false,
+        });
 
-    if (uploadError) {
-      console.error("Resume upload failed:", uploadError);
-      // Roll back the row so the applicant can retry with the same email.
-      await supabase.from("applications").delete().eq("id", id);
-      return NextResponse.json(
-        { error: "We couldn't upload your resume. Please try again." },
-        { status: 500 },
-      );
+      if (uploadError) {
+        console.error("Resume upload failed:", uploadError);
+        // Roll back the row so the applicant can retry with the same email.
+        await supabase.from("applications").delete().eq("id", id);
+        return NextResponse.json(
+          { error: "We couldn't upload your resume. Please try again." },
+          { status: 500 },
+        );
+      }
     }
 
     return NextResponse.json({ ok: true }, { status: 201 });
