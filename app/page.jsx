@@ -1,7 +1,6 @@
 import { FaqSection } from "../components/faq-section";
 import { Header, Footer } from "../components/page-layout";
 import { TeamSelector } from "../components/team-selector";
-import { TeamSubtitle } from "../components/team-subtitle";
 import { Schedule } from "../components/schedule";
 
 import Image from "next/image";
@@ -136,7 +135,6 @@ export default function HomePage() {
         >
           <div className="page-section-inner">
             <h2 id="team-title">Meet Our Team</h2>
-            <TeamSubtitle />
             <TeamSelector />
           </div>
         </section>
