@@ -2,11 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { TeamSubtitle } from "./team-subtitle";
 
 const teams = [
   {
     id: "presidents",
     name: "Presidents",
+    subtitleLead: "Meet the presidents making ",
     icon: "♡",
     members: [
       ["/assets/team/Julia.jpeg", "Julia Smith"],
@@ -16,6 +18,7 @@ const teams = [
   {
     id: "design-develop",
     name: "Design & Develop",
+    subtitleLead: "Meet the Design & Develop team making ",
     icon: "✦",
     members: [
       ["/assets/team/Youjia.jpg", "Youjia He"],
@@ -28,18 +31,21 @@ const teams = [
   {
     id: "marketing-outreach-graphics",
     name: "Marketing · Outreach · Graphics",
+    subtitleLead: "Meet the marketing, outreach, and graphics team making ",
     icon: "◎",
     members: [["/assets/team/aran.png", "Aran Chen"]],
   },
   {
     id: "sponsorships-finances",
     name: "Sponsorships · Finances",
+    subtitleLead: "Meet the sponsorships and finances team making ",
     icon: "$",
     members: [["/assets/team/youthika.png", "Youthika Anbu"]],
   },
   {
     id: "makeops",
     name: "MakeOps",
+    subtitleLead: "Meet the MakeOps team making ",
     icon: "⚙",
     members: [
       ["/assets/team/Shaikh.png", "Mu'Aaz Shaikh"]
@@ -102,10 +108,12 @@ export function TeamSelector() {
   }
 
   return (
-    <section
-      className="team-arcade"
-      aria-label="Choose a team and meet its members"
-    >
+    <>
+      <TeamSubtitle leadingText={currentTeam.subtitleLead} />
+      <section
+        className="team-arcade"
+        aria-label="Choose a team and meet its members"
+      >
       <div className="handheld-column">
         <div
           className="handheld gameboy"
@@ -269,6 +277,7 @@ onAnimationEnd={(event) => {
           </section>
         </div>
       </div>
-    </section>
+      </section>
+    </>
   );
 }

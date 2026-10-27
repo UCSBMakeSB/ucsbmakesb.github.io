@@ -1042,10 +1042,15 @@
   visibility: hidden;
 }
 
-#team .team-description-animated {
+#team .team-description-animated,
+#team .team-description-reduced {
   position: absolute;
   inset: 0;
   display: block;
+}
+
+#team .team-description-reduced {
+  display: none;
 }
 
 #team .team-description-highlight {
@@ -1126,12 +1131,12 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  #team .team-description-reserve {
-    visibility: visible;
-  }
-
   #team .team-description-animated {
     display: none;
+  }
+
+  #team .team-description-reduced {
+    display: block;
   }
 
   #team .team-description-highlight,

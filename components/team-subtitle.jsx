@@ -2,15 +2,17 @@
 
 import { useEffect, useRef, useState } from "react";
 
-const LEADING_TEXT = "Meet the students making ";
 const HIGHLIGHT_TEXT = "MakeSB happen!";
-const FULL_TEXT = `${LEADING_TEXT}${HIGHLIGHT_TEXT}`;
-const TYPING_DELAY_MS = 80;
+const RESERVED_LEADING_TEXT =
+  "Meet the marketing, outreach, and graphics team making ";
+const TYPING_DELAY_MS = 45;
 
-export function TeamSubtitle() {
+export function TeamSubtitle({ leadingText }) {
   const subtitleRef = useRef(null);
-  const [visibleCount, setVisibleCount] = useState(0);
+  const [hasEnteredViewport, setHasEnteredViewport] = useState(false);
+  const [typingState, setTypingState] = useState({ text: "", count: 0 });
   const [cursorVisible, setCursorVisible] = useState(false);
+  const fullText = `${leadingText}${HIGHLIGHT_TEXT}`;
 
   useEffect(() => {
     const reduceMotion = window.matchMedia(
@@ -18,7 +20,7 @@ export function TeamSubtitle() {
     ).matches;
 
     if (reduceMotion) {
-      setVisibleCount(FULL_TEXT.length);
+      setHasEnteredViewport(true);
       return undefined;
     }
 
@@ -28,74 +30,85 @@ export function TeamSubtitle() {
       return undefined;
     }
 
-    let hasStarted = false;
-    let typingTimer = null;
-
-    function startTyping() {
-      if (hasStarted) {
-        return;
-      }
-
-      hasStarted = true;
-      setCursorVisible(true);
-
-      let nextCount = 0;
-      typingTimer = window.setInterval(() => {
-        nextCount += 1;
-        setVisibleCount(nextCount);
-
-        if (nextCount >= FULL_TEXT.length) {
-          window.clearInterval(typingTimer);
-          typingTimer = null;
-        }
-      }, TYPING_DELAY_MS);
-    }
-
+    const teamSection = subtitle.closest("#team") ?? subtitle;
     let observer = null;
 
     if ("IntersectionObserver" in window) {
       observer = new IntersectionObserver(
         ([entry]) => {
           if (entry.isIntersecting) {
-            startTyping();
+            setHasEnteredViewport(true);
             observer.disconnect();
           }
         },
-        { threshold: 0.35 },
+        { threshold: 0.1 },
       );
-      observer.observe(subtitle);
+      observer.observe(teamSection);
     } else {
-      startTyping();
+      setHasEnteredViewport(true);
     }
 
-    return () => {
-      observer?.disconnect();
-
-      if (typingTimer !== null) {
-        window.clearInterval(typingTimer);
-      }
-    };
+    return () => observer?.disconnect();
   }, []);
 
-  const leadingText = LEADING_TEXT.slice(
+  useEffect(() => {
+    if (!hasEnteredViewport) {
+      return undefined;
+    }
+
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    if (reduceMotion) {
+      setTypingState({ text: fullText, count: fullText.length });
+      setCursorVisible(false);
+      return undefined;
+    }
+
+    let nextCount = 0;
+    setTypingState({ text: fullText, count: 0 });
+    setCursorVisible(true);
+
+    const typingTimer = window.setInterval(() => {
+      nextCount += 1;
+      setTypingState({ text: fullText, count: nextCount });
+
+      if (nextCount >= fullText.length) {
+        window.clearInterval(typingTimer);
+      }
+    }, TYPING_DELAY_MS);
+
+    return () => window.clearInterval(typingTimer);
+  }, [fullText, hasEnteredViewport]);
+
+  const visibleCount =
+    typingState.text === fullText ? typingState.count : 0;
+  const showCursor = typingState.text === fullText && cursorVisible;
+
+  const visibleLeadingText = leadingText.slice(
     0,
-    Math.min(visibleCount, LEADING_TEXT.length),
+    Math.min(visibleCount, leadingText.length),
   );
   const highlightedText = HIGHLIGHT_TEXT.slice(
     0,
-    Math.max(0, visibleCount - LEADING_TEXT.length),
+    Math.max(0, visibleCount - leadingText.length),
   );
-  const isComplete = visibleCount >= FULL_TEXT.length;
+  const isComplete = visibleCount >= fullText.length;
 
   return (
     <p ref={subtitleRef} className="team-description">
-      <span className="visually-hidden">{FULL_TEXT}</span>
+      <span className="visually-hidden">{fullText}</span>
       <span className="team-description-reserve" aria-hidden="true">
-        {LEADING_TEXT}
+        {RESERVED_LEADING_TEXT}
+        <span className="team-description-highlight">{HIGHLIGHT_TEXT}</span>
+      </span>
+      <span className="team-description-reduced" aria-hidden="true">
+        {leadingText}
         <span className="team-description-highlight">{HIGHLIGHT_TEXT}</span>
       </span>
       <span className="team-description-animated" aria-hidden="true">
-        {leadingText}
+        {visibleLeadingText}
         {highlightedText && (
           <span
             className={`team-description-highlight${isComplete ? " is-complete" : ""}`}
@@ -103,7 +116,7 @@ export function TeamSubtitle() {
             {highlightedText}
           </span>
         )}
-        {cursorVisible && (
+        {showCursor && (
           <span
             className={`team-description-cursor${isComplete ? " is-finishing" : ""}`}
             onAnimationEnd={(event) => {
