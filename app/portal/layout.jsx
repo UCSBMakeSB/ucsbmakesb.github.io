@@ -3,7 +3,6 @@ import { PortalHeader } from "../../components/portal/header";
 import { PortalAccountProvider } from "../../components/portal/account";
 import { PortalSidebar } from "../../components/portal/sidebar";
 import { PortalScrollReset } from "../../components/portal/scroll-reset";
-import { PortalClientRouter } from "../../components/portal/client-router";
 import {
   getPortalAccount,
   PORTAL_ACCOUNT_FIELDS,
@@ -33,7 +32,7 @@ async function getInitialAccount() {
   return getPortalAccount(PORTAL_ACCOUNT_FIELDS);
 }
 
-export default async function Layout() {
+export default async function Layout({ children }) {
   const initialAccount = await getInitialAccount();
 
   return (
@@ -46,7 +45,7 @@ export default async function Layout() {
         </a>
         <div className="portal-layout">
           <PortalSidebar pages={pages} />
-          <PortalClientRouter />
+          {children}
         </div>
       </div>
       <Footer />

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSupabaseAdmin, getSupabaseServer } from "../../../lib/supabase-server";
+import { revalidatePortalAccount } from "../../../lib/portal-data";
 
 export const runtime = "nodejs";
 
@@ -102,6 +103,7 @@ export async function PATCH(request) {
     return NextResponse.json({ error: "Application not found." }, { status: 404 });
   }
 
+  revalidatePortalAccount(user.id);
   return NextResponse.json({
     account: applicationToAccount(application, user.email),
   });

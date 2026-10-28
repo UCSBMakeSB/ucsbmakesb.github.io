@@ -6,6 +6,7 @@ import {
   rateLimitResponse,
 } from "../../../lib/rate-limit";
 import { getSupabaseAdmin, getSupabaseServer } from "../../../lib/supabase-server";
+import { revalidatePortalAccount } from "../../../lib/portal-data";
 
 export const runtime = "nodejs";
 
@@ -82,6 +83,7 @@ export async function PATCH(request) {
       return NextResponse.json({ error: "Application not found." }, { status: 404 });
     }
 
+    revalidatePortalAccount(user.id);
     return NextResponse.json({
       account: { firstName: application.preferred_first_name, lastName: application.last_name },
     });
@@ -160,6 +162,7 @@ export async function PATCH(request) {
       console.error("Password update failed:", error);
       return NextResponse.json({ error: "Couldn't update your password." }, { status: 500 });
     }
+    revalidatePortalAccount(user.id);
     return NextResponse.json({ ok: true });
   }
 

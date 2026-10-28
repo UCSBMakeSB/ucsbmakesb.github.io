@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { getSupabaseAdmin, getSupabaseServer } from "../../../lib/supabase-server";
+import { revalidatePortalAccount } from "../../../lib/portal-data";
 import {
   getResumeExtension,
   validateResume,
@@ -86,6 +87,7 @@ export async function GET() {
     return NextResponse.json({ error: "Application not found." }, { status: 404 });
   }
 
+  revalidatePortalAccount(user.id);
   return NextResponse.json({ account: applicationToAccount(application, user.email) });
 }
 

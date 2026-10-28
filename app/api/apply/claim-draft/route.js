@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { getSupabaseAdmin, getSupabaseServer } from "../../../../lib/supabase-server";
+import { revalidatePortalAccount } from "../../../../lib/portal-data";
 
 export const runtime = "nodejs";
 
@@ -114,6 +115,7 @@ async function claimDraft(request) {
     console.error("Claimed application draft cleanup failed:", deleteDraftError);
   }
 
+  revalidatePortalAccount(user.id);
   const next = request.nextUrl?.searchParams.get("next");
   const safeNext = next?.startsWith("/") && !next.startsWith("//")
     ? next
