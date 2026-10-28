@@ -1,0 +1,42 @@
+{
+  "signupPreparationIp": {
+    "limit": 100,
+    "window": "10 m"
+  },
+  "signupPreparationEmail": {
+    "limit": 3,
+    "window": "10 m"
+  },
+  "draftCreationIp": {
+    "limit": 100,
+    "window": "1 h"
+  },
+  "draftCreationEmail": {
+    "limit": 3,
+    "window": "1 h"
+  },
+  "passwordResetIp": {
+    "limit": 10,
+    "window": "1 h"
+  },
+  "passwordResetEmail": {
+    "limit": 3,
+    "window": "15 m"
+  },
+  "passwordVerificationUser": {
+    "limit": 5,
+    "window": "15 m"
+  },
+  "passwordVerificationIp": {
+    "limit": 30,
+    "window": "15 m"
+  },
+  "emailChangeUser": {
+    "limit": 3,
+    "window": "1 h"
+  },
+  "passwordChangeUser": {
+    "limit": 5,
+    "window": "1 h"
+  }
+}

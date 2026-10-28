@@ -1,5 +1,10 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
+import {
+  getClientIp,
+  getRateLimiters,
+  rateLimitResponse,
+} from "../../../lib/rate-limit";
 import { getSupabaseAdmin, getSupabaseServer } from "../../../lib/supabase-server";
 
 export const runtime = "nodejs";
@@ -13,6 +18,14 @@ async function getAuthenticatedUser() {
     data: { user },
   } = await supabase.auth.getUser();
   return user;
+}
+
+function rateLimitedResponse(result) {
+  const body = rateLimitResponse(result);
+  return NextResponse.json(body, {
+    status: 429,
+    headers: { "Retry-After": String(body.retryAfterSeconds) },
+  });
 }
 
 export async function PATCH(request) {
@@ -78,6 +91,29 @@ export async function PATCH(request) {
     typeof body.currentPassword === "string" ? body.currentPassword : "";
   if (!currentPassword) {
     return NextResponse.json({ error: "Enter your current password." }, { status: 400 });
+  }
+
+  const limiters = getRateLimiters();
+  const operationResult =
+    section === "email"
+      ? await limiters.emailChangeUser.limit(`user:${user.id}`)
+      : await limiters.passwordChangeUser.limit(`user:${user.id}`);
+  if (!operationResult.success) {
+    return rateLimitedResponse(operationResult);
+  }
+
+  const verificationUserResult = await limiters.passwordVerificationUser.limit(
+    `user:${user.id}`,
+  );
+  if (!verificationUserResult.success) {
+    return rateLimitedResponse(verificationUserResult);
+  }
+
+  const verificationIpResult = await limiters.passwordVerificationIp.limit(
+    `ip:${getClientIp(request)}`,
+  );
+  if (!verificationIpResult.success) {
+    return rateLimitedResponse(verificationIpResult);
   }
 
   const authUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;

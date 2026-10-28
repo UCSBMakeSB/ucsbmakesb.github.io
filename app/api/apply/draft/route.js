@@ -1,6 +1,12 @@
 import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { getResumeExtension, validateApplication } from "../../../../lib/application-validation";
+import {
+  getClientIp,
+  getEmailIdentifier,
+  getRateLimiters,
+  rateLimitResponse,
+} from "../../../../lib/rate-limit";
 import { getSupabaseAdmin } from "../../../../lib/supabase-server";
 
 export const runtime = "nodejs";
@@ -64,6 +70,33 @@ export async function POST(request) {
       { error: "Couldn't read the submitted form." },
       { status: 400 },
     );
+  }
+
+  const emailValue = formData.get("email");
+  const email = typeof emailValue === "string" ? emailValue.trim().toLowerCase() : "";
+  if (email) {
+    const limiters = getRateLimiters();
+    const ipResult = await limiters.draftCreationIp.limit(
+      `ip:${getClientIp(request)}`,
+    );
+    if (!ipResult.success) {
+      const body = rateLimitResponse(ipResult);
+      return NextResponse.json(body, {
+        status: 429,
+        headers: { "Retry-After": String(body.retryAfterSeconds) },
+      });
+    }
+
+    const emailResult = await limiters.draftCreationEmail.limit(
+      `email:${getEmailIdentifier(email)}`,
+    );
+    if (!emailResult.success) {
+      const body = rateLimitResponse(emailResult);
+      return NextResponse.json(body, {
+        status: 429,
+        headers: { "Retry-After": String(body.retryAfterSeconds) },
+      });
+    }
   }
 
   const result = validateApplication(formData);

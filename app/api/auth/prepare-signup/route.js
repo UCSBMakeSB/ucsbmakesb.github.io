@@ -1,5 +1,11 @@
 import { NextResponse } from "next/server";
 import { getSupabaseAdmin } from "../../../../lib/supabase-server";
+import {
+  getClientIp,
+  getEmailIdentifier,
+  getRateLimiters,
+  rateLimitResponse,
+} from "../../../../lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -27,6 +33,29 @@ export async function POST(request) {
   const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
   if (!email) {
     return NextResponse.json({ error: "Enter your email address." }, { status: 400 });
+  }
+
+  const limiters = getRateLimiters();
+  const ipResult = await limiters.signupPreparationIp.limit(
+    `ip:${getClientIp(request)}`,
+  );
+  if (!ipResult.success) {
+    const body = rateLimitResponse(ipResult);
+    return NextResponse.json(body, {
+      status: 429,
+      headers: { "Retry-After": String(body.retryAfterSeconds) },
+    });
+  }
+
+  const emailResult = await limiters.signupPreparationEmail.limit(
+    `email:${getEmailIdentifier(email)}`,
+  );
+  if (!emailResult.success) {
+    const body = rateLimitResponse(emailResult);
+    return NextResponse.json(body, {
+      status: 429,
+      headers: { "Retry-After": String(body.retryAfterSeconds) },
+    });
   }
 
   const supabase = getSupabaseAdmin();

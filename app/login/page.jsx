@@ -49,25 +49,20 @@ export default function LoginPage() {
     setMessage("");
 
     try {
-      const { error } = await getSupabaseBrowser().auth.resetPasswordForEmail(
-        email.trim(),
-        {
-          redirectTo: `${window.location.origin}/auth/callback?next=/auth/reset`,
-        },
-      );
+      const response = await fetch("/api/auth/password-reset", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await response.json().catch(() => ({}));
 
-      if (error) {
-        console.error("Password reset request failed:", error);
+      if (!response.ok) {
         setStatus("error");
-        setMessage(
-          "We couldn't send a reset link. Please try again or contact MakeSB support.",
-        );
+        setMessage(data.error || "We couldn't process your request. Please try again.");
         return;
       }
       setStatus("success");
-      setMessage(
-        "If an account exists for that email, you'll receive a password reset link shortly.",
-      );
+      setMessage(data.message);
     } catch (error) {
       console.error("Password reset request failed:", error);
       setStatus("error");
