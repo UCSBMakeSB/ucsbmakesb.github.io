@@ -2,6 +2,7 @@ import { FaqSection } from "../components/faq-section";
 import { Header, Footer } from "../components/page-layout";
 import { TeamSelector } from "../components/team-selector";
 import { Schedule } from "../components/schedule";
+import { HomeScrollReset } from "../components/home-scroll-reset";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -15,6 +16,7 @@ const sponsorUrl =
 export default function HomePage() {
   return (
     <>
+      <HomeScrollReset />
       <a className="skip-link" href="#main">
         Skip to content
       </a>

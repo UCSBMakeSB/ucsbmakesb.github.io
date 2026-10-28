@@ -1,9 +1,11 @@
 import Image from "next/image";
+import { redirect } from "next/navigation";
 import { ApplicationForm } from "../../components/application-form";
 import { FaqItem } from "../../components/faq-section";
 import { Header, Footer } from "../../components/page-layout";
 import { ScrollClippedForm } from "../../components/scroll-clipped-form";
 import FieldRenderer, { formFields } from "../../components/field-renderer";
+import { getSupabaseServer } from "../../lib/supabase-server";
 
 const applyUrl =
   "https://docs.google.com/forms/d/e/1FAIpQLSc69LeujVIem99yf-DhmwljMJxpeXlxWjMpiGqNGNK5MQrKGQ/viewform?usp=publish-editor";
@@ -29,7 +31,16 @@ We are also looking for volunteers, mentors, faculty, industry guests, and alumn
 Prizes and Tracks will be released soon!
 `;
 
-export default function Apply() {
+export default async function Apply() {
+  const supabase = await getSupabaseServer();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (user) {
+    redirect("/portal/profile");
+  }
+
   return (
     <>
       <Header fixed />

@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { useState } from "react";
 import FieldRenderer, { formFields } from "../field-renderer";
 import { usePortalAccount } from "./account";
@@ -28,8 +30,9 @@ const profileGroups = [
 ];
 
 export default function Profile() {
-  const { account, actions, setAccount } = usePortalAccount();
+  const { account, setAccount } = usePortalAccount();
   const [feedback, setFeedback] = useState(null);
+  const [saving, setSaving] = useState(false);
 
   function getDefaultValue(field) {
     if (field.name === "preferredFirstName") return account.firstName;
@@ -41,33 +44,27 @@ export default function Profile() {
     event.preventDefault();
     const values = Object.fromEntries(new FormData(event.currentTarget));
 
+    setSaving(true);
+    setFeedback(null);
     try {
-      if (actions?.updateProfile) {
-        const updated = await actions.updateProfile({
-          firstName: values.preferredFirstName.trim(),
-          lastName: values.lastName.trim(),
-        });
-        setAccount((previous) => ({ ...previous, ...updated }));
-      } else {
-        setAccount((previous) => ({
-          ...previous,
-          firstName: values.preferredFirstName.trim(),
-          lastName: values.lastName.trim(),
-          email: values.email,
-          mobileNumber: values.mobileNumber,
-          emergencyContactName: values.emergencyContactName,
-          emergencyContactMobileNumber: values.emergencyContactMobileNumber,
-          major: values.major,
-          year: values.year,
-          age: values.age,
-          country: values.country,
-          school: values.school,
-          "food-allergies": values["food-allergies"],
-        }));
+      const response = await fetch("/api/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        const fields = Object.entries(data.fields ?? {}).map(
+          ([field, message]) => `${field}: ${message}`,
+        );
+        throw new Error(fields.join(" ") || data.error || "Couldn't save your changes.");
       }
+      setAccount((previous) => ({ ...previous, ...data.account }));
       setFeedback("Profile changes saved.");
-    } catch {
-      setFeedback("We couldn’t save your changes. Please try again.");
+    } catch (error) {
+      setFeedback(error.message);
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -77,6 +74,8 @@ export default function Profile() {
       <h1>Profile</h1>
       <p className="portal-intro">
         View and update the information on your applicant profile.
+        <br /><br />
+        If you're trying to open a new application for someone else, log out and visit the <Link href="/apply">Apply</Link> page.
       </p>
       <form className="portal-profile-form" onSubmit={submit}>
         {profileGroups.map((group) => (
@@ -107,15 +106,17 @@ export default function Profile() {
         {feedback && (
           <p
             className={
-              feedback.startsWith("We ") ? "portal-error" : "portal-success"
+              feedback === "Profile changes saved."
+                ? "portal-success"
+                : "portal-error"
             }
-            role={feedback.startsWith("We ") ? "alert" : "status"}
+            role={feedback === "Profile changes saved." ? "status" : "alert"}
           >
             {feedback}
           </p>
         )}
-        <button className="portal-button" type="submit">
-          Save changes
+        <button className="portal-button" type="submit" disabled={saving}>
+          {saving ? "Saving..." : "Save changes"}
         </button>
       </form>
     </main>

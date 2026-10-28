@@ -114,3 +114,19 @@
   color: var(--sun);
   text-underline-offset: 3px;
 }
+
+.auth-text-button {
+  padding: 0;
+  color: var(--sun);
+  background: none;
+  border: 0;
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.auth-success {
+  margin: 0;
+  color: #b8e3b8;
+}

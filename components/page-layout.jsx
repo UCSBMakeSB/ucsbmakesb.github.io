@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { getSupabaseBrowser } from "../lib/supabase-browser";
 
 const links = [
   ["about", "About"],
@@ -16,6 +17,38 @@ const links = [
 export function Header({ fixed = false }) {
   const [open, setOpen] = useState(false);
   const [closing, setClosing] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    let supabase;
+    try {
+      supabase = getSupabaseBrowser();
+    } catch (error) {
+      console.error("Could not initialize authentication:", error);
+      return undefined;
+    }
+
+    supabase.auth
+      .getUser()
+      .then(({ data: { user } }) => {
+        if (active) setIsAuthenticated(Boolean(user));
+      })
+      .catch((error) => {
+        console.error("Could not read authentication state:", error);
+      });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (active) setIsAuthenticated(Boolean(session?.user));
+    });
+
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
+  }, []);
 
   function toggleMenu(event) {
     event.preventDefault();
@@ -79,8 +112,11 @@ export function Header({ fixed = false }) {
           ))}
         </nav>
       </details>
-      <Link className="header-sign-in" href="/login">
-        Sign in
+      <Link
+        className="header-sign-in"
+        href={isAuthenticated ? "/portal/" : "/login"}
+      >
+        {isAuthenticated ? "Access Portal" : "Portal Login"}
       </Link>
     </header>
   );

@@ -41,8 +41,11 @@ export async function GET(request) {
   }
 
   if (!data || data.claimed_at || new Date(data.expires_at) <= new Date()) {
+    const message = data?.claimed_at
+      ? "This application has already been linked to an account. Sign in to continue."
+      : "Your application draft has expired. Please start again.";
     const response = NextResponse.json(
-      { error: "Your application draft has expired. Please start again." },
+      { error: message },
       { status: 410 },
     );
     response.cookies.delete(DRAFT_COOKIE);
@@ -72,10 +75,79 @@ export async function POST(request) {
   }
 
   const { row, resume } = result;
+  const supabase = getSupabaseAdmin();
+
+  const { data: existingApplication, error: applicationLookupError } =
+    await supabase
+      .from("applications")
+      .select("id")
+      .ilike("email", row.email)
+      .maybeSingle();
+
+  if (applicationLookupError) {
+    console.error("Application email lookup failed:", applicationLookupError);
+    return NextResponse.json(
+      { error: "Couldn't check your application status." },
+      { status: 500 },
+    );
+  }
+
+  if (existingApplication) {
+    return NextResponse.json(
+      {
+        code: "application_exists",
+        error: "You already have an account for this email. Please log in to continue.",
+      },
+      { status: 409 },
+    );
+  }
+
+  const { data: existingDraft, error: draftLookupError } = await supabase
+    .from("application_drafts")
+    .select("id, expires_at, claimed_at")
+    .ilike("email", row.email)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (draftLookupError) {
+    console.error("Application draft email lookup failed:", draftLookupError);
+    return NextResponse.json(
+      { error: "Couldn't check your application status." },
+      { status: 500 },
+    );
+  }
+
+  if (existingDraft?.claimed_at) {
+    return NextResponse.json(
+      {
+        code: "application_exists",
+        error: "You already have an account for this email. Please log in to continue.",
+      },
+      { status: 409 },
+    );
+  }
+
+  if (existingDraft && new Date(existingDraft.expires_at) > new Date()) {
+    const response = NextResponse.json({ ok: true }, { status: 200 });
+    response.cookies.set(
+      DRAFT_COOKIE,
+      existingDraft.id,
+      draftCookieOptions(),
+    );
+    return response;
+  }
+
+  if (existingDraft) {
+    await supabase
+      .from("application_drafts")
+      .delete()
+      .eq("id", existingDraft.id);
+  }
+
   const id = randomUUID();
   const ext = resume ? getResumeExtension(resume) : null;
   const resumePath = ext ? `drafts/${id}.${ext}` : null;
-  const supabase = getSupabaseAdmin();
 
   const { error: insertError } = await supabase.from("application_drafts").insert({
     id,

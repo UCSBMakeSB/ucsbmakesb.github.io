@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getSupabaseBrowser } from "../../lib/supabase-browser";
 
-const SECURE_PASSWORD = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/;
+const SECURE_PASSWORD = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{12,}$/;
 
 export default function AuthPage() {
   const [email, setEmail] = useState("");
@@ -12,6 +12,7 @@ export default function AuthPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [status, setStatus] = useState("loading");
+  const [authState, setAuthState] = useState("checking");
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -22,30 +23,59 @@ export default function AuthPage() {
     } else if (error === "missing_code") {
       setStatus("error");
       setMessage("That confirmation link is incomplete. Please request a new one.");
+    } else if (error === "draft_claimed") {
+      setStatus("error");
+      setMessage("This application is already linked to an account. Sign in to continue.");
+    } else if (error === "email_sync_failed") {
+      setStatus("error");
+      setMessage(
+        "Your email was confirmed, but we couldn't sync your application. Please contact MakeSB support.",
+      );
     }
   }, []);
 
   useEffect(() => {
     let active = true;
 
-    fetch("/api/apply/draft")
-      .then(async (response) => {
-        const data = await response.json().catch(() => ({}));
-        if (!response.ok) throw new Error(data.error || "No application draft found.");
-        if (active) {
-          setEmail(data.email);
-          setStatus("idle");
-        }
-      })
-      .catch((error) => {
-        if (active) {
-          setStatus("error");
-          setMessage(error.message);
-        }
-      });
+    async function loadAuthState() {
+      const { data: { user } } = await getSupabaseBrowser().auth.getUser();
+      if (user) {
+        window.location.replace("/portal");
+        return;
+      }
+
+      if (active) setAuthState("signed-out");
+      const response = await fetch("/api/apply/draft");
+      const data = await response.json().catch(() => ({}));
+      if (response.ok && active) {
+        setEmail(data.email);
+        setConfirmEmail(data.email);
+        setStatus("idle");
+      } else if (active) {
+        setStatus("idle");
+      }
+    }
+
+    loadAuthState().catch((error) => {
+      if (active) {
+        setStatus("error");
+        setMessage(error.message);
+      }
+    });
+
+    function handleConfirmation(event) {
+      if (event.origin !== window.location.origin) return;
+      if (event.data?.type !== "makesb-auth-confirmed") return;
+      setStatus("error");
+      setMessage("Your email is confirmed. Sign in to continue your application.");
+      window.setTimeout(() => window.location.replace("/login"), 1200);
+    }
+
+    window.addEventListener("message", handleConfirmation);
 
     return () => {
       active = false;
+      window.removeEventListener("message", handleConfirmation);
     };
   }, []);
 
@@ -66,7 +96,7 @@ export default function AuthPage() {
     if (!SECURE_PASSWORD.test(password)) {
       setStatus("error");
       setMessage(
-        "Password must be at least 8 characters and include uppercase, lowercase, a number, and a symbol.",
+        "Password must be at least 12 characters and include uppercase, lowercase, a number, and a symbol.",
       );
       return;
     }
@@ -75,6 +105,30 @@ export default function AuthPage() {
     setMessage("");
 
     try {
+      const preflightResponse = await fetch("/api/auth/prepare-signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: normalizedEmail }),
+      });
+      const preflight = await preflightResponse.json().catch(() => ({}));
+
+      if (!preflightResponse.ok) {
+        setStatus("error");
+        setMessage(preflight.error || "Couldn't check your application status.");
+        return;
+      }
+      if (preflight.code === "no_application") {
+        window.alert(
+          "If this email has an application, we'll help you continue. Otherwise, please start an application first.",
+        );
+        window.location.replace("/apply");
+        return;
+      }
+      if (preflight.code === "application_exists") {
+        window.location.replace("/login");
+        return;
+      }
+
       const { data, error } = await getSupabaseBrowser().auth.signUp({
         email: normalizedEmail,
         password,
@@ -85,7 +139,11 @@ export default function AuthPage() {
 
       if (error) {
         setStatus("error");
-        setMessage(error.message);
+        setMessage(
+          error.message.toLowerCase().includes("already")
+            ? "An account already exists for this email. Sign in instead."
+            : error.message,
+        );
         return;
       }
 
@@ -116,7 +174,7 @@ export default function AuthPage() {
     }
   }
 
-  if (status === "loading") {
+  if (authState === "checking" || status === "loading") {
     return (
       <main className="auth-page">
         <section className="auth-card" aria-busy="true">
@@ -169,12 +227,12 @@ export default function AuthPage() {
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               required
-              minLength={8}
+              minLength={12}
             />
           </label>
 
           <p className="auth-password-help">
-            Use 8 or more characters with uppercase and lowercase letters, a
+            Use at least 12 characters with uppercase and lowercase letters, a
             number, and a symbol.
           </p>
 
@@ -187,7 +245,7 @@ export default function AuthPage() {
               value={confirmPassword}
               onChange={(event) => setConfirmPassword(event.target.value)}
               required
-              minLength={8}
+              minLength={12}
             />
           </label>
 
