@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 export function usePortalPath() {
@@ -9,5 +8,25 @@ export function usePortalPath() {
 }
 
 export function PortalNavLink({ href, children, ...props }) {
-  return <Link href={href} {...props}>{children}</Link>;
+  function handleClick(event) {
+    if (
+      event.defaultPrevented ||
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    ) {
+      return;
+    }
+
+    event.preventDefault();
+    window.history.pushState({}, "", href);
+  }
+
+  return (
+    <a href={href} onClick={handleClick} {...props}>
+      {children}
+    </a>
+  );
 }

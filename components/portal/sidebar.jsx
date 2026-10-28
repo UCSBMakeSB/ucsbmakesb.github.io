@@ -1,12 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { getSupabaseBrowser } from "../../lib/supabase-browser";
-import { usePathname } from "next/navigation";
+import { PortalNavLink, usePortalPath } from "./navigation";
 
 export function PortalSidebar({ pages }) {
-  const pathname = usePathname();
+  const pathname = usePortalPath();
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [error, setError] = useState("");
 
@@ -40,15 +39,14 @@ export function PortalSidebar({ pages }) {
           {pages.map((page) => {
             const isSelected = pathname === page.href;
             return (
-              <Link
+              <PortalNavLink
                 key={page.title + page.href}
                 href={page.href}
-                prefetch={true}
                 aria-current={isSelected ? "page" : undefined}
                 className={`portal-nav-link${isSelected ? " portal-selected" : ""}`}
               >
                 {page.title} {isSelected && <span aria-hidden="true">→</span>}
-              </Link>
+              </PortalNavLink>
             );
           })}
         </nav>
