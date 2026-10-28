@@ -79,6 +79,9 @@ export function Header({ fixed = false }) {
           ))}
         </nav>
       </details>
+      <Link className="header-sign-in" href="/login">
+        Sign in
+      </Link>
     </header>
   );
 }
