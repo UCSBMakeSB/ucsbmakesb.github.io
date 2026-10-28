@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect } from "react";
-import { usePathname } from "next/navigation";
+import { usePortalPath } from "./navigation";
 
 export function PortalScrollReset() {
-  const pathname = usePathname();
+  const pathname = usePortalPath();
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePortalAccount } from "./account";
+import { PortalNavLink } from "./navigation";
 
 export function PortalHeader() {
   const { account } = usePortalAccount();
@@ -19,7 +20,7 @@ export function PortalHeader() {
             preload
           />
         </Link>
-        <Link
+        <PortalNavLink
           href="/portal"
           className="portal-brand-text"
           aria-label="MakeSB Portal Home"
@@ -31,7 +32,7 @@ export function PortalHeader() {
             <br />
             UC SANTA BARBARA
           </span>
-        </Link>
+        </PortalNavLink>
       </div>
       <div className="portal-identity">
         <span className="portal-avatar" aria-hidden="true">

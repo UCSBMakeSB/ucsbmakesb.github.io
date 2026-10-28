@@ -46,6 +46,22 @@ export default function Profile() {
 
     setSaving(true);
     setFeedback(null);
+    const previousAccount = account;
+    const nextAccount = {
+      ...account,
+      firstName: values.preferredFirstName,
+      lastName: values.lastName,
+      mobileNumber: values.mobileNumber,
+      emergencyContactName: values.emergencyContactName,
+      emergencyContactMobileNumber: values.emergencyContactMobileNumber,
+      major: values.major,
+      year: values.year,
+      age: values.age,
+      country: values.country,
+      school: values.school,
+      "food-allergies": values["food-allergies"],
+    };
+    setAccount(nextAccount);
     try {
       const response = await fetch("/api/profile", {
         method: "PATCH",
@@ -62,6 +78,7 @@ export default function Profile() {
       setAccount((previous) => ({ ...previous, ...data.account }));
       setFeedback("Profile changes saved.");
     } catch (error) {
+      setAccount(previousAccount);
       setFeedback(error.message);
     } finally {
       setSaving(false);

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { usePortalAccount } from "./account";
 
 export function AccountSettings() {
-  const { account, actions, setAccount } = usePortalAccount();
+  const { account, setAccount } = usePortalAccount();
   const [profile, setProfile] = useState(account);
   const [pending, setPending] = useState(null);
   const [feedback, setFeedback] = useState({});
@@ -37,6 +37,19 @@ export function AccountSettings() {
     }
 
     setPending(section);
+    const previousAccount = account;
+    const optimisticProfile =
+      section === "profile"
+        ? {
+            ...account,
+            firstName: values.firstName.trim(),
+            lastName: values.lastName.trim(),
+          }
+        : account;
+    if (section === "profile") {
+      setAccount(optimisticProfile);
+      setProfile(optimisticProfile);
+    }
     try {
       const response = await fetch("/api/settings", {
         method: "PATCH",
@@ -69,6 +82,10 @@ export function AccountSettings() {
       }));
       if (section !== "profile") form.reset();
     } catch (error) {
+      if (section === "profile") {
+        setAccount(previousAccount);
+        setProfile(previousAccount);
+      }
       setFeedback((previous) => ({
         ...previous,
         [section]: {

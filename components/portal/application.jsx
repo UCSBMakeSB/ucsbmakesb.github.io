@@ -34,6 +34,16 @@ export default function Application() {
 
     setSaving(true);
     setFeedback(null);
+    const previousAccount = account;
+    const nextAccount = { ...account };
+    for (const question of applicationQuestions) {
+      nextAccount[question.name] = formData.get(question.name) ?? "";
+    }
+    if (waiver !== null) nextAccount.waiver = waiver === "on";
+    if (resume instanceof File && resume.name) {
+      nextAccount.resume = { name: resume.name };
+    }
+    setAccount(nextAccount);
     try {
       const response = await fetch("/api/application", {
         method: "PATCH",
@@ -49,6 +59,7 @@ export default function Application() {
       setAccount(data.account);
       setFeedback("Application changes saved.");
     } catch (error) {
+      setAccount(previousAccount);
       setFeedback(error.message);
     } finally {
       setSaving(false);

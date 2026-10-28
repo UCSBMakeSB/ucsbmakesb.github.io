@@ -1,5 +1,5 @@
 import Application from "../../../components/portal/application";
 
-export default function ApplicationPage() {
+export default async function ApplicationPage() {
   return <Application />;
 }
