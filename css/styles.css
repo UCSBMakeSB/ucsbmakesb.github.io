@@ -49,6 +49,54 @@ button {
 	cursor: var(--cursor-arrow-active), pointer;
 }
 
+/* Shared feedback for links, buttons, and the mobile menu toggle. */
+:where(a[href], button, summary, .application-file-button) {
+	transition:
+		color 160ms ease,
+		background-color 160ms ease,
+		border-color 160ms ease,
+		box-shadow 160ms ease,
+		filter 160ms ease,
+		translate 160ms ease;
+}
+
+:where(a[href], button, summary, .application-file-button):focus-visible {
+	outline: 2px solid var(--sun);
+	outline-offset: 4px;
+}
+
+@media (hover: hover) {
+	a[href]:not(.apply-button, .header-sign-in, .wordmark, .skip-link, [aria-disabled="true"]):hover {
+		color: var(--coral);
+		text-decoration-thickness: 2px;
+		text-underline-offset: 5px;
+	}
+
+	:is(button, .apply-button, .header-sign-in, summary, .application-file-button):not(:disabled):not([aria-disabled="true"]):hover {
+		translate: 0 -2px;
+		filter: brightness(1.1);
+	}
+}
+
+:is(button, .apply-button, .header-sign-in, summary, .application-file-button):not(:disabled):not([aria-disabled="true"]):active {
+	translate: 0 1px;
+	filter: brightness(0.92);
+}
+
+a[href]:not(.apply-button, .header-sign-in, .wordmark, .skip-link, [aria-disabled="true"]):active {
+	color: var(--sun);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	:where(a[href], button, summary, .application-file-button) {
+		transition: none;
+	}
+
+	:is(button, .apply-button, .header-sign-in, summary, .application-file-button):not(:disabled):not([aria-disabled="true"]):is(:hover, :active) {
+		translate: none;
+	}
+}
+
 .skip-link {
 	position: fixed;
 	z-index: 100;
@@ -184,6 +232,31 @@ button {
 
 .mobile-menu {
 	display: none;
+}
+
+.header-sign-in {
+	grid-column: 3;
+	grid-row: 1;
+	justify-self: end;
+	display: inline-flex;
+	min-height: 44px;
+	align-items: center;
+	padding: 10px 16px;
+	border: 1px solid currentColor;
+	border-radius: 6px;
+	font-family: var(--mono);
+	font-size: 0.85rem;
+	white-space: nowrap;
+	text-decoration: none;
+}
+
+.header-sign-in:hover {
+	background: rgba(255, 250, 240, 0.15);
+}
+
+.header-sign-in:focus-visible {
+	outline: 2px solid currentColor;
+	outline-offset: 4px;
 }
 
 .team-mobile-link {
@@ -949,7 +1022,7 @@ button {
 	}
 
 	.site-header {
-		grid-template-columns: 1fr auto;
+		grid-template-columns: 1fr auto auto;
 		column-gap: 16px;
 	}
 
