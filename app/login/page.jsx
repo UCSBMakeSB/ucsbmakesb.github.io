@@ -14,6 +14,7 @@ function getSafeNextPath() {
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [resetMode, setResetMode] = useState(false);
   const [status, setStatus] = useState("idle");
   const [message, setMessage] = useState("");
 
@@ -42,6 +43,38 @@ export default function LoginPage() {
     }
   }
 
+  async function handleResetRequest(event) {
+    event.preventDefault();
+    setStatus("submitting");
+    setMessage("");
+
+    try {
+      const { error } = await getSupabaseBrowser().auth.resetPasswordForEmail(
+        email.trim(),
+        {
+          redirectTo: `${window.location.origin}/auth/callback?next=/auth/reset`,
+        },
+      );
+
+      if (error) {
+        console.error("Password reset request failed:", error);
+        setStatus("error");
+        setMessage(
+          "We couldn't send a reset link. Please try again or contact MakeSB support.",
+        );
+        return;
+      }
+      setStatus("success");
+      setMessage(
+        "If an account exists for that email, you'll receive a password reset link shortly.",
+      );
+    } catch (error) {
+      console.error("Password reset request failed:", error);
+      setStatus("error");
+      setMessage("We couldn't process your request. Please try again.");
+    }
+  }
+
   return (
     <main className="auth-page">
       <section className="auth-card" aria-labelledby="login-title">
@@ -51,7 +84,10 @@ export default function LoginPage() {
           Sign in to continue working on your MakeSB application.
         </p>
 
-        <form className="auth-form" onSubmit={handleSubmit}>
+        <form
+          className="auth-form"
+          onSubmit={resetMode ? handleResetRequest : handleSubmit}
+        >
           <label className="auth-field" htmlFor="login-email">
             <span>Email</span>
             <input
@@ -65,25 +101,33 @@ export default function LoginPage() {
             />
           </label>
 
-          <label className="auth-field" htmlFor="login-password">
-            <span>Password</span>
-            <input
-              id="login-password"
-              name="password"
-              type="password"
-              autoComplete="current-password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              required
-            />
-          </label>
+          {!resetMode && (
+            <label className="auth-field" htmlFor="login-password">
+              <span>Password</span>
+              <input
+                id="login-password"
+                name="password"
+                type="password"
+                autoComplete="current-password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                required
+              />
+            </label>
+          )}
 
           <button
             className="auth-submit"
             type="submit"
             disabled={status === "submitting"}
           >
-            {status === "submitting" ? "Signing in..." : "Sign in"}
+            {status === "submitting"
+              ? resetMode
+                ? "Sending link..."
+                : "Signing in..."
+              : resetMode
+                ? "Send reset link"
+                : "Sign in"}
           </button>
 
           {message && (
@@ -93,6 +137,19 @@ export default function LoginPage() {
           )}
         </form>
 
+        <p className="auth-footer">
+          <button
+            className="auth-text-button"
+            type="button"
+            onClick={() => {
+              setResetMode((current) => !current);
+              setStatus("idle");
+              setMessage("");
+            }}
+          >
+            {resetMode ? "Back to sign in" : "Forgot your password?"}
+          </button>
+        </p>
         <p className="auth-footer">
           Need an account? <Link href="/apply">Start your application</Link>
         </p>

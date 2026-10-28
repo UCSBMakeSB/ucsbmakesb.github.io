@@ -18,6 +18,10 @@ async function claimDraft(request) {
 
   const draftId = request.cookies.get(DRAFT_COOKIE)?.value;
   if (!draftId) {
+    const next = request.nextUrl?.searchParams.get("next");
+    if (next) {
+      return NextResponse.redirect(new URL("/auth/confirmed", request.url));
+    }
     return NextResponse.json({ error: "No application draft found." }, { status: 404 });
   }
 
@@ -34,6 +38,17 @@ async function claimDraft(request) {
   }
 
   if (!draft || draft.claimed_at || new Date(draft.expires_at) <= new Date()) {
+    const next = request.nextUrl?.searchParams.get("next");
+    if (next) {
+      return NextResponse.redirect(
+        new URL(
+          draft?.claimed_at
+            ? "/auth?error=draft_claimed"
+            : "/auth?error=draft_expired",
+          request.url,
+        ),
+      );
+    }
     return NextResponse.json(
       { error: "Your application draft has expired. Please start again." },
       { status: 410 },
@@ -90,10 +105,14 @@ async function claimDraft(request) {
     );
   }
 
-  await supabase
+  const { error: deleteDraftError } = await supabase
     .from("application_drafts")
-    .update({ claimed_at: new Date().toISOString() })
+    .delete()
     .eq("id", draftId);
+
+  if (deleteDraftError) {
+    console.error("Claimed application draft cleanup failed:", deleteDraftError);
+  }
 
   const next = request.nextUrl?.searchParams.get("next");
   const safeNext = next?.startsWith("/") && !next.startsWith("//")

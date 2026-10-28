@@ -25,6 +25,7 @@ export function ApplicationForm({ children, className, submitLabel = "Continue" 
   const [status, setStatus] = useState("idle");
   const [message, setMessage] = useState("");
   const [fieldErrors, setFieldErrors] = useState([]);
+  const [hasLoginLink, setHasLoginLink] = useState(false);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -33,6 +34,7 @@ export function ApplicationForm({ children, className, submitLabel = "Continue" 
     setStatus("submitting");
     setMessage("");
     setFieldErrors([]);
+    setHasLoginLink(false);
 
     try {
       const response = await fetch("/api/apply/draft", {
@@ -48,6 +50,7 @@ export function ApplicationForm({ children, className, submitLabel = "Continue" 
 
       setStatus("error");
       setMessage(data.error || "Something went wrong. Please try again.");
+      setHasLoginLink(data.code === "application_exists");
       setFieldErrors(
         Object.entries(data.fields ?? {}).map(
           ([field, text]) => `${FIELD_LABELS[field] ?? field}: ${text}`,
@@ -78,6 +81,11 @@ export function ApplicationForm({ children, className, submitLabel = "Continue" 
           role={status === "error" ? "alert" : "status"}
         >
           <p>{message}</p>
+          {hasLoginLink && (
+            <p>
+              <a href="/login">Log in to your account</a>
+            </p>
+          )}
           {fieldErrors.length > 0 && (
             <ul>
               {fieldErrors.map((text) => (

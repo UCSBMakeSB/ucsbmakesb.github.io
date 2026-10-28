@@ -8,7 +8,6 @@ export function AccountSettings() {
   const [profile, setProfile] = useState(account);
   const [pending, setPending] = useState(null);
   const [feedback, setFeedback] = useState({});
-  const isPreview = !actions;
 
   async function submit(event, section) {
     event.preventDefault();
@@ -39,64 +38,42 @@ export function AccountSettings() {
 
     setPending(section);
     try {
-      if (isPreview) {
-        if (section === "profile")
-          setProfile((previous) => ({
-            ...previous,
-            firstName: values.firstName.trim(),
-            lastName: values.lastName.trim(),
-          }));
-        if (section === "profile")
-          setAccount((previous) => ({
-            ...previous,
-            firstName: values.firstName.trim(),
-            lastName: values.lastName.trim(),
-          }));
-        setFeedback((previous) => ({
-          ...previous,
-          [section]: {
-            text:
-              section === "profile"
-                ? "Profile preview updated. Changes reset when you reload."
-                : "Form checked. Connect account services to save this change.",
-          },
-        }));
-      } else {
-        if (section === "profile") {
-          const updated = await actions.updateProfile({
-            firstName: values.firstName.trim(),
-            lastName: values.lastName.trim(),
-          });
-          setAccount((previous) => ({ ...previous, ...updated }));
-          setProfile((previous) => ({ ...previous, ...updated }));
-        } else if (section === "email") {
-          await actions.updateEmail({
-            email: values.email.trim(),
-            currentPassword: values.currentPassword,
-          });
-        } else {
-          await actions.updatePassword({
-            currentPassword: values.currentPassword,
-            newPassword: values.newPassword,
-          });
-        }
-        setFeedback((previous) => ({
-          ...previous,
-          [section]: {
-            text:
-              section === "email"
-                ? "Check your inbox to confirm your email change. Your current email stays active until confirmation."
-                : "Your changes have been saved.",
-          },
-        }));
+      const response = await fetch("/api/settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          section,
+          firstName: values.firstName,
+          lastName: values.lastName,
+          email: values.email,
+          currentPassword: values.currentPassword,
+          newPassword: values.newPassword,
+          confirmPassword: values.confirmPassword,
+        }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(data.error || "We couldn't save your changes. Please try again.");
       }
+      if (section === "profile") {
+        setAccount((previous) => ({ ...previous, ...data.account }));
+        setProfile((previous) => ({ ...previous, ...data.account }));
+      }
+      setFeedback((previous) => ({
+        ...previous,
+        [section]: {
+          text: section === "email"
+            ? data.message
+            : "Your changes have been saved.",
+        },
+      }));
       if (section !== "profile") form.reset();
-    } catch {
+    } catch (error) {
       setFeedback((previous) => ({
         ...previous,
         [section]: {
           error: true,
-          text: "We couldn’t save your changes. Please try again.",
+          text: error.message,
         },
       }));
     } finally {
@@ -135,12 +112,6 @@ export function AccountSettings() {
       <p className="portal-intro">
         Update your personal details, email, and password.
       </p>
-      {isPreview && (
-        <p className="portal-preview">
-          <strong>Preview mode</strong> You’re viewing a sample account. Account
-          services aren’t connected yet.
-        </p>
-      )}
       <section className="portal-card" aria-labelledby="profile-heading">
         <div className="portal-card-heading">
           <h2 id="profile-heading">Personal details</h2>
@@ -175,7 +146,7 @@ export function AccountSettings() {
           <div className="portal-form-footer">
             <span>These details appear in your applicant profile.</span>
             <SaveButton section="profile">
-              {isPreview ? "Preview changes" : "Save changes"}
+              Save changes
             </SaveButton>
           </div>
         </form>
@@ -215,7 +186,7 @@ export function AccountSettings() {
           <div className="portal-form-footer">
             <span>You’ll need to confirm your new email address.</span>
             <SaveButton section="email">
-              {isPreview ? "Check email change" : "Update email"}
+              Update email
             </SaveButton>
           </div>
         </form>
@@ -260,9 +231,12 @@ export function AccountSettings() {
           </div>
           <Status section="password" />
           <div className="portal-form-footer">
-            <span id="password-hint">Use at least 12 characters.</span>
+            <span id="password-hint">
+              Use at least 12 characters with uppercase and lowercase letters, a
+              number, and a symbol.
+            </span>
             <SaveButton section="password">
-              {isPreview ? "Check password change" : "Update password"}
+              Update password
             </SaveButton>
           </div>
         </form>
