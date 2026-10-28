@@ -25,7 +25,16 @@ create table if not exists public.applications (
   prior_hackathon_experience boolean not null,
 
   -- Path of the resume inside the private "resumes" storage bucket.
-  resume_path text
+  resume_path text,
+
+  application_question_1 text,
+  application_question_2 text,
+  application_question_3 text,
+  application_question_4 text,
+  application_question_5 text,
+  application_question_6 text,
+  application_question_7 text,
+  application_question_8 text
 );
 
 -- One application per email, case-insensitive.
@@ -66,6 +75,16 @@ alter table public.applications enable row level security;
 
 alter table public.applications
   alter column food_allergies drop not null;
+
+alter table public.applications
+  add column if not exists application_question_1 text,
+  add column if not exists application_question_2 text,
+  add column if not exists application_question_3 text,
+  add column if not exists application_question_4 text,
+  add column if not exists application_question_5 text,
+  add column if not exists application_question_6 text,
+  add column if not exists application_question_7 text,
+  add column if not exists application_question_8 text;
 
 -- Explicit privileges, so this works whether or not "Automatically expose new
 -- tables" was enabled when the project was created: the public roles get

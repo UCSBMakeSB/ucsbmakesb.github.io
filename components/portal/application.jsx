@@ -12,22 +12,47 @@ import {
 export default function Application() {
   const { account, setAccount } = usePortalAccount();
   const [feedback, setFeedback] = useState(null);
+  const [saving, setSaving] = useState(false);
 
-  function submit(event) {
+  async function submit(event) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    const resumeFile = formData.get("resume");
-    const updates = Object.fromEntries(
-      applicationQuestions.map((question) => [
-        question.name,
-        formData.get(question.name),
-      ]),
-    );
+    const submission = new FormData();
+    for (const question of applicationQuestions) {
+      submission.set(
+        question.name.replace(
+          /^applicationQuestion(\d+)$/,
+          "application_question_$1",
+        ),
+        formData.get(question.name) ?? "",
+      );
+    }
+    const waiver = formData.get("waiver");
+    if (waiver !== null) submission.set("waiver", waiver);
+    const resume = formData.get("resume");
+    if (resume) submission.set("resume", resume);
 
-    updates.waiver = formData.get("waiver") === "on";
-    if (resumeFile?.name) updates.resume = { name: resumeFile.name };
-    setAccount((previous) => ({ ...previous, ...updates }));
-    setFeedback("Application changes saved in preview mode.");
+    setSaving(true);
+    setFeedback(null);
+    try {
+      const response = await fetch("/api/application", {
+        method: "PATCH",
+        body: submission,
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        const fields = Object.entries(data.fields ?? {}).map(
+          ([field, message]) => `${field.replaceAll("_", " ")}: ${message}`,
+        );
+        throw new Error(fields.join(" ") || data.error || "Couldn't save your application.");
+      }
+      setAccount(data.account);
+      setFeedback("Application changes saved.");
+    } catch (error) {
+      setFeedback(error.message);
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
@@ -75,12 +100,15 @@ export default function Application() {
           </div>
         </section>
         {feedback && (
-          <p className="portal-success" role="status">
+          <p
+            className={feedback === "Application changes saved." ? "portal-success" : "portal-error"}
+            role={feedback === "Application changes saved." ? "status" : "alert"}
+          >
             {feedback}
           </p>
         )}
-        <button className="portal-button" type="submit">
-          Save
+        <button className="portal-button" type="submit" disabled={saving}>
+          {saving ? "Saving..." : "Save"}
         </button>
       </form>
     </main>
