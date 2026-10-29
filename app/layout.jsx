@@ -1,5 +1,7 @@
-import "../styles.css";
-import "../team.css";
+import "../css/styles.css";
+import "../css/team.css";
+import "../css/apply.css";
+import "../css/auth.css";
 
 import { mono, serif, sans } from "./fonts";
 

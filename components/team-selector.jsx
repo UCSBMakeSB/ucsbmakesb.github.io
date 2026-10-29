@@ -1,12 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { TeamSubtitle } from "./team-subtitle";
 
 const teams = [
   {
     id: "presidents",
     name: "Presidents",
+    subtitleLead: "Meet the presidents making ",
     icon: "♡",
     members: [
       ["/assets/team/Julia.jpeg", "Julia Smith"],
@@ -16,6 +18,7 @@ const teams = [
   {
     id: "design-develop",
     name: "Design & Develop",
+    subtitleLead: "Meet the Design & Develop team making ",
     icon: "✦",
     members: [
       ["/assets/team/Youjia.jpg", "Youjia He"],
@@ -28,18 +31,21 @@ const teams = [
   {
     id: "marketing-outreach-graphics",
     name: "Marketing · Outreach · Graphics",
+    subtitleLead: "Meet the marketing, outreach, and graphics team making ",
     icon: "◎",
     members: [["/assets/team/aran.png", "Aran Chen"]],
   },
   {
     id: "sponsorships-finances",
     name: "Sponsorships · Finances",
+    subtitleLead: "Meet the sponsorships and finances team making ",
     icon: "$",
     members: [["/assets/team/youthika.png", "Youthika Anbu"]],
   },
   {
     id: "makeops",
     name: "MakeOps",
+    subtitleLead: "Meet the MakeOps team making ",
     icon: "⚙",
     members: [
       ["/assets/team/Shaikh.png", "Mu'Aaz Shaikh"]
@@ -51,9 +57,44 @@ export function TeamSelector() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const currentTeam = teams[currentIndex];
 
+  const screenMenuRef = useRef(null);
+  const menuItemRefs = useRef([]);
+
+  useEffect(() => {
+  const screenMenu = screenMenuRef.current;
+  const selectedItem = menuItemRefs.current[currentIndex];
+
+  if (!screenMenu || !selectedItem) {
+    return;
+  }
+
+  const centeredOffset =
+    selectedItem.offsetTop -
+    (screenMenu.clientHeight - selectedItem.offsetHeight) / 2;
+
+  const reduceMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)",
+  ).matches;
+
+  screenMenu.scrollTo({
+    top: Math.max(0, centeredOffset),
+    behavior: reduceMotion ? "auto" : "smooth",
+  });
+}, [currentIndex]);
+
   function selectTeam(index) {
     setCurrentIndex((index + teams.length) % teams.length);
   }
+
+  function triggerControlGlow(event) {
+  const button = event.currentTarget;
+
+  button.classList.remove("is-glowing");
+
+  void button.offsetWidth;
+
+  button.classList.add("is-glowing");
+}
 
   function handleKeyDown(event) {
     if (event.key === "ArrowUp") {
@@ -67,10 +108,12 @@ export function TeamSelector() {
   }
 
   return (
-    <section
-      className="team-arcade"
-      aria-label="Choose a team and meet its members"
-    >
+    <>
+      <TeamSubtitle leadingText={currentTeam.subtitleLead} />
+      <section
+        className="team-arcade"
+        aria-label="Choose a team and meet its members"
+      >
       <div className="handheld-column">
         <div
           className="handheld gameboy"
@@ -95,11 +138,18 @@ export function TeamSelector() {
                   <i />
                 </span>
               </div>
-              <ol className="screen-menu" aria-label="Team groups">
+              <ol
+  ref={screenMenuRef}
+  className="screen-menu"
+  aria-label="Team groups"
+>
                 {teams.map((team, index) => (
-                  <li
-                    key={team.id}
-                    className={index === currentIndex ? "is-selected" : ""}
+                 <li
+  key={team.id}
+  ref={(node) => {
+    menuItemRefs.current[index] = node;
+  }}
+  className={index === currentIndex ? "is-selected" : ""}
                     aria-current={index === currentIndex ? "true" : undefined}
                   >
                     <button
@@ -124,7 +174,13 @@ export function TeamSelector() {
               className="team-control team-control-up"
               type="button"
               aria-label="Previous team"
-              onClick={() => selectTeam(currentIndex - 1)}
+             onClick={(event) => {
+  triggerControlGlow(event);
+  selectTeam(currentIndex - 1);
+}}
+onAnimationEnd={(event) => {
+  event.currentTarget.classList.remove("is-glowing");
+}}
             >
               ▲
             </button>
@@ -139,7 +195,13 @@ export function TeamSelector() {
               className="team-control team-control-down"
               type="button"
               aria-label="Next team"
-              onClick={() => selectTeam(currentIndex + 1)}
+              onClick={(event) => {
+  triggerControlGlow(event);
+  selectTeam(currentIndex + 1);
+}}
+onAnimationEnd={(event) => {
+  event.currentTarget.classList.remove("is-glowing");
+}}
             >
               ▼
             </button>
@@ -185,9 +247,6 @@ export function TeamSelector() {
             </p>
             <h3 className="current-team-title">{currentTeam.name}</h3>
           </div>
-          <span className="current-team-icon" aria-hidden="true">
-            {currentTeam.icon}
-          </span>
         </div>
         <div className="member-stage" aria-live="polite" aria-atomic="false">
           <section
@@ -218,6 +277,7 @@ export function TeamSelector() {
           </section>
         </div>
       </div>
-    </section>
+      </section>
+    </>
   );
 }

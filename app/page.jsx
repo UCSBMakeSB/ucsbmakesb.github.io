@@ -1,12 +1,11 @@
 import { FaqSection } from "../components/faq-section";
-import { Header } from "../components/header";
+import { Header, Footer } from "../components/page-layout";
 import { TeamSelector } from "../components/team-selector";
 import { Schedule } from "../components/schedule";
+import { HomeScrollReset } from "../components/home-scroll-reset";
 
 import Image from "next/image";
-
-const applyUrl =
-  "https://docs.google.com/forms/d/e/1FAIpQLSc69LeujVIem99yf-DhmwljMJxpeXlxWjMpiGqNGNK5MQrKGQ/viewform?usp=publish-editor";
+import { ApplyLink } from "../components/apply-link";
 
 const sponsorUrl =
   "mailto:patrick_liu@ucsb.edu?subject=MakeSB%202027%20Sponsorship";
@@ -14,6 +13,7 @@ const sponsorUrl =
 export default function HomePage() {
   return (
     <>
+      <HomeScrollReset />
       <a className="skip-link" href="#main">
         Skip to content
       </a>
@@ -52,14 +52,9 @@ export default function HomePage() {
               </nav>
             </div>
             <div className="hero-actions">
-              <a
-                className="apply-button"
-                href={applyUrl}
-                target="_blank"
-                rel="noreferrer"
-              >
+              <ApplyLink className="apply-button">
                 Apply to MakeSB <span aria-hidden="true">↗</span>
-              </a>
+              </ApplyLink>
               <a
                 className="sponsor-link"
                 href={sponsorUrl}
@@ -113,14 +108,9 @@ export default function HomePage() {
         >
           <div className="page-section-inner">
             <h2 id="contact-title">Apply Here</h2>
-            <a
-              className="apply-button"
-              href={applyUrl}
-              target="_blank"
-              rel="noreferrer"
-            >
+            <ApplyLink className="apply-button">
               Apply to MakeSB <span aria-hidden="true">↗</span>
-            </a>
+            </ApplyLink>
             <a className="sponsor-link" href={sponsorUrl}>
               Sponsor MakeSB <span aria-hidden="true">→</span>
             </a>
@@ -134,24 +124,11 @@ export default function HomePage() {
         >
           <div className="page-section-inner">
             <h2 id="team-title">Meet Our Team</h2>
-            <p className="team-description">
-              Meet the students making MakeSB happen.
-            </p>
             <TeamSelector />
           </div>
         </section>
       </main>
-      <footer className="site-footer">
-        <p> © 2026 MakeSB.com - All Rights Reserved. </p>
-        <p>
-          <a href={applyUrl}>Apply</a>&emsp;&emsp;&emsp;&emsp;
-          <a href={sponsorUrl}>Sponsor</a>
-        </p>
-        <p>
-          Please contact us here:{" "}
-          <a href="https://linktr.ee/ucsbmakesb">LinkTree</a>
-        </p>
-      </footer>
+      <Footer sponsorUrl={sponsorUrl} />
     </>
   );
 }
