@@ -134,7 +134,7 @@ export function Footer({ sponsorUrl = "mailto:patrick_liu@ucsb.edu?subject=MakeS
         <a href={sponsorUrl}>Sponsor</a>
       </div>
       <p>
-        Please contact us here:{" "}
+        Need help? Please Contact Us Here:{" "}
         <a href="https://linktr.ee/ucsbmakesb">LinkTree</a>
       </p>
     </footer>
