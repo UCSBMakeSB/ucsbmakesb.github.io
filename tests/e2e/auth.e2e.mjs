@@ -245,21 +245,28 @@ describe("live: auth and application flows", { skip }, () => {
 
   // ------------------------------------------------------------------ 6
   describe("duplicate and invalid email changes", () => {
-    let alice;
     let bob;
     let carol;
 
     before(async () => {
-      alice = await freshAccount("dup-alice");
       bob = await freshAccount("dup-bob");
       carol = await freshAccount("dup-carol", { withApplication: false });
     });
 
-    const change = (email) =>
-      api("/api/settings", { method: "PATCH", cookie: alice.cookie, json: { section: "email", currentPassword: STRONG_PASSWORD, email } });
+    // Email changes are limited to 3 per user per hour, so every case gets
+    // its own fresh user.
+    const change = async (email) => {
+      const alice = await freshAccount("dup-alice");
+      const result = await api("/api/settings", {
+        method: "PATCH",
+        cookie: alice.cookie,
+        json: { section: "email", currentPassword: STRONG_PASSWORD, email: email ?? alice.email.toUpperCase() },
+      });
+      return result;
+    };
 
     it("rejects the address the account already has", async () => {
-      assert.equal((await change(alice.email.toUpperCase())).status, 400);
+      assert.equal((await change()).status, 400);
     });
 
     it("rejects a malformed address", async () => {

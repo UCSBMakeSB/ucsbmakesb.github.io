@@ -17,21 +17,30 @@ function filesIn(dir, suffix) {
     .map((name) => `${dir}/${name}`);
 }
 
-let args;
+function run(args) {
+  return spawnSync(process.execPath, args, { stdio: "inherit" }).status ?? 1;
+}
+
 if (suite === "e2e") {
-  args = ["--test", ...filesIn("tests/e2e", ".e2e.mjs")];
+  // One file at a time: each live file wipes all e2e-* test data when it
+  // starts and ends, so running them in parallel makes them delete each
+  // other's users, rows and files.
+  let failed = false;
+  for (const file of filesIn("tests/e2e", ".e2e.mjs")) {
+    if (run(["--test", file]) !== 0) failed = true;
+  }
+  process.exit(failed ? 1 : 0);
 } else if (suite === "unit") {
-  args = [
-    "--import",
-    "./tests/support/register-fakes.mjs",
-    "--test",
-    ...filesIn("tests", ".test.mjs"),
-    ...filesIn("tests/routes", ".test.mjs"),
-  ];
+  process.exit(
+    run([
+      "--import",
+      "./tests/support/register-fakes.mjs",
+      "--test",
+      ...filesIn("tests", ".test.mjs"),
+      ...filesIn("tests/routes", ".test.mjs"),
+    ]),
+  );
 } else {
   console.error(`Unknown suite "${suite}". Use "unit" or "e2e".`);
   process.exit(2);
 }
-
-const result = spawnSync(process.execPath, args, { stdio: "inherit" });
-process.exit(result.status ?? 1);
