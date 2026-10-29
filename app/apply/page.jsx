@@ -63,7 +63,7 @@ export default async function Apply() {
                 something special. <em>How will you change the world?</em>
               </h2>
             </div>
-            <div>
+            <div className="apply-bird-container">
               <Image
                 src="/assets/faq-smile.png"
                 className="apply-bird"
