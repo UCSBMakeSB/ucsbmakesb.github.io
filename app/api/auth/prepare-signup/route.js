@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { escapeLikePattern } from "../../../../lib/db-helpers";
 import { getSupabaseAdmin } from "../../../../lib/supabase-server";
 import {
   getClientIp,
@@ -59,13 +60,15 @@ export async function POST(request) {
   }
 
   const supabase = getSupabaseAdmin();
+  // ilike is a pattern match; escape % and _ so the address is matched literally.
+  const emailPattern = escapeLikePattern(email);
   const [{ data: applications, error: applicationError }, { data: drafts, error: draftError }] =
     await Promise.all([
-      supabase.from("applications").select("id").ilike("email", email).limit(1),
+      supabase.from("applications").select("id").ilike("email", emailPattern).limit(1),
       supabase
         .from("application_drafts")
         .select("id, email, expires_at, claimed_at, resume_path")
-        .ilike("email", email)
+        .ilike("email", emailPattern)
         .order("created_at", { ascending: false }),
     ]);
 
