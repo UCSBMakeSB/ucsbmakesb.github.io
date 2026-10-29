@@ -1,7 +1,43 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import { usePortalAccount } from "./account";
+
+function PasswordField({ name, label, describedBy }) {
+  const id = useId();
+  const [visible, setVisible] = useState(false);
+
+  return (
+    <div className="portal-password-field">
+      <label htmlFor={id}>{label}</label>
+      <div className="portal-password-input">
+        <input
+          id={id}
+          name={name}
+          type={visible ? "text" : "password"}
+          autoComplete="new-password"
+          minLength={12}
+          aria-describedby={describedBy}
+          required
+        />
+        <button
+          type="button"
+          className="portal-password-toggle"
+          aria-label={`${visible ? "Hide" : "Show"} ${label.toLowerCase()}`}
+          aria-controls={id}
+          aria-pressed={visible}
+          onClick={() => setVisible((previous) => !previous)}
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+            <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
+            <circle cx="12" cy="12" r="3" />
+            {visible && <path d="m3 3 18 18" />}
+          </svg>
+        </button>
+      </div>
+    </div>
+  );
+}
 
 export function AccountSettings() {
   const { account, setAccount } = usePortalAccount();
@@ -14,6 +50,14 @@ export function AccountSettings() {
     const form = event.currentTarget;
     const values = Object.fromEntries(new FormData(form));
     setFeedback((previous) => ({ ...previous, [section]: null }));
+
+    if (section === "password" && values.newPassword === values.currentPassword) {
+      setFeedback((previous) => ({
+        ...previous,
+        password: { error: true, text: "Your new password must be different from your current password." },
+      }));
+      return;
+    }
 
     if (
       section === "password" &&
@@ -224,27 +268,8 @@ export function AccountSettings() {
                 required
               />
             </label>
-            <label>
-              New password
-              <input
-                name="newPassword"
-                type="password"
-                autoComplete="new-password"
-                minLength={12}
-                aria-describedby="password-hint"
-                required
-              />
-            </label>
-            <label>
-              Confirm new password
-              <input
-                name="confirmPassword"
-                type="password"
-                autoComplete="new-password"
-                minLength={12}
-                required
-              />
-            </label>
+            <PasswordField name="newPassword" label="New password" describedBy="password-hint" />
+            <PasswordField name="confirmPassword" label="Confirm new password" />
           </div>
           <Status section="password" />
           <div className="portal-form-footer">

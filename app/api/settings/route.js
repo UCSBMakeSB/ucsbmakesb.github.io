@@ -142,6 +142,12 @@ export async function PATCH(request) {
   if (section === "password") {
     const newPassword =
       typeof body.newPassword === "string" ? body.newPassword : "";
+    if (newPassword === currentPassword) {
+      return NextResponse.json(
+        { error: "Your new password must be different from your current password." },
+        { status: 400 },
+      );
+    }
     if (!SECURE_PASSWORD.test(newPassword)) {
       return NextResponse.json(
         {

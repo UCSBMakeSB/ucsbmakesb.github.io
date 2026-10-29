@@ -4,13 +4,13 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { getSupabaseBrowser } from "../lib/supabase-browser";
+import { ApplyLink } from "./apply-link";
 
 const links = [
   ["about", "About"],
   ["schedule", "Schedule"],
   ["faqs", "FAQs"],
   ["sponsors", "Sponsors"],
-  ["contact", "Apply"],
   ["team", "Meet Our Team"],
 ];
 
@@ -106,30 +106,33 @@ export function Header({ fixed = false }) {
         </summary>
         <nav aria-label="Mobile section navigation">
           {links.map(([id, label]) => (
-            <a key={id} href={`#${id}`} onClick={closeMenu}>
+            <a key={id} href={`/#${id}`} onClick={closeMenu}>
               {label}
             </a>
           ))}
         </nav>
       </details>
+      <div className="header-actions">
       <Link
         className="header-sign-in"
         href={isAuthenticated ? "/portal/" : "/login"}
       >
         {isAuthenticated ? "Access Portal" : "Portal Login"}
       </Link>
+        <ApplyLink className="header-apply" />
+      </div>
     </header>
   );
 }
 
-export function Footer({ applyUrl, sponsorUrl }) {
+export function Footer({ sponsorUrl = "mailto:patrick_liu@ucsb.edu?subject=MakeSB%202027%20Sponsorship" }) {
   return (
     <footer className="site-footer">
       <p> © 2026 MakeSB.com - All Rights Reserved. </p>
-      <p>
-        <a href={applyUrl}>Apply</a>&emsp;&emsp;&emsp;&emsp;
+      <div className="footer-actions">
+        <ApplyLink />&emsp;&emsp;&emsp;&emsp;
         <a href={sponsorUrl}>Sponsor</a>
-      </p>
+      </div>
       <p>
         Please contact us here:{" "}
         <a href="https://linktr.ee/ucsbmakesb">LinkTree</a>

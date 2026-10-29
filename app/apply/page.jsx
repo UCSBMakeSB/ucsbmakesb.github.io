@@ -7,9 +7,6 @@ import { ScrollClippedForm } from "../../components/scroll-clipped-form";
 import FieldRenderer, { formFields } from "../../components/field-renderer";
 import { getSupabaseServer } from "../../lib/supabase-server";
 
-const applyUrl =
-  "https://docs.google.com/forms/d/e/1FAIpQLSc69LeujVIem99yf-DhmwljMJxpeXlxWjMpiGqNGNK5MQrKGQ/viewform?usp=publish-editor";
-
 const sponsorUrl =
   "mailto:patrick_liu@ucsb.edu?subject=MakeSB%202027%20Sponsorship";
 
@@ -32,13 +29,23 @@ Prizes and Tracks will be released soon!
 `;
 
 export default async function Apply() {
-  const supabase = await getSupabaseServer();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const authConfigured = Boolean(
+    (process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL) &&
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+  );
+  const submissionsConfigured = Boolean(
+    authConfigured && process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY,
+  );
 
-  if (user) {
-    redirect("/portal/profile");
+  if (authConfigured) {
+    const supabase = await getSupabaseServer();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (user) {
+      redirect("/portal/profile");
+    }
   }
 
   return (
@@ -70,7 +77,12 @@ export default async function Apply() {
 
           <FaqItem question="Have questions?" answer={info} inline />
 
-          <ApplicationForm className="application-form">
+          {!submissionsConfigured && (
+            <p role="status">
+              Applications are temporarily unavailable. Please try again later.
+            </p>
+          )}
+          <ApplicationForm className="application-form" disabled={!submissionsConfigured}>
             <div className="application-form-fields">
               {formFields
                 .filter((field) => field.section === "primary")
@@ -92,7 +104,7 @@ export default async function Apply() {
         </ScrollClippedForm>
       </main>
 
-      <Footer applyUrl={"/apply"} sponsorUrl={sponsorUrl} />
+      <Footer sponsorUrl={sponsorUrl} />
     </>
   );
 }
