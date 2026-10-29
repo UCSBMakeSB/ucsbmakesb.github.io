@@ -5,6 +5,7 @@ import {
   getRateLimiters,
   rateLimitResponse,
 } from "../../../lib/rate-limit";
+import { escapeLikePattern } from "../../../lib/db-helpers";
 import { getSupabaseAdmin, getSupabaseServer } from "../../../lib/supabase-server";
 import { revalidatePortalAccount } from "../../../lib/portal-data";
 
@@ -183,12 +184,36 @@ export async function PATCH(request) {
     );
   }
 
+  // The confirmed address is later copied onto the application, which has its
+  // own unique-email rule that Supabase Auth knows nothing about. Refuse here,
+  // before any confirmation email is sent, so the account email and the
+  // application email can never drift apart.
+  const { data: holder, error: holderError } = await supabase
+    .from("applications")
+    .select("id, user_id")
+    .ilike("email", escapeLikePattern(email))
+    .limit(1)
+    .maybeSingle();
+  if (holderError) {
+    console.error("Email availability check failed:", holderError);
+    return NextResponse.json({ error: "Couldn't update your email." }, { status: 500 });
+  }
+  if (holder && holder.user_id !== user.id) {
+    return NextResponse.json(
+      { error: "That email address is already in use." },
+      { status: 409 },
+    );
+  }
+
   const { error: authError } = await authClient.auth.updateUser(
     { email },
     { emailRedirectTo: new URL("/auth/callback", request.url).toString() },
   );
   if (authError) {
-    if (authError.message.toLowerCase().includes("already")) {
+    if (
+      authError.code === "email_exists" ||
+      authError.message.toLowerCase().includes("already")
+    ) {
       return NextResponse.json(
         { error: "That email address is already in use." },
         { status: 409 },
