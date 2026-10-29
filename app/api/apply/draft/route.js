@@ -7,6 +7,7 @@ import {
   getRateLimiters,
   rateLimitResponse,
 } from "../../../../lib/rate-limit";
+import { escapeLikePattern } from "../../../../lib/db-helpers";
 import { getSupabaseAdmin } from "../../../../lib/supabase-server";
 
 export const runtime = "nodejs";
@@ -109,12 +110,14 @@ export async function POST(request) {
 
   const { row, resume } = result;
   const supabase = getSupabaseAdmin();
+  // ilike is a pattern match; escape % and _ so the address is matched literally.
+  const emailPattern = escapeLikePattern(row.email);
 
   const { data: existingApplication, error: applicationLookupError } =
     await supabase
       .from("applications")
       .select("id")
-      .ilike("email", row.email)
+      .ilike("email", emailPattern)
       .maybeSingle();
 
   if (applicationLookupError) {
@@ -137,8 +140,8 @@ export async function POST(request) {
 
   const { data: existingDraft, error: draftLookupError } = await supabase
     .from("application_drafts")
-    .select("id, expires_at, claimed_at")
-    .ilike("email", row.email)
+    .select("id, expires_at, claimed_at, resume_path")
+    .ilike("email", emailPattern)
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();
@@ -172,6 +175,16 @@ export async function POST(request) {
   }
 
   if (existingDraft) {
+    // The expired draft is being replaced; don't leave its resume orphaned in
+    // storage (it holds the applicant's personal data).
+    if (existingDraft.resume_path) {
+      const { error: removeError } = await supabase.storage
+        .from("resumes")
+        .remove([existingDraft.resume_path]);
+      if (removeError) {
+        console.error("Expired draft resume cleanup failed:", removeError);
+      }
+    }
     await supabase
       .from("application_drafts")
       .delete()
