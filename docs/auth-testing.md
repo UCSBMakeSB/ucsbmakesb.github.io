@@ -22,7 +22,9 @@ Setup:
 3. Dashboard settings on the test project (these mirror what production needs):
    - Auth > Sign In / Providers > Email: "Confirm email" ON; password minimum length 12 with lowercase, uppercase, digits and symbols required; "Secure password change" ON.
    - Auth > URL Configuration: site URL and redirect URLs for localhost and production.
-   - Optional: `supabase/auth-hook-before-user-created.sql` (see the file).
+   - Optional: `supabase/auth-hook-before-user-created.sql` (see the file). The
+     function is `SECURITY DEFINER` because `application_drafts` intentionally
+     has RLS enabled with no public policies.
 4. Put the TEST project's keys in `.env.local` (URL, publishable key, service-role key, Upstash vars), then `npm run dev`.
 5. In another terminal, set these and run:
 
@@ -37,6 +39,11 @@ Optional:
 - `E2E_BASE_URL` if the site is not on http://localhost:3000.
 - `E2E_SEND_EMAILS=yes` enables cases that send a real email.
 - `E2E_EXPECT_SIGNUP_HOOK=yes` after enabling the Before User Created hook.
+
+If the hook rejects an email that has an active draft, re-run the complete
+`supabase/auth-hook-before-user-created.sql` script in the same Supabase
+project. Do not solve this by adding a public RLS policy or granting draft
+table access to `anon` or `authenticated`.
 
 Without the env vars the suite skips with a reason. Rate limits (5 password checks per user per 15 min, etc.) apply, so wait 15 minutes or flush the test Redis between runs.
 

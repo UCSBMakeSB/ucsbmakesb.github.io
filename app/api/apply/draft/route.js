@@ -73,33 +73,6 @@ export async function POST(request) {
     );
   }
 
-  const emailValue = formData.get("email");
-  const email = typeof emailValue === "string" ? emailValue.trim().toLowerCase() : "";
-  if (email) {
-    const limiters = getRateLimiters();
-    const ipResult = await limiters.draftCreationIp.limit(
-      `ip:${getClientIp(request)}`,
-    );
-    if (!ipResult.success) {
-      const body = rateLimitResponse(ipResult);
-      return NextResponse.json(body, {
-        status: 429,
-        headers: { "Retry-After": String(body.retryAfterSeconds) },
-      });
-    }
-
-    const emailResult = await limiters.draftCreationEmail.limit(
-      `email:${getEmailIdentifier(email)}`,
-    );
-    if (!emailResult.success) {
-      const body = rateLimitResponse(emailResult);
-      return NextResponse.json(body, {
-        status: 429,
-        headers: { "Retry-After": String(body.retryAfterSeconds) },
-      });
-    }
-  }
-
   const result = validateApplication(formData);
   if (!result.ok) {
     return NextResponse.json(
@@ -109,6 +82,29 @@ export async function POST(request) {
   }
 
   const { row, resume } = result;
+  const limiters = getRateLimiters();
+  const ipResult = await limiters.draftCreationIp.limit(
+    `ip:${getClientIp(request)}`,
+  );
+  if (!ipResult.success) {
+    const body = rateLimitResponse(ipResult);
+    return NextResponse.json(body, {
+      status: 429,
+      headers: { "Retry-After": String(body.retryAfterSeconds) },
+    });
+  }
+
+  const emailResult = await limiters.draftCreationEmail.limit(
+    `email:${getEmailIdentifier(row.email)}`,
+  );
+  if (!emailResult.success) {
+    const body = rateLimitResponse(emailResult);
+    return NextResponse.json(body, {
+      status: 429,
+      headers: { "Retry-After": String(body.retryAfterSeconds) },
+    });
+  }
+
   const supabase = getSupabaseAdmin();
   // ilike is a pattern match; escape % and _ so the address is matched literally.
   const emailPattern = escapeLikePattern(row.email);

@@ -69,6 +69,14 @@ describe("POST /api/apply/draft (create a draft)", () => {
     assert.equal(db.tables.application_drafts.length, 0);
   });
 
+  it("does not consume draft rate limits for invalid forms", async () => {
+    db.rateLimited.add("draftCreationIp");
+    db.rateLimited.add("draftCreationEmail");
+    const response = await submit({ email: "not-an-email", waiver: undefined });
+    assert.equal(response.status, 400);
+    assert.equal(db.tables.application_drafts.length, 0);
+  });
+
   it("creates a draft: lowercased email, httpOnly cookie, resume stored under drafts/", async () => {
     const response = await submit({ email: "Gaucho@UCSB.edu" });
     assert.equal(response.status, 201);

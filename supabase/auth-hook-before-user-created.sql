@@ -16,6 +16,8 @@ create or replace function public.hook_before_user_created(event jsonb)
 returns jsonb
 language plpgsql
 stable
+security definer
+set search_path = public, pg_temp
 as $$
 declare
   signup_email text := lower(event -> 'user' ->> 'email');
@@ -41,5 +43,7 @@ $$;
 grant execute on function public.hook_before_user_created(jsonb) to supabase_auth_admin;
 revoke execute on function public.hook_before_user_created(jsonb) from authenticated, anon, public;
 
--- The hook runs as supabase_auth_admin, which needs to read the drafts table.
-grant select on table public.application_drafts to supabase_auth_admin;
+-- SECURITY DEFINER makes this lookup run with the function owner's privileges.
+-- That is required because application_drafts has RLS enabled and intentionally
+-- has no public policies.
+revoke all on table public.application_drafts from supabase_auth_admin;
