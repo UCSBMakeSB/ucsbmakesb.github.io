@@ -6,7 +6,10 @@ Two suites.
 
 Fast, no network, no secrets. Route handlers run against an in-memory fake of Supabase, storage and the rate limiter (`tests/support`). Covers: unauthenticated requests, cross-user access, invalid current passwords, password complexity, password reset validation, duplicate email changes, signup preflight states, expired/missing/claimed drafts, and email sync after confirmation.
 
-Needs Node 20.6+ and `npm install`.
+Needs Node 20.6+ and `npm install`. `npm run test:e2e` loads local Supabase
+and Redis settings from `.env.local` automatically. Keep the destructive
+confirmation variables out of `.env.local` and set them explicitly in the
+terminal or CI environment.
 
 ## 2. Live suite (`npm run test:e2e`)
 
