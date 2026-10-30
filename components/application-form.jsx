@@ -20,7 +20,7 @@ const FIELD_LABELS = {
   resume: "Resume",
 };
 
-export function ApplicationForm({ children, className, submitLabel = "Continue" }) {
+export function ApplicationForm({ children, className, submitLabel = "Continue", disabled = false }) {
   // status: "idle" | "submitting" | "success" | "error"
   const [status, setStatus] = useState("idle");
   const [message, setMessage] = useState("");
@@ -29,6 +29,7 @@ export function ApplicationForm({ children, className, submitLabel = "Continue" 
 
   async function handleSubmit(event) {
     event.preventDefault();
+    if (disabled) return;
     const form = event.currentTarget;
 
     setStatus("submitting");
@@ -69,7 +70,7 @@ export function ApplicationForm({ children, className, submitLabel = "Continue" 
       <button
         type="submit"
         className="application-form-submit"
-        disabled={status === "submitting"}
+        disabled={disabled || status === "submitting"}
       >
         {status === "submitting" ? "Submitting..." : submitLabel}
       </button>

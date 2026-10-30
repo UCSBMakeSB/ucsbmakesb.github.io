@@ -749,6 +749,36 @@
 .portal-fields input::placeholder {
   color: #656572;
 }
+.portal-password-field {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+.portal-password-input {
+  position: relative;
+}
+.portal-password-input input {
+  padding-right: 52px;
+}
+.portal-password-toggle {
+  position: absolute;
+  right: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+}
+.portal-password-toggle:focus-visible {
+  outline: 3px solid var(--sun);
+  outline-offset: -3px;
+}
 .portal-full-width {
   grid-column: 1 / -1;
 }
@@ -888,7 +918,7 @@
     border-bottom: 1px solid #344054;
     padding: 14px 20px;
   }
-  .portal-sidebar > .portal-eyebrow,
+  .portal-sidebar > div > .portal-eyebrow,
   .portal-back-link,
   .portal-identity {
     display: none;

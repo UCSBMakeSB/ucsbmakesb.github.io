@@ -28,12 +28,8 @@ const pages = [
   },
 ];
 
-async function getInitialAccount() {
-  return getPortalAccount(PORTAL_ACCOUNT_FIELDS);
-}
-
 export default async function Layout({ children }) {
-  const initialAccount = await getInitialAccount();
+  const initialAccount = await getPortalAccount(PORTAL_ACCOUNT_FIELDS);
 
   return (
     <PortalAccountProvider initialAccount={initialAccount}>
@@ -41,7 +37,7 @@ export default async function Layout({ children }) {
       <PortalHeader />
       <div className="portal-shell">
         <a className="skip-link" href="#account-main">
-          Skip to account settings
+          Skip to main content
         </a>
         <div className="portal-layout">
           <PortalSidebar pages={pages} />

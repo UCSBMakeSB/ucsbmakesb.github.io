@@ -7,12 +7,11 @@ const PortalAccountContext = createContext(null);
 export function PortalAccountProvider({
   children,
   initialAccount,
-  actions,
 }) {
   const [account, setAccount] = useState(initialAccount);
   const value = useMemo(
-    () => ({ account, actions, setAccount, loading: !account }),
-    [account, actions],
+    () => ({ account, setAccount }),
+    [account],
   );
 
   return (

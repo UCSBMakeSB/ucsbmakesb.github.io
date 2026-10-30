@@ -357,6 +357,42 @@
   }
 }
 
+@media (max-width: 600px) {
+  .form-header {
+    align-items: center;
+    flex-direction: column;
+    padding-right: 0;
+    text-align: center;
+  }
+
+  .apply-bird-container {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 12px;
+  }
+
+  .apply-bird {
+    animation-name: apply-bird-jump-mobile;
+  }
+
+  .apply-bird-shadow {
+    width: 108px;
+  }
+}
+
+@keyframes apply-bird-jump-mobile {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-18px);
+  }
+}
+
 .application-form-submit:disabled {
   opacity: 0.6;
   cursor: wait;

@@ -5,10 +5,7 @@ import { Schedule } from "../components/schedule";
 import { HomeScrollReset } from "../components/home-scroll-reset";
 
 import Image from "next/image";
-import Link from "next/link";
-
-const applyUrl =
-  "https://docs.google.com/forms/d/e/1FAIpQLSc69LeujVIem99yf-DhmwljMJxpeXlxWjMpiGqNGNK5MQrKGQ/viewform?usp=publish-editor";
+import { ApplyLink } from "../components/apply-link";
 
 const sponsorUrl =
   "mailto:patrick_liu@ucsb.edu?subject=MakeSB%202027%20Sponsorship";
@@ -55,14 +52,9 @@ export default function HomePage() {
               </nav>
             </div>
             <div className="hero-actions">
-              <a
-                className="apply-button"
-                href={applyUrl}
-                target="_blank"
-                rel="noreferrer"
-              >
+              <ApplyLink className="apply-button">
                 Apply to MakeSB <span aria-hidden="true">↗</span>
-              </a>
+              </ApplyLink>
               <a
                 className="sponsor-link"
                 href={sponsorUrl}
@@ -116,14 +108,9 @@ export default function HomePage() {
         >
           <div className="page-section-inner">
             <h2 id="contact-title">Apply Here</h2>
-            <a
-              className="apply-button"
-              href={applyUrl}
-              target="_blank"
-              rel="noreferrer"
-            >
+            <ApplyLink className="apply-button">
               Apply to MakeSB <span aria-hidden="true">↗</span>
-            </a>
+            </ApplyLink>
             <a className="sponsor-link" href={sponsorUrl}>
               Sponsor MakeSB <span aria-hidden="true">→</span>
             </a>
@@ -141,7 +128,7 @@ export default function HomePage() {
           </div>
         </section>
       </main>
-      <Footer applyUrl={applyUrl} sponsorUrl={sponsorUrl} />
+      <Footer sponsorUrl={sponsorUrl} />
     </>
   );
 }
