@@ -764,10 +764,18 @@ a[href]:not(
 .sponsor-row li {
   padding: 14px 20px;
   border: 1px solid rgba(255, 250, 240, 0.28);
+  background: #ffffff;
   font-family: var(--mono);
   font-size: 0.875rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+.sponsor-logo {
+  display: block;
+  width: min(200px, 70vw);
+  height: auto;
+  object-fit: contain;
 }
 
 .schedule-legend {
