@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { PortalTimeline } from "./timeline";
 
 const competitionStart = new Date("2027-01-16T03:00:00Z");
 const units = ["months", "weeks", "days", "hours", "minutes", "seconds"];
@@ -72,14 +73,7 @@ export function Dashboard() {
           </div>
         </div>
       </section>
-
-      <section className="portal-dashboard-message" aria-labelledby="message-heading">
-        <h2 id="message-heading">Action Items</h2>
-        <p>
-          We&apos;ll share more details about the hackathon, your schedule, and
-          everything you need to get ready right here.
-        </p>
-      </section>
+      <PortalTimeline />
     </main>
   );
 }

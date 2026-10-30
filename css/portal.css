@@ -339,25 +339,208 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
-.portal-dashboard-message {
-  max-width: 760px;
+.portal-timeline-section {
+  max-width: 1060px;
   margin: 44px auto 0;
-  padding: 28px 0 30px;
+  padding: 28px 0 52px;
   border-top: 1px solid #74677e;
 }
-.portal-dashboard-message h2 {
-  margin: 0 0 8px;
+
+.portal-timeline-heading p {
+  margin: 0 0 6px;
+  color: var(--sun);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.portal-timeline-heading h2 {
+  margin: 0;
   font-family: var(--serif);
-  font-size: 30px;
+  font-size: 34px;
   font-weight: 400;
 }
-.portal-dashboard-message p {
-  max-width: 600px;
-  margin: 0;
-  color: #e0dce6;
-  font-size: 16px;
-  line-height: 1.7;
+
+.portal-timeline-scroll {
+  margin-top: 16px;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-color: var(--sun) var(--panel);
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
 }
+
+.portal-timeline-scroll:focus-visible {
+  outline: 2px solid var(--sun);
+  outline-offset: 6px;
+}
+
+.portal-timeline-scroll::-webkit-scrollbar {
+  height: 8px;
+}
+
+.portal-timeline-scroll::-webkit-scrollbar-track {
+  border-radius: 999px;
+  background: rgba(255, 250, 240, 0.1);
+}
+
+.portal-timeline-scroll::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: var(--sun);
+}
+
+.portal-timeline-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--coral);
+}
+
+.portal-timeline-canvas {
+  position: relative;
+  width: 3200px;
+  height: 310px;
+}
+
+.portal-timeline-track {
+  position: absolute;
+  top: 154px;
+  right: 40px;
+  left: 40px;
+  height: 4px;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(
+    90deg,
+    var(--coral) 0 24%,
+    var(--sun) 24% 48%,
+    var(--layer2) 48% 70%,
+    #6b8fb2 70% 100%
+  );
+  list-style: none;
+}
+
+.portal-milestone {
+  --marker-color: var(--sun);
+
+  position: absolute;
+  top: 50%;
+  color: var(--paper);
+}
+
+.portal-milestone::before {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  left: 0;
+  width: 18px;
+  height: 18px;
+  border: 3px solid var(--marker-color);
+  border-radius: 50%;
+  background: var(--ink);
+  content: "";
+  transform: translate(-50%, -50%);
+}
+
+.portal-milestone::after {
+  position: absolute;
+  left: 0;
+  width: 1px;
+  height: 26px;
+  background: var(--marker-color);
+  content: "";
+  transform: translateX(-50%);
+}
+
+.portal-milestone.is-above::after {
+  bottom: 10px;
+}
+
+.portal-milestone.is-below::after {
+  top: 10px;
+}
+
+.portal-milestone-content {
+  position: absolute;
+  left: 0;
+  display: grid;
+  width: 170px;
+  gap: 4px;
+  text-align: center;
+  transform: translateX(-50%);
+}
+
+.portal-milestone.is-above .portal-milestone-content {
+  bottom: 40px;
+}
+
+.portal-milestone.is-below .portal-milestone-content {
+  top: 40px;
+}
+
+.portal-milestone-date {
+  color: var(--marker-color);
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+}
+
+.portal-milestone strong {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.portal-milestone small {
+  color: #c4becf;
+  font-family: var(--mono);
+  font-size: 10px;
+}
+
+.portal-milestone.is-yellow {
+  --marker-color: var(--sun);
+}
+
+.portal-milestone.is-coral {
+  --marker-color: var(--coral);
+}
+
+.portal-milestone.is-purple {
+  --marker-color: #9a76a7;
+}
+
+.portal-milestone.is-blue {
+  --marker-color: #6b9fc3;
+}
+
+.portal-timeline-today {
+  --marker-color: var(--coral);
+}
+
+.portal-timeline-today::before {
+  background: var(--coral);
+}
+
+.portal-timeline-today::after {
+  content: none;
+}
+
+.portal-timeline-today .portal-milestone-content {
+  width: 150px;
+  text-align: left;
+  transform: translate(-40px, 22px);
+}
+
+@media (max-width: 600px) {
+  .portal-timeline-section {
+    margin-top: 30px;
+    padding-bottom: 36px;
+  }
+
+  .portal-timeline-heading h2 {
+    font-size: 30px;
+  }
+}
+
 .portal-main h1 {
   font-family: var(--serif);
   font-weight: 400;
