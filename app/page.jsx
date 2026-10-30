@@ -95,9 +95,17 @@ export default function HomePage() {
         >
           <div className="page-section-inner">
             <h2 id="sponsors-title">Sponsors</h2>
-            <ul className="sponsor-row">
-              <li>Coming Soon!</li>
-            </ul>
+<ul className="sponsor-row">
+  <li>
+      <Image
+        className="sponsor-logo"
+        src="/assets/sponsors/Rotatrix.png"
+        width={240}
+        height={100}
+        alt="SPONSOR_NAME logo"
+      />
+  </li>
+</ul>
           </div>
         </section>
 
