@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { getSupabaseBrowser } from "../lib/supabase-browser";
 import { ApplyLink } from "./apply-link";
+import { ContactEmail } from "./contact-email";
 
 const links = [
   ["about", "About"],
@@ -133,10 +134,7 @@ export function Footer({ sponsorUrl = "mailto:patrick_liu@ucsb.edu?subject=MakeS
         <ApplyLink />&emsp;&emsp;&emsp;&emsp;
         <a href={sponsorUrl}>Sponsor</a>
       </div>
-      <p>
-        Need help? Please Contact Us Here:{" "}
-        <a href="https://linktr.ee/ucsbmakesb">LinkTree</a>
-      </p>
+      <ContactEmail />
     </footer>
   );
 }
