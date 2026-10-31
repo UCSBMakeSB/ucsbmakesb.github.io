@@ -1438,3 +1438,39 @@ a[href]:not(
     height: auto;
   }
 }
+
+.contact-email {
+  margin-top: 22px;
+  font-family: var(--mono);
+  font-size: 0.85rem;
+}
+.contact-email > p { margin: 8px 0; }
+.contact-email-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+.contact-email-actions > a {
+  overflow-wrap: anywhere;
+  text-underline-offset: 4px;
+}
+.contact-email-actions > button {
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 1px solid currentColor;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.contact-email-actions > :focus-visible {
+  outline: 2px solid var(--sun);
+  outline-offset: 4px;
+}
+.contact-email-status {
+  min-height: 1.5em;
+  font-size: 0.8rem;
+}
