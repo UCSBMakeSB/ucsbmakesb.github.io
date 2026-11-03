@@ -148,6 +148,78 @@ export const countries = [
   { value: "other", label: "Other" },
 ];
 
+export const schools = [
+  {
+    value: "ucsb",
+    label: "University of California, Santa Barbara (UCSB)",
+  },
+  {
+    value: "sbcc",
+    label: "Santa Barbara City College (SBCC)",
+  },
+  {
+    value: "ucla",
+    label: "University of California, Los Angeles (UCLA)",
+  },
+  {
+    value: "calpoly",
+    label:
+      "California Polytechnic State University, San Luis Obispo (Cal Poly SLO)",
+  },
+  {
+    value: "csulb",
+    label: "California State University, Long Beach (CSULB)",
+  },
+  {
+    value: "csuf",
+    label: "California State University, Fullerton (CSUF)",
+  },
+  {
+    value: "uci",
+    label: "University of California, Irvine (UCI)",
+  },
+  {
+    value: "ucr",
+    label: "University of California, Riverside (UCR)",
+  },
+  {
+    value: "ucsd",
+    label: "University of California, San Diego (UCSD)",
+  },
+  {
+    value: "ucsc",
+    label: "University of California, Santa Cruz (UCSC)",
+  },
+  {
+    value: "ucm",
+    label: "University of California, Merced (UCM)",
+  },
+  {
+    value: "ucb",
+    label: "University of California, Berkeley (UCB)",
+  },
+  {
+    value: "ucd",
+    label: "University of California, Davis (UCD)",
+  },
+  {
+    value: "other-csu",
+    label: "Another California State University (CSU)",
+  },
+  {
+    value: "other-cc",
+    label: "Another Community College",
+  },
+  {
+    value: "out-of-state",
+    label: "Out of State",
+  },
+  {
+    value: "other",
+    label: "Other",
+  },
+];
+
 export const formFields = [
   {
     type: "input",
@@ -238,12 +310,7 @@ export const formFields = [
     id: "school",
     name: "school",
     label: "Institution",
-    options: [
-      {
-        value: "ucsb",
-        label: "University of California, Santa Barbara (UCSB)",
-      },
-    ],
+    options: schools,
     requirement: "required",
   },
   {
@@ -302,10 +369,12 @@ export default function FieldRenderer({ field, portal = false }) {
         ? "Optional"
         : requirement === "recommended"
           ? "Highly Recommended!"
-        : "This question is purely for fun, and won't impact your application!";
+          : "This question is purely for fun, and won't impact your application!";
 
   function RequirementText() {
-    return <small className="application-field-requirement">{requirementText}</small>;
+    return (
+      <small className="application-field-requirement">{requirementText}</small>
+    );
   }
 
   switch (field.type) {
@@ -382,14 +451,12 @@ export default function FieldRenderer({ field, portal = false }) {
             required={required}
             defaultChecked={field.defaultValue}
             className={
-              portal
-                ? "portal-checkbox-input"
-                : "application-checkbox-input"
+              portal ? "portal-checkbox-input" : "application-checkbox-input"
             }
           />
           <span>
-          {field.label}
-          <RequirementText />
+            {field.label}
+            <RequirementText />
           </span>
         </label>
       );
@@ -408,9 +475,7 @@ export default function FieldRenderer({ field, portal = false }) {
             {field.options.map((option) => (
               <label
                 className={
-                  portal
-                    ? "portal-radio-option"
-                    : "application-radio-option"
+                  portal ? "portal-radio-option" : "application-radio-option"
                 }
                 htmlFor={option.id}
                 key={option.id}
@@ -423,9 +488,7 @@ export default function FieldRenderer({ field, portal = false }) {
                   required={required}
                   defaultChecked={field.defaultValue === option.value}
                   className={
-                    portal
-                      ? "portal-radio-input"
-                      : "application-radio-input"
+                    portal ? "portal-radio-input" : "application-radio-input"
                   }
                 />
                 <span>{option.label}</span>
@@ -453,7 +516,9 @@ export default function FieldRenderer({ field, portal = false }) {
             ariaLabelledby={field.ariaLabelledby}
             existingFileName={field.existingFileName}
           />
-          {field.existingFileName && <small>Current file: {field.existingFileName}</small>}
+          {field.existingFileName && (
+            <small>Current file: {field.existingFileName}</small>
+          )}
           <small>{field.helpText}</small>
         </div>
       );
