@@ -1,23 +1,25 @@
-const puzzlePaths = {
-  start:
-    "M16,0 L184,0 A16,16 0 0 1 200,16 L200,73 A22,22 0 0 1 200,117 L200,174 A16,16 0 0 1 184,190 L16,190 A16,16 0 0 1 0,174 L0,16 A16,16 0 0 1 16,0 Z",
-  end: "M16,0 L184,0 A16,16 0 0 1 200,16 L200,174 A16,16 0 0 1 184,190 L16,190 A16,16 0 0 1 0,174 L0,117 A22,22 0 0 0 0,73 L0,16 A16,16 0 0 1 16,0 Z",
-  middle:
-    "M16,0 L184,0 A16,16 0 0 1 200,16 L200,73 A22,22 0 0 1 200,117 L200,174 A16,16 0 0 1 184,190 L16,190 A16,16 0 0 1 0,174 L0,117 A22,22 0 0 0 0,73 L0,16 A16,16 0 0 1 16,0 Z",
-};
+const eventPieces = [
+  "M0 0 Q30 5 55 0 C60 0 49 16 66 16 C83 16 72 0 77 0 Q102 5 132 0 L132 52 C132 58 146 48 146 66 C146 84 132 74 132 80 L132 132 Q102 127 77 132 C72 132 83 116 66 116 C49 116 60 132 55 132 Q30 127 0 132 L0 80 C0 74 -14 84 -14 66 C-14 48 0 58 0 52 Z",
+  "M0 0 Q30 5 55 0 C60 0 49 -16 66 -16 C83 -16 72 0 77 0 Q102 5 132 0 L132 52 C132 58 118 48 118 66 C118 84 132 74 132 80 L132 132 Q102 127 77 132 C72 132 83 148 66 148 C49 148 60 132 55 132 Q30 127 0 132 L0 80 C0 74 14 84 14 66 C14 48 0 58 0 52 Z",
+];
 
 const schedule = [
   ["01", "Sat · 8:00 AM", "Check-In", "kickoff"],
   ["02", "Sat · 9:00 AM", "Opening Ceremony", "kickoff"],
   ["03", "Sat · 10:00 AM", "Hacking Begins!", "build"],
   ["04", "Sat · 10:15 AM", "Guided Hacker Team Matching", "build"],
-  ["05", "Sun · 5:00 PM", "Hacking Ends", "build"],
-  ["06", "Sun · 5:15 PM", "Judging Begins", "judge"],
-  ["07", "Sun · 7:00 PM", "Judging Ends", "judge"],
-  ["08", "Sun · 8:00 PM", "Finalist Judging", "judge"],
-  ["09", "Sun · 8:45 PM", "Finalist Judging Ends", "judge"],
-  ["10", "Sun · 9:00 PM", "Closing Ceremony", "wrap"],
-  ["11", "Sun · 10:00 PM", "The End!", "wrap"],
+  ["05", "Sat · 12:00 PM", "Lunch", "build"],
+  ["06", "Sat · 7:00 PM", "Dinner", "build"],
+  ["07", "Sun · 8:00 AM", "Breakfast", "build"],
+  ["08", "Sun · 12:00 PM", "Lunch", "build"],
+  ["09", "Sun · 5:00 PM", "Hacking Ends", "build"],
+  ["10", "Sun · 5:15 PM", "Judging Begins", "judge"],
+  ["11", "Sun · 7:00 PM", "Judging Ends", "judge"],
+  ["12", "Sun · 7:00 PM", "Dinner", "judge"],
+  ["13", "Sun · 8:00 PM", "Finalist Judging", "judge"],
+  ["14", "Sun · 8:45 PM", "Finalist Judging Ends", "judge"],
+  ["15", "Sun · 9:00 PM", "Closing Ceremony", "wrap"],
+  ["16", "Sun · 10:00 PM", "The End!", "wrap"],
 ];
 
 export function Schedule() {
@@ -27,7 +29,7 @@ export function Schedule() {
       className="page-section"
       aria-labelledby="schedule-title"
     >
-      <div className="puzzle-hint-group">
+      <div>
         <div className="page-section-inner">
           <h2 id="schedule-title">Schedule</h2>
           <ul className="schedule-legend">
@@ -50,32 +52,17 @@ export function Schedule() {
           </ul>
         </div>
         <div className="puzzle-shell">
-          <ol className="puzzle-strip">
+          <ol className="puzzle-strip" tabIndex={0} aria-labelledby="schedule-title">
             {schedule.map(([number, time, title, phase], index) => (
-              <li
-                key={number}
-                className={`puzzle-piece phase-${phase} ${index === 0 ? "is-start" : ""} ${index === schedule.length - 1 ? "is-end" : ""}`}
-              >
+              <li key={number} className={`puzzle-piece phase-${phase}`}>
                 <svg
                   className="piece-face"
-                  viewBox={`0 0 ${index === schedule.length - 1 ? 200 : 222} 208`}
+                  viewBox="0 0 132 132"
                   aria-hidden="true"
                 >
-                  <path
-                    fill="currentColor"
-                    d={
-                      puzzlePaths[
-                        index === 0
-                          ? "start"
-                          : index === schedule.length - 1
-                            ? "end"
-                            : "middle"
-                      ]
-                    }
-                  />
+                  <path fill="currentColor" d={eventPieces[index % 2]} />
                 </svg>
                 <div className="piece-content">
-                  <p className="piece-num">{number}</p>
                   <p className="piece-time">{time}</p>
                   <h3 className="piece-title">{title}</h3>
                 </div>
@@ -84,11 +71,9 @@ export function Schedule() {
           </ol>
         </div>
         <div className="page-section-inner">
-          <p className="puzzle-hint puzzle-hint-group-child">
-            <span aria-hidden="true" className="phgc-arrow">
-              →
-            </span>{" "}
-            Scroll to explore the weekend
+          <p className="puzzle-hint">
+            <span aria-hidden="true">→</span>
+            Scroll sideways to see more events
           </p>
         </div>
       </div>
