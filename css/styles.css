@@ -272,7 +272,7 @@ a[href]:not(
   padding: 10px 16px;
   border: 1px solid currentColor;
   border-radius: 6px;
-  font-family: var(--mono);
+  font-family: var(--sans);
   font-size: 0.85rem;
   white-space: nowrap;
   text-decoration: none;
