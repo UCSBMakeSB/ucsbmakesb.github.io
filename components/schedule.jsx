@@ -1,3 +1,7 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+
 const eventPieces = [
   "M0 0 Q30 5 55 0 C60 0 49 16 66 16 C83 16 72 0 77 0 Q102 5 132 0 L132 52 C132 58 146 48 146 66 C146 84 132 74 132 80 L132 132 Q102 127 77 132 C72 132 83 116 66 116 C49 116 60 132 55 132 Q30 127 0 132 L0 80 C0 74 -14 84 -14 66 C-14 48 0 58 0 52 Z",
   "M0 0 Q30 5 55 0 C60 0 49 -16 66 -16 C83 -16 72 0 77 0 Q102 5 132 0 L132 52 C132 58 118 48 118 66 C118 84 132 74 132 80 L132 132 Q102 127 77 132 C72 132 83 148 66 148 C49 148 60 132 55 132 Q30 127 0 132 L0 80 C0 74 14 84 14 66 C14 48 0 58 0 52 Z",
@@ -23,6 +27,46 @@ const schedule = [
 ];
 
 export function Schedule() {
+  const stripRef = useRef(null);
+
+  useEffect(() => {
+    const strip = stripRef.current;
+    function updateEdges() {
+      strip.style.setProperty("--fade-left", strip.scrollLeft > 1 ? "12px" : "0px");
+      strip.style.setProperty(
+        "--fade-right",
+        strip.scrollLeft + strip.clientWidth < strip.scrollWidth - 1 ? "12px" : "0px",
+      );
+    }
+    updateEdges();
+    strip.addEventListener("scroll", updateEdges, { passive: true });
+    const observer = new ResizeObserver(updateEdges);
+    observer.observe(strip);
+    return () => {
+      strip.removeEventListener("scroll", updateEdges);
+      observer.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    function handleScheduleKeyDown(event) {
+      if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+      if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+      if (event.target.isContentEditable || event.target.closest("input, textarea, select, button, a, [role='dialog']")) return;
+
+      const strip = stripRef.current;
+      const bounds = strip.getBoundingClientRect();
+      if (bounds.bottom <= 0 || bounds.top >= window.innerHeight) return;
+
+      event.preventDefault();
+      const direction = event.key === "ArrowLeft" ? -1 : 1;
+      strip.scrollBy({ left: direction * strip.firstElementChild.offsetWidth });
+    }
+
+    window.addEventListener("keydown", handleScheduleKeyDown);
+    return () => window.removeEventListener("keydown", handleScheduleKeyDown);
+  }, []);
+
   return (
     <section
       id="schedule"
@@ -52,7 +96,14 @@ export function Schedule() {
           </ul>
         </div>
         <div className="puzzle-shell">
-          <ol className="puzzle-strip" tabIndex={0} aria-labelledby="schedule-title">
+          <ol
+            id="schedule-events"
+            ref={stripRef}
+            className="puzzle-strip"
+            tabIndex={0}
+            aria-labelledby="schedule-title"
+            aria-describedby="schedule-scroll-hint"
+          >
             {schedule.map(([number, time, title, phase], index) => (
               <li key={number} className={`puzzle-piece phase-${phase}`}>
                 <svg
@@ -71,7 +122,7 @@ export function Schedule() {
           </ol>
         </div>
         <div className="page-section-inner">
-          <p className="puzzle-hint">
+          <p id="schedule-scroll-hint" className="puzzle-hint">
             <span aria-hidden="true">→</span>
             Scroll sideways to see more events
           </p>
