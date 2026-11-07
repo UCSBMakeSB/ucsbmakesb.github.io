@@ -849,16 +849,16 @@ a[href]:not(
 
 .puzzle-piece {
   position: relative;
-  flex: 0 0 132px;
-  height: 132px;
+  flex: 0 0 160px;
+  height: 160px;
 }
 
 .piece-face {
   position: absolute;
   top: 0;
   left: 0;
-  width: 132px;
-  height: 132px;
+  width: 160px;
+  height: 160px;
   overflow: visible;
   color: var(--piece-color);
   filter: drop-shadow(0 3px 2px #0b193066);
@@ -874,7 +874,7 @@ a[href]:not(
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 100px;
+  width: 108px;
   transform: translate(-50%, -50%);
   color: var(--ink);
   text-align: center;
@@ -882,12 +882,12 @@ a[href]:not(
 
 .page-section .piece-time {
   margin: 0 0 6px;
-  font: 500 0.75rem/1.3 var(--sans);
+  font: 500 0.8125rem/1.3 var(--sans);
 }
 
 .piece-title {
   margin: 0;
-  font: 700 0.875rem/1.2 var(--sans);
+  font: 700 1rem/1.2 var(--sans);
 }
 
 .page-section .puzzle-hint {
