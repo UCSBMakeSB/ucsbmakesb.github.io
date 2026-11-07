@@ -97,13 +97,15 @@ export default function HomePage() {
             <h2 id="sponsors-title">Sponsors</h2>
 <ul className="sponsor-row">
   <li>
+    <a href="https://rotatrix.com/" target="_blank" rel="noreferrer">
       <Image
         className="sponsor-logo"
         src="/assets/sponsors/Rotatrix.png"
         width={240}
         height={100}
-        alt="SPONSOR_NAME logo"
+        alt="Rotatrix"
       />
+    </a>
   </li>
 </ul>
           </div>

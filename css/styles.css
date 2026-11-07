@@ -760,13 +760,41 @@ a[href]:not(
 }
 
 .sponsor-row li {
-  padding: 14px 20px;
   border: 1px solid rgba(255, 250, 240, 0.28);
   background: #ffffff;
   font-family: var(--mono);
   font-size: 0.875rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  transition: border-color 180ms ease, box-shadow 180ms ease, translate 180ms ease;
+}
+
+.sponsor-row a {
+  display: block;
+  padding: 14px 20px;
+}
+
+.sponsor-row li:focus-within {
+  border-color: var(--sun);
+  box-shadow: 0 4px 16px rgba(243, 191, 82, 0.2);
+}
+
+@media (hover: hover) {
+  .sponsor-row li:hover {
+    border-color: var(--sun);
+    box-shadow: 0 4px 16px rgba(243, 191, 82, 0.2);
+    translate: 0 -3px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sponsor-row li {
+    transition: none;
+  }
+
+  .sponsor-row li:hover {
+    translate: none;
+  }
 }
 
 .sponsor-logo {
