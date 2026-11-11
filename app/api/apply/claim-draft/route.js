@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { getSupabaseAdmin, getSupabaseServer } from "../../../../lib/supabase-server";
 import { revalidatePortalAccount } from "../../../../lib/portal-data";
+import { verifyDraftToken } from "../../../../lib/draft-token";
 
 export const runtime = "nodejs";
 
@@ -49,7 +50,11 @@ async function claimDraft(request) {
     );
   }
 
-  const draftId = request.cookies.get(DRAFT_COOKIE)?.value;
+  const token = request.nextUrl?.searchParams.get("draft_token");
+  const tokenData = token ? verifyDraftToken(token) : null;
+  if (token && !tokenData) return draftUnavailable(request, "expired");
+
+  const draftId = tokenData?.draftId || request.cookies.get(DRAFT_COOKIE)?.value;
   if (!draftId) {
     const next = request.nextUrl?.searchParams.get("next");
     if (next) {
@@ -81,6 +86,9 @@ async function claimDraft(request) {
       { error: "The account email must match the application email." },
       { status: 403 },
     );
+  }
+  if (tokenData && (tokenData.email !== draft.email || tokenData.draftId !== draft.id)) {
+    return draftUnavailable(request, "expired");
   }
 
   // Atomic claim: only one concurrent request can flip claimed_at from null.

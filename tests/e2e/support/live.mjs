@@ -35,6 +35,7 @@ export function checkLiveEnvironment() {
     ["NEXT_PUBLIC_SUPABASE_URL", SUPABASE_URL],
     ["NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY", PUBLISHABLE_KEY],
     ["SUPABASE_SERVICE_ROLE_KEY", SERVICE_KEY],
+    ["DRAFT_TOKEN_SECRET", process.env.DRAFT_TOKEN_SECRET],
   ]
     .filter(([, value]) => !value)
     .map(([name]) => name);

@@ -29,7 +29,7 @@ export default function AuthPage() {
     } else if (error === "email_sync_failed") {
       setStatus("error");
       setMessage(
-        "Your email was confirmed, but we couldn't sync your application. Please contact MakeSB support.",
+        "Your email was confirmed, but we couldn't sync your application. Please contact MakeSB support at team@makesb.org.",
       );
     }
   }, []);
@@ -128,12 +128,15 @@ export default function AuthPage() {
         window.location.replace("/login");
         return;
       }
+      const signupDraftToken = preflight.draftToken || "";
 
       const { data, error } = await getSupabaseBrowser().auth.signUp({
         email: normalizedEmail,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: signupDraftToken
+            ? `${window.location.origin}/auth/callback?draft_token=${encodeURIComponent(signupDraftToken)}`
+            : `${window.location.origin}/auth/callback`,
         },
       });
 
@@ -155,7 +158,10 @@ export default function AuthPage() {
         return;
       }
 
-      const claimResponse = await fetch("/api/apply/claim-draft", {
+      const claimUrl = signupDraftToken
+        ? `/api/apply/claim-draft?draft_token=${encodeURIComponent(signupDraftToken)}`
+        : "/api/apply/claim-draft";
+      const claimResponse = await fetch(claimUrl, {
         method: "POST",
       });
       const claimData = await claimResponse.json().catch(() => ({}));

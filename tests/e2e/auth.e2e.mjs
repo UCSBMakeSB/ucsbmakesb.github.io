@@ -302,6 +302,8 @@ describe("live: auth and application flows", { skip }, () => {
       const draft = await createDraft(email);
       const response = await preflight(email);
       assert.equal(response.body.code, "draft_ready");
+      assert.equal(typeof response.body.draftToken, "string");
+      assert.ok(response.body.draftToken.length > 40);
       const { value, header } = draftCookieFrom(response);
       assert.equal(value, draft.id);
       assert.match(header, /HttpOnly/i);
@@ -405,6 +407,54 @@ describe("live: auth and application flows", { skip }, () => {
 
       const replay = await api("/api/apply/claim-draft", { method: "POST", cookie });
       assert.equal(replay.status, 410);
+    });
+
+    it("claims a draft with its signed token in the same browser", async () => {
+      const email = uniqueEmail("d-token-same");
+      const user = await createUser(email);
+      await createDraft(email);
+
+      const preflight = await api("/api/auth/prepare-signup", {
+        method: "POST",
+        json: { email },
+      });
+      assert.equal(preflight.body.code, "draft_ready");
+      const { value: draftId } = draftCookieFrom(preflight);
+      const cookie = `${await sessionCookie(email)}; ${DRAFT_COOKIE}=${draftId}`;
+
+      const claimed = await api(
+        `/api/apply/claim-draft?draft_token=${encodeURIComponent(preflight.body.draftToken)}`,
+        { method: "POST", cookie },
+      );
+      assert.equal(claimed.status, 200);
+      assert.ok(await findApplication(user.id), "the token-linked draft was claimed");
+    });
+
+    it("claims a draft with its signed token in a different browser", async () => {
+      const email = uniqueEmail("d-token-cross");
+      const user = await createUser(email);
+      await createDraft(email);
+
+      const preflight = await api("/api/auth/prepare-signup", {
+        method: "POST",
+        json: { email },
+      });
+      assert.equal(preflight.body.code, "draft_ready");
+      const { value: draftId } = draftCookieFrom(preflight);
+
+      // Simulate opening the confirmation link in a browser with no draft
+      // cookie. The signed token is the only draft identifier supplied.
+      const claimed = await api(
+        `/api/apply/claim-draft?draft_token=${encodeURIComponent(preflight.body.draftToken)}`,
+        { method: "POST", cookie: await sessionCookie(email) },
+      );
+      assert.equal(claimed.status, 200);
+      assert.ok(await findApplication(user.id), "the cross-browser token claim succeeded");
+      const { data: drafts } = await admin()
+        .from("application_drafts")
+        .select("id")
+        .eq("id", draftId);
+      assert.equal(drafts.length, 0, "the token-linked draft was consumed");
     });
   });
 
