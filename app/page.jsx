@@ -26,7 +26,7 @@ export default function HomePage() {
             width={1672}
             height={941}
             alt="Illustration of Storke Tower and the UC Santa Barbara campus at golden hour"
-            preload
+            priority
           />
           <div className="hero-title">
             <h1 id="event-title">
@@ -55,10 +55,7 @@ export default function HomePage() {
               <ApplyLink className="apply-button">
                 Apply to MakeSB <span aria-hidden="true">↗</span>
               </ApplyLink>
-              <a
-                className="sponsor-link"
-                href={sponsorUrl}
-              >
+              <a className="sponsor-link" href={sponsorUrl}>
                 Sponsor MakeSB <span aria-hidden="true">→</span>
               </a>
             </div>
@@ -95,19 +92,23 @@ export default function HomePage() {
         >
           <div className="page-section-inner">
             <h2 id="sponsors-title">Sponsors</h2>
-<ul className="sponsor-row">
-  <li>
-    <a href="https://rotatrix.com/" target="_blank" rel="noreferrer">
-      <Image
-        className="sponsor-logo"
-        src="/assets/sponsors/Rotatrix.png"
-        width={240}
-        height={100}
-        alt="Rotatrix"
-      />
-    </a>
-  </li>
-</ul>
+            <ul className="sponsor-row">
+              <li>
+                <a
+                  href="https://rotatrix.com/"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <Image
+                    className="sponsor-logo"
+                    src="/assets/sponsors/Rotatrix.png"
+                    width={240}
+                    height={100}
+                    alt="Rotatrix"
+                  />
+                </a>
+              </li>
+            </ul>
           </div>
         </section>
 
