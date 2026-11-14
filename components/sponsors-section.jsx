@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { sponsors } from "../lib/sponsors";
+import { sponsorTiers, TIER_SCALE } from "../lib/sponsors";
 
 export function SponsorsSection() {
   return (
@@ -10,22 +10,29 @@ export function SponsorsSection() {
     >
       <div className="page-section-inner sponsors-inner">
         <h2 id="sponsors-title">Thank you to our sponsors</h2>
-        <ul className="sponsor-row">
-          {sponsors.map(({ name, href, src, width, height, display }) => (
-            <li key={name}>
-              <a href={href} target="_blank" rel="noreferrer" aria-label={name}>
-                <Image
-                  className="sponsor-logo"
-                  src={src}
-                  width={width}
-                  height={height}
-                  alt={name}
-                  style={{ "--logo-w": display }}
-                />
-              </a>
-            </li>
-          ))}
-        </ul>
+        {sponsorTiers.map(({ tier, items }) => (
+          <ul className="sponsor-row" data-tier={tier} key={tier}>
+            {items.map(({ name, href, src, width, height, display }) => (
+              <li key={name}>
+                <a
+                  href={href}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={name}
+                >
+                  <Image
+                    className="sponsor-logo"
+                    src={src}
+                    width={width}
+                    height={height}
+                    alt={name}
+                    style={{ "--logo-w": Math.round(display * TIER_SCALE[tier]) }}
+                  />
+                </a>
+              </li>
+            ))}
+          </ul>
+        ))}
       </div>
     </section>
   );

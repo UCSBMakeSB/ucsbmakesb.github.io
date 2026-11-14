@@ -332,7 +332,7 @@ export const formFields = [
   {
     type: "radio",
     name: "experience",
-    legend: "Have you ever been to a hackathon or makeathon before?",
+    legend: "Have you ever been to a makeathon or engineering hackathon before?",
     options: [
       { id: "yexperience", value: "yes", label: "Yes" },
       { id: "nexperience", value: "no", label: "No" },

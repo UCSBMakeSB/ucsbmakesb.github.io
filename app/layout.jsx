@@ -1,5 +1,4 @@
 import "../css/styles.css";
-import "../css/team.css";
 import "../css/apply.css";
 import "../css/auth.css";
 
@@ -9,7 +8,7 @@ const domain = "https://" + (process.env.VERCEL_PROJECT_PRODUCTION_URL || "local
 
 export const metadata = {
   title: "MakeSB 2027 — January 15–17 at UC Santa Barbara",
-  description: "MakeSB 2027 — January 15–17 at UC Santa Barbara.",
+  description: "MakeSB 2027 is UCSB’s first hardware makeathon, January 15–17 at UC Santa Barbara.",
   metadataBase: new URL(domain),
   icons: {
     icon: "/assets/makesb-favicon-v2.png",
@@ -17,7 +16,7 @@ export const metadata = {
   openGraph: {
     title: "MakeSB 2027",
     siteName: "MakeSB 2027",
-    description: "January 15–17 at UC Santa Barbara.",
+    description: "UCSB’s first hardware makeathon, January 15–17 at UC Santa Barbara.",
     type: "website",
     url: domain,
     images: [
@@ -32,7 +31,7 @@ export const metadata = {
   twitter: {
     card: "summary_large_image",
     title: "MakeSB 2027",
-    description: "January 15–17 at UC Santa Barbara.",
+    description: "UCSB’s first hardware makeathon, January 15–17 at UC Santa Barbara.",
     images: ["/assets/makesb-social-card.jpg"],
   },
 };

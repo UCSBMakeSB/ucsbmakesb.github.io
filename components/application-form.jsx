@@ -16,7 +16,7 @@ const FIELD_LABELS = {
   school: "Institution",
   "food-allergies": "Food allergies or restrictions",
   waiver: "Waiver",
-  experience: "Hackathon experience",
+  experience: "Makeathon experience",
   resume: "Resume",
 };
 

@@ -10,7 +10,7 @@ const barriers = [
 ];
 
 const specials = [
-  ["01", "UCSB’s first hardware hackathon"],
+  ["01", "UCSB’s first hardware makeathon"],
   ["02", "Free to attend"],
   ["03", "Parts and tools provided"],
   ["04", "Mentors on hand"],

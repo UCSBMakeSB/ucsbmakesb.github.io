@@ -59,7 +59,7 @@ export default async function Apply() {
                 Build Something <span>Real</span>
               </h1>
               <h2>
-                Register today for UCSB's first hardware hackathon and make
+                Register today for UCSB's first hardware makeathon and make
                 something special. <em>How will you change the world?</em>
               </h2>
             </div>

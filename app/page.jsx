@@ -1,6 +1,6 @@
 import { FaqSection } from "../components/faq-section";
 import { Header, Footer } from "../components/page-layout";
-import { TeamSelector } from "../components/team-selector";
+import { TeamGrid } from "../components/team-grid";
 import { SponsorsSection } from "../components/sponsors-section";
 import {
   ApplySection,
@@ -81,12 +81,12 @@ export default function HomePage() {
           <div className="page-section-inner">
             <h2 id="about-title">What is MakeSB?</h2>
             <p>
-              MakeSB is UCSB’s first hardware hackathon! It’s a weekend-long
+              MakeSB is UCSB’s first hardware makeathon! It’s a weekend-long
               engineering event where students come together to design and build
               innovative projects from scratch. As something that is first of
               its kind, we are extremely excited to bring together hundreds of
               undergraduate students. Additionally, we offer workshops,
-              mentorship, and events where hackers can learn and build technical
+              mentorship, and events where makers can learn and build technical
               skills, learn from others, and meet and make new friends.
             </p>
             <SpecialBlock />
@@ -117,7 +117,7 @@ export default function HomePage() {
         >
           <div className="page-section-inner">
             <h2 id="team-title">Meet Our Team</h2>
-            <TeamSelector />
+            <TeamGrid />
           </div>
         </section>
       </main>
