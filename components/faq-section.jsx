@@ -4,6 +4,14 @@ import { useEffect, useId, useRef, useState } from "react";
 
 const questions = [
   [
+    "When is MakeSB?",
+    "MakeSB runs January 15 to 17, 2027. It starts Friday evening and ends Sunday afternoon.",
+  ],
+  [
+    "Where is it?",
+    "On UCSB’s main campus.",
+  ],
+  [
     "Is there a cost to participate in MakeSB?",
     "Nothing! We provide sleeping accommodations, food, hardware, and other resources. All you have to do is get to Santa Barbara!",
   ],
@@ -26,9 +34,11 @@ const questions = [
   [
     "Do you provide travel reimbursements?",
     <>
-      At the moment, no. However, we are working hard to try to get travel
-      reimbursements. If attending MakeSB poses a financial burden, please
-      contact <a href="mailto:patrick_liu@ucsb.edu">patrick_liu@ucsb.edu</a>.
+      Yes. We offer flights to Santa Barbara for low-income students, and we
+      are working to fly out all participants. Makers from other schools can
+      get their travel reimbursed and stay with us through dorm hosting. Email{" "}
+      <a href="mailto:team@makesb.org">team@makesb.org</a> and we will help you
+      plan your trip.
     </>,
   ],
   [

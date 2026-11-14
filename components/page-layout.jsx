@@ -9,7 +9,8 @@ import { ContactEmail } from "./contact-email";
 
 const links = [
   ["about", "About"],
-  ["schedule", "Schedule"],
+  ["mission", "Mission"],
+  ["tracks", "Tracks"],
   ["faqs", "FAQs"],
   ["sponsors", "Sponsors"],
   ["team", "Meet Our Team"],

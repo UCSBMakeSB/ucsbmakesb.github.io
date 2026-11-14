@@ -1,7 +1,14 @@
 import { FaqSection } from "../components/faq-section";
 import { Header, Footer } from "../components/page-layout";
 import { TeamSelector } from "../components/team-selector";
-import { Schedule } from "../components/schedule";
+import { SponsorsSection } from "../components/sponsors-section";
+import {
+  ApplySection,
+  MissionSection,
+  ProvidedSection,
+  SpecialBlock,
+  TracksSection,
+} from "../components/home-sections";
 import { HomeScrollReset } from "../components/home-scroll-reset";
 
 import Image from "next/image";
@@ -52,6 +59,7 @@ export default function HomePage() {
               </nav>
             </div>
             <div className="hero-actions">
+              <p className="hero-deadline">Applications close November 30</p>
               <ApplyLink className="apply-button">
                 Apply to MakeSB <span aria-hidden="true">↗</span>
               </ApplyLink>
@@ -81,51 +89,26 @@ export default function HomePage() {
               mentorship, and events where hackers can learn and build technical
               skills, learn from others, and meet and make new friends.
             </p>
+            <SpecialBlock />
           </div>
         </section>
 
-        <Schedule />
+        <MissionSection />
+
+        <TracksSection />
+
+        <ProvidedSection />
+
+        {/* The schedule is hidden until the event timeline is final. The
+            component and its styles are kept. To restore it, import Schedule
+            from "../components/schedule", render <Schedule /> here, and add
+            ["schedule", "Schedule"] back to links in components/page-layout.jsx. */}
 
         <FaqSection />
 
-        <section
-          id="sponsors"
-          className="page-section"
-          aria-labelledby="sponsors-title"
-        >
-          <div className="page-section-inner">
-            <h2 id="sponsors-title">Sponsors</h2>
-<ul className="sponsor-row">
-  <li>
-    <a href="https://rotatrix.com/" target="_blank" rel="noreferrer">
-      <Image
-        className="sponsor-logo"
-        src="/assets/sponsors/Rotatrix.png"
-        width={240}
-        height={100}
-        alt="Rotatrix"
-      />
-    </a>
-  </li>
-</ul>
-          </div>
-        </section>
+        <SponsorsSection />
 
-        <section
-          id="contact"
-          className="page-section"
-          aria-labelledby="contact-title"
-        >
-          <div className="page-section-inner">
-            <h2 id="contact-title">Apply Here</h2>
-            <ApplyLink className="apply-button">
-              Apply to MakeSB <span aria-hidden="true">↗</span>
-            </ApplyLink>
-            <a className="sponsor-link" href={sponsorUrl}>
-              Sponsor MakeSB <span aria-hidden="true">→</span>
-            </a>
-          </div>
-        </section>
+        <ApplySection sponsorUrl={sponsorUrl} />
 
         <section
           id="team"
