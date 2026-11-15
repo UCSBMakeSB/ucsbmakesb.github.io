@@ -129,14 +129,16 @@ export default function AuthPage() {
         return;
       }
       const signupDraftToken = preflight.draftToken || "";
+      const emailRedirectUrl = new URL("/auth/callback", window.location.origin);
+      if (signupDraftToken) {
+        emailRedirectUrl.searchParams.set("draft_token", signupDraftToken);
+      }
 
       const { data, error } = await getSupabaseBrowser().auth.signUp({
         email: normalizedEmail,
         password,
         options: {
-          emailRedirectTo: signupDraftToken
-            ? `${window.location.origin}/auth/callback?draft_token=${encodeURIComponent(signupDraftToken)}`
-            : `${window.location.origin}/auth/callback`,
+          emailRedirectTo: emailRedirectUrl.toString(),
         },
       });
 
