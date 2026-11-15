@@ -26,11 +26,11 @@ const questions = [
   [
     "Do you help with travel?",
     <>
-      Yes. We offer flights to Santa Barbara for low-income students, and we
-      are working to fly out all participants. Makers from other schools can
-      get their travel reimbursed and stay with us through dorm hosting. Email{" "}
-      <a href="mailto:team@makesb.org">team@makesb.org</a> and we will help you
-      plan your trip.
+      Yes, but not for all participants yet. We offer flights to Santa Barbara
+      for low-income students, and we are working hard to fly out everyone.
+      Makers from other schools can also stay with us through dorm hosting. If
+      attending MakeSB poses a financial burden, please contact{" "}
+      <a href="mailto:patrick_liu@ucsb.edu">patrick_liu@ucsb.edu</a>.
     </>,
   ],
   [
