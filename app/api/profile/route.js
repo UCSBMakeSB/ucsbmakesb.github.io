@@ -4,15 +4,18 @@ import { revalidatePortalAccount } from "../../../lib/portal-data";
 
 export const runtime = "nodejs";
 
+// NOT NULL columns that may be blank now: store "" rather than null.
+const BLANK_OK_COLUMNS = new Set(["mobile_number", "emergency_contact_name", "emergency_contact_mobile_number", "age"]);
+
 const PROFILE_FIELDS = {
   preferredFirstName: ["preferred_first_name", 100, true],
   lastName: ["last_name", 100, true],
-  mobileNumber: ["mobile_number", 40, true],
-  emergencyContactName: ["emergency_contact_name", 150, true],
-  emergencyContactMobileNumber: ["emergency_contact_mobile_number", 40, true],
+  mobileNumber: ["mobile_number", 40, false], // not asked on the application any more
+  emergencyContactName: ["emergency_contact_name", 150, false], // not asked on the application any more
+  emergencyContactMobileNumber: ["emergency_contact_mobile_number", 40, false], // not asked on the application any more
   major: ["major", 100, true],
   year: ["year", 100, true],
-  age: ["age", 100, true],
+  age: ["age", 100, false], // not asked on the application any more
   country: ["country", 100, true],
   school: ["school", 200, true],
   "food-allergies": ["food_allergies", 500, false],
@@ -71,8 +74,15 @@ export async function PATCH(request) {
     } else if (value.length > maxLength) {
       errors[field] = `Must be ${maxLength} characters or fewer.`;
     } else {
-      updates[column] = value || null;
+      updates[column] = value || (BLANK_OK_COLUMNS.has(column) ? "" : null);
     }
+  }
+
+  if (updates.school === "other") {
+    const schoolName = typeof body.schoolOther === "string" ? body.schoolOther.trim() : "";
+    if (!schoolName) errors.schoolOther = "Please enter your school.";
+    else if (schoolName.length > 200) errors.schoolOther = "Must be 200 characters or fewer.";
+    else updates.school = schoolName;
   }
 
   if (Object.keys(errors).length > 0) {

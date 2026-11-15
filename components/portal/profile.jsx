@@ -58,7 +58,7 @@ export default function Profile() {
       year: values.year,
       age: values.age,
       country: values.country,
-      school: values.school,
+      school: values.school === "other" ? values.schoolOther : values.school,
       "food-allergies": values["food-allergies"],
     };
     setAccount(nextAccount);

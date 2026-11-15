@@ -203,22 +203,17 @@ export const schools = [
     label: "University of California, Davis (UCD)",
   },
   {
-    value: "other-csu",
-    label: "Another California State University (CSU)",
-  },
-  {
-    value: "other-cc",
-    label: "Another Community College",
-  },
-  {
-    value: "out-of-state",
-    label: "Out of State",
-  },
-  {
     value: "other",
     label: "Other",
   },
 ];
+
+// Old catch-all values still stored for earlier applicants; shown as readable text.
+const legacySchoolLabels = {
+  "other-csu": "Another California State University (CSU)",
+  "other-cc": "Another Community College",
+  "out-of-state": "Out of State",
+};
 
 export const formFields = [
   {
@@ -255,7 +250,9 @@ export const formFields = [
     label: "Mobile number",
     inputType: "tel",
     autoComplete: "tel",
-    requirement: "required",
+    // ask after admission, restore in post-admission portal
+    postAdmission: true,
+    requirement: "optional",
   },
   {
     type: "input",
@@ -263,7 +260,9 @@ export const formFields = [
     name: "emergencyContactName",
     label: "Emergency contact name",
     inputType: "text",
-    requirement: "required",
+    // ask after admission, restore in post-admission portal
+    postAdmission: true,
+    requirement: "optional",
   },
   {
     type: "input",
@@ -271,7 +270,9 @@ export const formFields = [
     name: "emergencyContactMobileNumber",
     label: "Emergency contact mobile number",
     inputType: "tel",
-    requirement: "required",
+    // ask after admission, restore in post-admission portal
+    postAdmission: true,
+    requirement: "optional",
   },
   {
     type: "select",
@@ -295,7 +296,9 @@ export const formFields = [
     name: "age",
     label: "Age",
     options: ages,
-    requirement: "required",
+    // ask after admission, restore in post-admission portal
+    postAdmission: true,
+    requirement: "optional",
   },
   {
     type: "select",
@@ -311,6 +314,7 @@ export const formFields = [
     name: "school",
     label: "Institution",
     options: schools,
+    other: { value: "other", name: "schoolOther", label: "What school?", legacyLabels: legacySchoolLabels },
     requirement: "required",
   },
   {
@@ -319,6 +323,8 @@ export const formFields = [
     name: "food-allergies",
     label: "Any Food Allergies or Restrictions?",
     inputType: "text",
+    // ask after admission, restore in post-admission portal
+    postAdmission: true,
     requirement: "optional",
   },
   {
@@ -432,6 +438,7 @@ export default function FieldRenderer({ field, portal = false }) {
           requirementText={requirementText}
           portal={portal}
           options={field.options}
+          other={field.other}
         />
       );
     case "checkbox":

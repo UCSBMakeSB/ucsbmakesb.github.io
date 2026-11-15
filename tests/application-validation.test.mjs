@@ -43,7 +43,8 @@ test("accepts a complete application and normalizes the email", () => {
   assert.equal(result.row.preferred_first_name, "Gaucho");
   assert.equal(result.row.waiver_accepted, true);
   assert.equal(result.row.prior_hackathon_experience, true);
-  assert.equal(result.row.food_allergies, "None");
+  // food allergies are no longer asked on the application (ask after admission)
+  assert.equal(result.row.food_allergies, undefined);
 });
 
 test("maps 'no' experience to false", () => {
@@ -54,10 +55,9 @@ test("maps 'no' experience to false", () => {
 
 test("accepts empty optional fields", () => {
   const result = validateApplication(
-    validForm({ "food-allergies": "", resume: undefined }),
+    validForm({ resume: undefined }),
   );
   assert.equal(result.ok, true);
-  assert.equal(result.row.food_allergies, null);
   assert.equal(result.resume, null);
 });
 
@@ -68,6 +68,31 @@ test("rejects missing and blank required fields", () => {
   assert.equal(result.ok, false);
   assert.ok(result.errors.lastName);
   assert.ok(result.errors.major);
+});
+
+test("does not require the post-admission questions", () => {
+  const result = validateApplication(
+    validForm({
+      mobileNumber: undefined,
+      emergencyContactName: undefined,
+      emergencyContactMobileNumber: undefined,
+      age: undefined,
+    }),
+  );
+  assert.equal(result.ok, true);
+  assert.equal(result.row.mobile_number, undefined);
+});
+
+test("'other' school needs a typed name and saves it as the school", () => {
+  const missing = validateApplication(validForm({ school: "other" }));
+  assert.equal(missing.ok, false);
+  assert.ok(missing.errors.schoolOther);
+
+  const typed = validateApplication(
+    validForm({ school: "other", schoolOther: "  Stanford  " }),
+  );
+  assert.equal(typed.ok, true);
+  assert.equal(typed.row.school, "Stanford");
 });
 
 test("rejects an invalid email", () => {

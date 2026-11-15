@@ -48,6 +48,9 @@ export default async function Apply() {
     }
   }
 
+  // Questions asked only after admission (still used by the portal).
+  const applyFields = formFields.filter((field) => !field.postAdmission);
+
   return (
     <>
       <Header fixed />
@@ -84,17 +87,17 @@ export default async function Apply() {
           )}
           <ApplicationForm className="application-form" disabled={!submissionsConfigured}>
             <div className="application-form-fields">
-              {formFields
+              {applyFields
                 .filter((field) => field.section === "primary")
                 .map((field) => (
                   <FieldRenderer key={field.id} field={field} />
                 ))}
             </div>
             <FieldRenderer
-              field={formFields.find((field) => field.section === "standalone")}
+              field={applyFields.find((field) => field.section === "standalone")}
             />
             <div className="application-form-fields">
-              {formFields
+              {applyFields
                 .filter((field) => field.section === "secondary")
                 .map((field) => (
                   <FieldRenderer key={field.id || field.name} field={field} />
