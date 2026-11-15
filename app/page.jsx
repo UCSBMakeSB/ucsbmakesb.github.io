@@ -38,7 +38,8 @@ export default function HomePage() {
               <span className="hero-date-line">January 15—17, 2027</span>
               <br />
               UC Santa Barbara
-            </p>          </div>
+            </p>
+            <p className="hero-tagline">UCSB’s First Hardware Makeathon</p>          </div>
           <div className="hero-bottom">
             <div className="hero-info">
               <nav className="social-links" aria-label="Social links">

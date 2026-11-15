@@ -382,6 +382,11 @@ a[href]:not(
   text-transform: uppercase;
 }
 
+.hero-title > p.hero-tagline {
+  margin-top: 10px;
+  color: var(--sun);
+}
+
 .hero-date-line {
   position: relative;
   top: 10px;
