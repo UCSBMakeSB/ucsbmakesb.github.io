@@ -1,7 +1,8 @@
 import { FaqSection } from "../components/faq-section";
 import { Header, Footer } from "../components/page-layout";
 import { TeamSelector } from "../components/team-selector";
-import { Schedule } from "../components/schedule";
+// import { Schedule } from "../components/schedule"; // Schedule hidden; uncomment to restore (also <Schedule /> below and the "schedule" link in components/page-layout.jsx)
+import { SponsorsSection } from "../components/sponsors-section";
 import { HomeScrollReset } from "../components/home-scroll-reset";
 
 import Image from "next/image";
@@ -84,32 +85,11 @@ export default function HomePage() {
           </div>
         </section>
 
-        <Schedule />
+        {/* Schedule hidden for now. To restore: uncomment the import above, replace this comment with <Schedule />, re-add ["schedule", "Schedule"] to links in components/page-layout.jsx, and set the #faqs gradient start back to layer3 in css/styles.css. */}
 
         <FaqSection />
 
-        <section
-          id="sponsors"
-          className="page-section"
-          aria-labelledby="sponsors-title"
-        >
-          <div className="page-section-inner">
-            <h2 id="sponsors-title">Sponsors</h2>
-<ul className="sponsor-row">
-  <li>
-    <a href="https://rotatrix.com/" target="_blank" rel="noreferrer">
-      <Image
-        className="sponsor-logo"
-        src="/assets/sponsors/Rotatrix.png"
-        width={240}
-        height={100}
-        alt="Rotatrix"
-      />
-    </a>
-  </li>
-</ul>
-          </div>
-        </section>
+        <SponsorsSection />
 
         <section
           id="contact"

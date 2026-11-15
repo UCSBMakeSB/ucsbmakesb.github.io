@@ -9,7 +9,7 @@ import { ContactEmail } from "./contact-email";
 
 const links = [
   ["about", "About"],
-  ["schedule", "Schedule"],
+  // Schedule hidden for now; restore with ["schedule", "Schedule"] between About and FAQs.
   ["faqs", "FAQs"],
   ["sponsors", "Sponsors"],
   ["team", "Meet Our Team"],

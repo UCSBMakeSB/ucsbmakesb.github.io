@@ -518,8 +518,10 @@ a[href]:not(
   background: linear-gradient(to bottom, var(--layer2), var(--layer3));
 }
 
+/* Schedule is hidden, so FAQs continue straight from About (layer2). When the
+   Schedule is restored, change layer2 back to layer3 here. */
 #faqs.page-section {
-  background: linear-gradient(to bottom, var(--layer3), var(--layer4));
+  background: linear-gradient(to bottom, var(--layer2), var(--layer4));
 }
 
 #sponsors.page-section {
@@ -750,58 +752,79 @@ a[href]:not(
   opacity: 1;
 }
 
+#sponsors .sponsors-inner h2 {
+  margin-bottom: clamp(64px, 9vw, 120px);
+  text-align: center;
+}
+
 .sponsor-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  justify-content: center;
+  gap: clamp(28px, 4vw, 44px) clamp(36px, 6vw, 80px);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
+.sponsor-row[data-tier="1"] {
+  max-width: 900px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.sponsor-row + .sponsor-row {
+  margin-top: clamp(56px, 8vw, 112px);
+}
+
 .sponsor-row li {
-  border: 1px solid rgba(255, 250, 240, 0.28);
-  background: #ffffff;
-  font-family: var(--mono);
-  font-size: 0.875rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  transition: border-color 180ms ease, box-shadow 180ms ease, translate 180ms ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .sponsor-row a {
   display: block;
-  padding: 14px 20px;
+  opacity: 0.88;
+  transition: opacity 180ms ease, translate 180ms ease;
 }
 
-.sponsor-row li:focus-within {
-  border-color: var(--sun);
-  box-shadow: 0 4px 16px rgba(243, 191, 82, 0.2);
+.sponsor-row a:focus-visible {
+  outline: 2px solid var(--sun);
+  outline-offset: 8px;
 }
 
 @media (hover: hover) {
-  .sponsor-row li:hover {
-    border-color: var(--sun);
-    box-shadow: 0 4px 16px rgba(243, 191, 82, 0.2);
-    translate: 0 -3px;
+  .sponsor-row a:hover {
+    opacity: 1;
+    translate: 0 -2px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .sponsor-row li {
+  .sponsor-row a {
     transition: none;
   }
 
-  .sponsor-row li:hover {
+  .sponsor-row a:hover {
     translate: none;
   }
 }
 
+/* Every logo is flattened to white so the row reads as one set. */
 .sponsor-logo {
+  --logo-scale: 1;
   display: block;
-  width: min(200px, 70vw);
+  width: calc(var(--logo-w) * var(--logo-scale) * 1px);
+  max-width: 100%;
   height: auto;
-  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+
+@media (max-width: 720px) {
+  .sponsor-logo {
+    --logo-scale: 0.66;
+  }
 }
 
 .schedule-legend {
