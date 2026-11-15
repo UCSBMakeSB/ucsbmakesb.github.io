@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getSupabaseBrowser } from "../../lib/supabase-browser";
 
 function getSafeNextPath() {
@@ -11,17 +11,56 @@ function getSafeNextPath() {
   return next?.startsWith("/") && !next.startsWith("//") ? next : "/portal";
 }
 
+// Why someone was sent here from an emailed link (see lib/auth-callback.js).
+const NOTICES = {
+  confirm_link:
+    "Sign in below to finish your application. If you just clicked the link in our email, your email is most likely confirmed already; the link simply couldn't sign you in here (it was opened in a different browser or device than the one you applied on, or it was already used). If sign-in says your email isn't confirmed, we'll offer to send a new link.",
+  reset_link:
+    "That password reset link couldn't be used here. It may have expired, or it was opened in a different browser than the one you requested it from. Use \"Forgot your password?\" below to get a new link, and open it in this browser.",
+};
+
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [resetMode, setResetMode] = useState(false);
   const [status, setStatus] = useState("idle");
   const [message, setMessage] = useState("");
+  const [notice, setNotice] = useState("");
+  // Set when sign-in fails only because the email isn't confirmed yet.
+  const [unconfirmedEmail, setUnconfirmedEmail] = useState("");
+
+  useEffect(() => {
+    const code = new URLSearchParams(window.location.search).get("notice");
+    setNotice(NOTICES[code] ?? "");
+  }, []);
+
+  async function handleResendConfirmation() {
+    setStatus("submitting");
+    try {
+      const { error } = await getSupabaseBrowser().auth.resend({
+        type: "signup",
+        email: unconfirmedEmail,
+        options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+      });
+      setStatus(error ? "error" : "success");
+      setMessage(
+        error
+          ? "We couldn't send the email just now. Please wait a minute and try again."
+          : `Sent. Check ${unconfirmedEmail} (and spam or junk) for the confirmation link.`,
+      );
+      if (!error) setUnconfirmedEmail("");
+    } catch (error) {
+      console.error("Resending the confirmation email failed:", error);
+      setStatus("error");
+      setMessage("We couldn't send the email just now. Please wait a minute and try again.");
+    }
+  }
 
   async function handleSubmit(event) {
     event.preventDefault();
     setStatus("submitting");
     setMessage("");
+    setUnconfirmedEmail("");
 
     try {
       const { error } = await getSupabaseBrowser().auth.signInWithPassword({
@@ -31,7 +70,19 @@ export default function LoginPage() {
 
       if (error) {
         setStatus("error");
-        setMessage("Email or password is incorrect. Please try again.");
+        // This used to say "Email or password is incorrect" for every error,
+        // which sent applicants who simply hadn't clicked the confirmation
+        // link yet off to reset a password that was fine.
+        if (error.code === "email_not_confirmed") {
+          setUnconfirmedEmail(email.trim().toLowerCase());
+          setMessage(
+            "Your email isn't confirmed yet. Click the link we emailed you (check spam or junk), or send a new one.",
+          );
+        } else if (error.status === 429 || error.code === "over_request_rate_limit") {
+          setMessage("Too many sign-in attempts for now. Please wait a minute and try again.");
+        } else {
+          setMessage("Email or password is incorrect. Please try again.");
+        }
         return;
       }
 
@@ -78,6 +129,12 @@ export default function LoginPage() {
         <p className="auth-intro">
           Sign in to continue working on your MakeSB application.
         </p>
+
+        {notice && (
+          <p className="auth-notice" role="status">
+            {notice}
+          </p>
+        )}
 
         <form
           className="auth-form"
@@ -126,9 +183,19 @@ export default function LoginPage() {
           </button>
 
           {message && (
-            <p className="auth-message" role="alert">
+            <p className="auth-message" data-status={status} role="alert">
               {message}
             </p>
+          )}
+          {unconfirmedEmail && !resetMode && (
+            <button
+              className="auth-text-button"
+              type="button"
+              onClick={handleResendConfirmation}
+              disabled={status === "submitting"}
+            >
+              Resend confirmation email
+            </button>
           )}
         </form>
 

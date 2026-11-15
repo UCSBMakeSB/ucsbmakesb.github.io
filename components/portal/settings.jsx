@@ -197,9 +197,7 @@ export function AccountSettings() {
                 name="lastName"
                 autoComplete="family-name"
                 defaultValue={account.lastName}
-                required
                 maxLength={80}
-                pattern=".*\S.*"
               />
             </label>
           </div>

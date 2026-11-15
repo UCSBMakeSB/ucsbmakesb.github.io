@@ -25,22 +25,29 @@ describe("auth callback: email synchronization after confirmation", () => {
     alice.email = email;
   };
 
-  it("redirects to /auth?error=missing_code when no code is present", async () => {
+  it("sends a link with no code to the sign-in page with an explanation", async () => {
     const response = await callback("");
-    assert.equal(redirectPath(response), "/auth?error=missing_code");
+    assert.equal(redirectPath(response), "/login?notice=confirm_link");
   });
 
-  it("redirects to /auth?error=confirmation_failed for an invalid, expired or reused code", async () => {
+  it("an invalid, expired or reused code lands on sign-in (the email is usually already confirmed), with no session", async () => {
     const response = await callback("?code=bogus");
-    assert.equal(redirectPath(response), "/auth?error=confirmation_failed");
+    assert.equal(redirectPath(response), "/login?notice=confirm_link");
     assert.equal(db.currentUserId, null, "no session may be created from a bad code");
   });
 
-  it("an expired-link error from Supabase is also a confirmation failure", async () => {
+  it("an expired-link error from Supabase also lands on sign-in and changes nothing", async () => {
     db.codes.set("expired", { error: { message: "Email link is invalid or has expired" } });
     const response = await callback("?code=expired");
-    assert.equal(redirectPath(response), "/auth?error=confirmation_failed");
+    assert.equal(redirectPath(response), "/login?notice=confirm_link");
     assert.equal(appOf(alice).email, "alice@ucsb.edu");
+  });
+
+  it("Supabase's own dead-link redirect (?error_code=otp_expired, no code) explains that the link expired", async () => {
+    const response = await callback(
+      "?error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired",
+    );
+    assert.equal(redirectPath(response), "/login?notice=confirm_link");
   });
 
   it("copies the newly confirmed email onto the application", async () => {
@@ -57,12 +64,14 @@ describe("auth callback: email synchronization after confirmation", () => {
     assert.equal(JSON.stringify(appOf(alice)), before);
   });
 
-  it("does not create or touch anything for an account with no application yet", async () => {
+  it("an account with no application yet is handed to claim-draft, with or without the draft cookie", async () => {
     const bob = addUser({ email: "bob@ucsb.edu" });
-    db.codes.set("bob-code", { userId: bob.id });
-    const response = await callback("?code=bob-code");
-    assert.equal(redirectPath(response), "/auth/confirmed");
-    assert.equal(db.tables.applications.length, 1);
+    for (const options of [undefined, { cookies: { [DRAFT_COOKIE]: "draft-id" } }]) {
+      db.codes.set("bob-code", { userId: bob.id });
+      const response = await callback("?code=bob-code", options);
+      assert.equal(redirectPath(response), "/api/apply/claim-draft?next=/auth/confirmed");
+    }
+    assert.equal(db.tables.applications.length, 1, "the callback itself creates nothing");
   });
 
   it("only ever syncs the email onto the confirming user's own application", async () => {
@@ -87,6 +96,11 @@ describe("auth callback: email synchronization after confirmation", () => {
     assert.equal(redirectPath(response), "/auth?error=email_sync_failed");
   });
 
+  it("a password-reset link that can't be used says so, instead of talking about email confirmation", async () => {
+    const response = await callback("?code=bogus&next=/auth/reset");
+    assert.equal(redirectPath(response), "/login?notice=reset_link");
+  });
+
   it("password-recovery links continue to /auth/reset after syncing", async () => {
     const response = await callback("?code=good-code&next=/auth/reset");
     assert.equal(redirectPath(response), "/auth/reset");
@@ -100,8 +114,8 @@ describe("auth callback: email synchronization after confirmation", () => {
     }
   });
 
-  it("hands off to claim-draft when a pending application draft cookie is present", async () => {
+  it("an account that already has its application skips claim-draft even if a stale draft cookie is present", async () => {
     const response = await callback("?code=good-code", { cookies: { [DRAFT_COOKIE]: "draft-id" } });
-    assert.equal(redirectPath(response), "/api/apply/claim-draft?next=/auth/confirmed");
+    assert.equal(redirectPath(response), "/auth/confirmed");
   });
 });

@@ -1,4 +1,4 @@
-import { formFields } from "../field-renderer";
+import { formFields, postAdmissionFields } from "../field-renderer";
 
 export const applicationQuestions = [
   {
@@ -6,7 +6,8 @@ export const applicationQuestions = [
     id: "application-question-1",
     name: "applicationQuestion1",
     label: "Why do you want to come to MakeSB?",
-    rows: 8,
+    helpText: "A sentence or two is plenty.",
+    rows: 4,
     requirement: "required",
   },
   {
@@ -15,16 +16,19 @@ export const applicationQuestions = [
     name: "applicationQuestion2",
     label:
       "Tell us about a project you're proud of. What specific decisions did you make and why?",
-    rows: 8,
-    requirement: "required",
+    helpText: "A few sentences or a link is fine.",
+    rows: 4,
+    // Was required. Only question 1 is required now.
+    requirement: "optional",
   },
   {
     type: "essay",
     id: "application-question-3",
     name: "applicationQuestion3",
     label: "What skills do you want to use, and what's your background?",
-    rows: 8,
-    requirement: "required",
+    rows: 4,
+    // Was required.
+    requirement: "optional",
   },
   {
     type: "essay",
@@ -32,7 +36,8 @@ export const applicationQuestions = [
     name: "applicationQuestion4",
     label: "What kinds of problems are you interested in solving?",
     rows: 4,
-    requirement: "required",
+    // Was required.
+    requirement: "optional",
   },
   {
     type: "essay",
@@ -40,7 +45,7 @@ export const applicationQuestions = [
     name: "applicationQuestion5",
     label: "Is there anything else you'd like to share?",
     rows: 4,
-    requirement: "recommended",
+    requirement: "optional",
   },
   {
     type: "essay",
@@ -79,8 +84,8 @@ export const applicationGroups = [
   },
   {
     title: "Details",
-    description: "A few additional details to help us plan the event.",
-    questions: applicationQuestions.slice(5, 7),
+    description: "Optional. Helps us reach more builders.",
+    questions: applicationQuestions.slice(6, 7),
   },
   {
     title: "Fun Questions",
@@ -91,9 +96,18 @@ export const applicationGroups = [
 
 export const applicationSupplements = {
   title: "Supplements",
-  description: "Extra materials to support and confirm your application.",
-  fields: [
-    formFields.find((field) => field.name === "resume"),
-    formFields.find((field) => field.name === "waiver"),
-  ],
+  description: "Extra materials to support your application.",
+  fields: [formFields.find((field) => field.name === "resume")],
+};
+
+// ASK AFTER ADMISSION: travel details (question 6) and the liability waiver
+// were part of the application. They are only needed from admitted students,
+// so they sit in their own optional section. Once admission decisions exist,
+// show this section only to admitted applicants and require the waiver there.
+export const postAdmissionSection = {
+  title: "If You're Admitted",
+  description:
+    "Optional for now. We only need these if you're admitted, so feel free to skip them.",
+  questions: applicationQuestions.slice(5, 6),
+  fields: [postAdmissionFields.find((field) => field.name === "waiver")],
 };

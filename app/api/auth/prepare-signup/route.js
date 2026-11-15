@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { escapeLikePattern } from "../../../../lib/db-helpers";
+import { DRAFT_COOKIE, draftCookieOptions } from "../../../../lib/draft";
 import { getSupabaseAdmin } from "../../../../lib/supabase-server";
 import {
   getClientIp,
@@ -9,19 +10,6 @@ import {
 } from "../../../../lib/rate-limit";
 
 export const runtime = "nodejs";
-
-const DRAFT_COOKIE = "makesb_application_draft";
-const DRAFT_MAX_AGE = 30 * 60;
-
-function draftCookieOptions() {
-  return {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: DRAFT_MAX_AGE,
-  };
-}
 
 export async function POST(request) {
   let body;
