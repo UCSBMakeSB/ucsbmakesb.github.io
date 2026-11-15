@@ -89,34 +89,33 @@ export default function HomePage() {
           <div className="page-section-inner">
             <h2 id="about-title">What is MakeSB?</h2>
             <p className="lead">
-              MakeSB is UCSB’s first hardware makeathon. For one weekend in
-              January, students team up to design and build something real from
-              scratch. It is free, and we supply the parts, tools, food and
-              mentors. A pop-up Micro Center on site stocks components for when
-              a part goes missing, and MakeWeek workshops the week before get
-              you ready.
+              MakeSB is UCSB’s first hardware makeathon. Over one weekend in
+              January, student teams design and build original projects from
+              the ground up. Participation is free, and we provide the parts,
+              tools, meals and mentorship. An on-site pop-up parts store
+              supplies components when you need them, and MakeWeek workshops
+              the week before prepare you for the event.
             </p>
             <p className="lead">
-              We built MakeSB for students who have faced barriers to advanced
-              STEM. That includes low-income and first-generation students,
-              community college students, women in STEM, underrepresented
-              groups, and anyone who has never had access to a makerspace. If
-              that sounds like you, apply. You belong here.
+              MakeSB was created for students who have faced barriers to
+              advanced STEM education, including low-income and first-generation
+              students, community college students, women in engineering,
+              underrepresented groups, and anyone who has not had access to a
+              makerspace. If this describes you, we encourage you to apply.
             </p>
 
             <h3 className="subhead">Our mission</h3>
             <p>
-              We want to make hardware accessible: giving people the parts,
-              tools and support to build things they couldn’t otherwise. If
-              you’ve faced barriers to advanced STEM, please apply. That is
-              exactly why we built this.
+              Our mission is to make hardware accessible by giving students the
+              parts, tools and support they need to build projects they could
+              not otherwise attempt. We want participants to take on ambitious,
+              creative ideas, such as weather balloons, small rockets, drifting
+              go-karts, a jet bike or a surgical robot arm.
             </p>
             <p>
-              The best projects are fun and different. Think weather balloons,
-              small rockets, drifting go-karts, a jet bike, or a surgical robot
-              arm. We want MakeSB around for decades, and we want to help UCSB
-              students land as many internships as possible through our
-              sponsors.
+              Our long-term goal is to establish MakeSB as a lasting UCSB
+              tradition and to connect students with internship opportunities
+              through our sponsors.
             </p>
           </div>
         </section>
@@ -129,49 +128,53 @@ export default function HomePage() {
           <div className="page-section-inner">
             <h2 id="special-title">What makes MakeSB special</h2>
             <p className="lead">
-              It’s the first event of its kind at UCSB, and it’s free. Here is
-              what you get.
+              MakeSB is the first event of its kind at UCSB, and it is free to
+              attend. Here is what we provide.
             </p>
             <ul className="feature-grid">
               <li>
-                <h3>Real parts, real budgets</h3>
+                <h3>Funded hardware</h3>
                 <p>
-                  Sponsors like DigiKey and ST provide parts. Google Quantum AI,
-                  SpaceX and UCSB make the funding possible, so teams can build
-                  projects worth over $1,000.
+                  Sponsors including DigiKey and STMicroelectronics donate
+                  components, while Google Quantum AI, SpaceX and UCSB provide
+                  the funding that allows teams to build projects costing more
+                  than $1,000.
                 </p>
               </li>
               <li>
-                <h3>A pop-up parts store</h3>
+                <h3>On-site parts store</h3>
                 <p>
-                  A literal pop-up Micro Center for makers, on site all
-                  weekend.
+                  A pop-up parts store, modeled on a Micro Center, is available
+                  to makers throughout the weekend.
                 </p>
               </li>
               <li>
                 <h3>Parts before the event</h3>
                 <p>
-                  Shuttles to Home Depot and a hardware request form mean your
-                  parts show up before the event starts.
+                  Shuttles to Home Depot and a hardware request form ensure your
+                  parts are ready before the event begins.
                 </p>
               </li>
               <li>
-                <h3>Mentors from industry</h3>
+                <h3>Industry mentors</h3>
                 <p>
-                  Engineers from companies like Meta, Amazon and Tesla, matched
-                  to your project.
+                  Engineers from companies such as Meta, Amazon and Tesla are
+                  matched to your project.
                 </p>
               </li>
               <li>
                 <h3>MakeWeek</h3>
                 <p>
-                  The week before, join idea jams, form your team, and attend
-                  workshops.
+                  The week before the event includes idea jams, team formation
+                  and technical workshops.
                 </p>
               </li>
               <li>
-                <h3>Everything provided</h3>
-                <p>Food, sleeping space and hardware are all taken care of.</p>
+                <h3>Everything included</h3>
+                <p>
+                  Meals, sleeping space and hardware are provided to all
+                  participants.
+                </p>
               </li>
             </ul>
           </div>
@@ -185,37 +188,43 @@ export default function HomePage() {
           <div className="page-section-inner">
             <h2 id="travel-title">Flights and housing</h2>
             <p className="lead">
-              Coming from another school? Don’t let cost or distance stop you.
+              Traveling from another school? We want cost and distance to stand
+              in the way as little as possible.
             </p>
             <ul className="feature-grid">
               <li>
                 <h3>Flights to Santa Barbara</h3>
                 <p>
-                  We offer flights for low-income students, and we are working
-                  hard to fly out every participant. We can’t cover everyone
-                  yet.
+                  We offer flights to low-income students, and we are working to
+                  extend this support to all participants.
                 </p>
               </li>
               <li>
                 <h3>Travel reimbursement</h3>
-                <p>Makers from other schools can also get travel reimbursed.</p>
+                <p>
+                  Participants from other schools may also receive travel
+                  reimbursement.
+                </p>
               </li>
               <li>
                 <h3>Housing</h3>
                 <p>
-                  Makers from other schools can stay in UCSB dorms through our
-                  hosting program, or in Isla Vista.
+                  Participants from other schools can stay in UCSB dorms through
+                  our hosting program or with hosts in Isla Vista.
                 </p>
               </li>
               <li>
                 <h3>Airport shuttles</h3>
-                <p>Shuttle pickups from the Santa Barbara airport (SBA).</p>
+                <p>
+                  Shuttle service is available from the Santa Barbara Airport
+                  (SBA).
+                </p>
               </li>
             </ul>
             <p>
-              If cost is the thing stopping you, email{" "}
-              <a href="mailto:patrick_liu@ucsb.edu">patrick_liu@ucsb.edu</a>{" "}
-              and we will do our best to support you.
+              If cost is preventing you from attending, please contact{" "}
+              <a href="mailto:patrick_liu@ucsb.edu">patrick_liu@ucsb.edu</a>.
+              We will do our best to support you.
             </p>
           </div>
         </section>
@@ -228,22 +237,23 @@ export default function HomePage() {
           <div className="page-section-inner">
             <h2 id="perks-title">Perks and prizes</h2>
             <p className="lead">
-              Build something great, and you could take home something great.
+              Outstanding projects will be recognized with prizes from our
+              sponsors.
             </p>
             <ul className="feature-grid">
               <li>
-                <h3>Free skydiving</h3>
-                <p>For the best first-year project.</p>
+                <h3>Skydiving experience</h3>
+                <p>Awarded to the best first-year project.</p>
               </li>
               <li>
-                <h3>Free Framework laptop</h3>
-                <p>For the most technically impressive project.</p>
+                <h3>Framework laptop</h3>
+                <p>Awarded to the most technically impressive project.</p>
               </li>
               <li>
-                <h3>A Costco membership</h3>
+                <h3>Costco membership</h3>
                 <p>
-                  Thanks to our Costco sponsorship, a free Costco membership is
-                  one of the prizes.
+                  A Costco membership is offered as a prize through our Costco
+                  sponsorship.
                 </p>
               </li>
             </ul>
@@ -251,8 +261,8 @@ export default function HomePage() {
                 place prizes, DigiKey and ASUS tracks, tracks from other sponsors,
                 and extra perks (kits, swag, socials). Add them here once final. */}
             <p>
-              More prizes and tracks will be announced as our sponsors confirm
-              them.
+              Additional prizes and tracks will be announced as our sponsors
+              confirm them.
             </p>
           </div>
         </section>
