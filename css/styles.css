@@ -518,10 +518,22 @@ a[href]:not(
   background: linear-gradient(to bottom, var(--layer2), var(--layer3));
 }
 
-/* Schedule is hidden, so FAQs continue straight from About (layer2). When the
-   Schedule is restored, change layer2 back to layer3 here. */
+#special.page-section {
+  background: linear-gradient(to bottom, var(--layer2), var(--layer3));
+}
+
+#travel.page-section {
+  background: linear-gradient(to bottom, var(--layer3), var(--layer4));
+}
+
+#perks.page-section {
+  background: var(--layer4);
+}
+
+/* Schedule is hidden, so FAQs continue straight from Perks (layer4). When the
+   Schedule is restored, reshuffle the gradients above to include it. */
 #faqs.page-section {
-  background: linear-gradient(to bottom, var(--layer2), var(--layer4));
+  background: var(--layer4);
 }
 
 #sponsors.page-section {
@@ -553,6 +565,116 @@ a[href]:not(
 .page-section p {
   margin: 0 0 12px;
   line-height: 1.6;
+}
+
+/* Long, airy content sections (About, Special, Travel, Perks). */
+#about.page-section,
+#special.page-section,
+#travel.page-section,
+#perks.page-section {
+  padding-top: clamp(88px, 12vw, 150px);
+  padding-bottom: clamp(88px, 12vw, 150px);
+}
+
+.page-section p.lead {
+  margin: 0 0 24px;
+  font-size: clamp(1.2rem, 1rem + 0.8vw, 1.55rem);
+  line-height: 1.55;
+}
+
+.subhead {
+  margin: 56px 0 16px;
+  color: var(--sun);
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 40px 48px;
+  margin: 48px 0 40px;
+  padding: 0;
+  list-style: none;
+}
+
+.feature-grid li {
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 250, 240, 0.28);
+}
+
+.feature-grid h3 {
+  margin: 0 0 10px;
+  font-family: var(--serif);
+  font-size: 1.6rem;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+.feature-grid p {
+  margin: 0;
+}
+
+.page-section a {
+  text-underline-offset: 4px;
+}
+
+.deadline-banner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 32px;
+  align-items: center;
+  justify-content: center;
+  padding: 22px clamp(20px, 4vw, 68px);
+  color: var(--ink);
+  background: var(--sun);
+  text-align: center;
+}
+
+.deadline-banner p {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 24px;
+  align-items: baseline;
+  justify-content: center;
+  margin: 0;
+  font-family: var(--mono);
+  font-size: clamp(0.9rem, 0.8rem + 0.4vw, 1.1rem);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.deadline-banner a {
+  font-weight: 500;
+  text-underline-offset: 4px;
+}
+
+.deadline-banner .apply-button {
+  color: var(--paper);
+  background: var(--ink);
+  border-color: var(--ink);
+}
+
+.deadline-banner .apply-button:hover,
+.deadline-banner .apply-button:focus-visible {
+  color: var(--ink);
+  background: var(--paper);
+}
+
+.hero-deadline {
+  display: inline-block;
+  margin: 16px 0 0;
+  padding: 6px 14px;
+  color: var(--ink);
+  background: var(--sun);
+  font-family: var(--mono);
+  font-size: clamp(0.8rem, 0.7rem + 0.4vw, 1rem);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
 .faq-layout {
