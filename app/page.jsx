@@ -144,8 +144,8 @@ export default function HomePage() {
               <li>
                 <h3>On-site parts store</h3>
                 <p>
-                  A pop-up parts store, modeled on a Micro Center, is available
-                  to makers throughout the weekend.
+                  A pop-up parts store is available to makers throughout the
+                  weekend.
                 </p>
               </li>
               <li>
