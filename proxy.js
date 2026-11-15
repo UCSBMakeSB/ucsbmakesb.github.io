@@ -2,6 +2,15 @@ import { NextResponse } from "next/server";
 import { createSupabaseProxyClient } from "./lib/supabase-proxy";
 
 export async function proxy(request) {
+  if (
+    request.nextUrl.pathname === "/" &&
+    request.nextUrl.searchParams.has("code")
+  ) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/auth/callback";
+    return NextResponse.redirect(url);
+  }
+
   const response = NextResponse.next({ request });
   const supabase = createSupabaseProxyClient(request, response);
   const {
@@ -19,5 +28,5 @@ export async function proxy(request) {
 }
 
 export const config = {
-  matcher: ["/portal/:path*"],
+  matcher: ["/", "/portal/:path*"],
 };

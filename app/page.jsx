@@ -3,7 +3,6 @@ import { Header, Footer } from "../components/page-layout";
 import { TeamSelector } from "../components/team-selector";
 import { Schedule } from "../components/schedule";
 import { HomeScrollReset } from "../components/home-scroll-reset";
-import { redirect } from "next/navigation";
 
 import Image from "next/image";
 import { ApplyLink } from "../components/apply-link";
@@ -11,16 +10,7 @@ import { ApplyLink } from "../components/apply-link";
 const sponsorUrl =
   "mailto:patrick_liu@ucsb.edu?subject=MakeSB%202027%20Sponsorship";
 
-export default async function HomePage({ searchParams }) {
-  const params = await searchParams;
-  if (typeof params?.code === "string") {
-    const callbackParams = new URLSearchParams({ code: params.code });
-    if (typeof params.draft_token === "string") {
-      callbackParams.set("draft_token", params.draft_token);
-    }
-    redirect(`/auth/callback?${callbackParams.toString()}`);
-  }
-
+export default function HomePage() {
   return (
     <>
       <HomeScrollReset />
