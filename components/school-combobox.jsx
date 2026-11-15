@@ -17,18 +17,20 @@
 
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import {
+  OTHER_LABEL,
+  OTHER_PROMPT,
   SCHOOL_MAX_LENGTH,
   buildSchoolIndex,
   exactSchool,
   fold,
+  isLegacyBucket,
   schoolDisplayName,
   searchSchools,
 } from "../lib/schools";
 
 const RESULT_LIMIT = 8;
 const SCHOOLS_URL = "/schools.json";
-const NOT_LISTED = "My school isn't listed";
-const PICK_MESSAGE = `Choose your school from the list, or choose "${NOT_LISTED}".`;
+const PICK_MESSAGE = `Choose your school from the list, or choose "${OTHER_LABEL}".`;
 
 // One shared fetch per page load, started the first time a picker is used.
 let indexPromise = null;
@@ -57,6 +59,7 @@ export function SchoolCombobox({
 }) {
   const uid = useId();
   const inputId = id;
+  const otherId = `${id}-other`;
   const listId = `${uid}-list`;
   const labelId = `${uid}-label`;
   const hintId = `${uid}-hint`;
@@ -64,30 +67,36 @@ export function SchoolCombobox({
 
   const [index, setIndex] = useState(null); // null until the list has loaded
   const [loadError, setLoadError] = useState(false);
-  const [query, setQuery] = useState(schoolDisplayName(defaultValue));
-  // The committed choice: { value, name } or null while the applicant is typing.
+  // A row saved with one of the old buckets ("other-cc", "out-of-state", ...)
+  // has no school name, so it reopens on "Other" with "What school?" empty.
+  const startsOther = isLegacyBucket(defaultValue);
+  const [query, setQuery] = useState(
+    startsOther ? OTHER_LABEL : schoolDisplayName(defaultValue),
+  );
+  // The committed list choice: { value, name }, or null while the applicant is
+  // typing or has chosen "Other".
   const [chosen, setChosen] = useState(
-    defaultValue
+    defaultValue && !startsOther
       ? { value: defaultValue, name: schoolDisplayName(defaultValue) }
       : null,
   );
-  const [manual, setManual] = useState(false); // typing a name by hand
-  const [manualText, setManualText] = useState("");
+  const [other, setOther] = useState(startsOther); // "Other" chosen
+  const [otherText, setOtherText] = useState(""); // answer to "What school?"
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
 
   const inputRef = useRef(null);
-  const manualRef = useRef(null);
+  const otherRef = useRef(null);
   const listRef = useRef(null);
 
   const results = useMemo(
     () => (index ? searchSchools(index, query, RESULT_LIMIT) : []),
     [index, query],
   );
-  // Results, then the always-present "My school isn't listed" row.
+  // Results, then the always-present "Other" row.
   const rows = [
     ...results.map((entry) => ({ kind: "school", entry })),
-    { kind: "manual" },
+    { kind: "other" },
   ];
 
   function ensureLoaded() {
@@ -99,8 +108,10 @@ export function SchoolCombobox({
   useEffect(() => {
     const input = inputRef.current;
     if (!input) return;
-    input.setCustomValidity(required && !chosen ? PICK_MESSAGE : "");
-  }, [chosen, required, manual]);
+    input.setCustomValidity(
+      required && !chosen && !other ? PICK_MESSAGE : "",
+    );
+  }, [chosen, required, other]);
 
   // Keep the highlighted option scrolled into view inside the list.
   useEffect(() => {
@@ -122,36 +133,32 @@ export function SchoolCombobox({
 
   function choose(entry) {
     setChosen({ value: entry.value, name: entry.name });
+    setOther(false);
     setQuery(entry.name);
     setOpen(false);
     setActive(-1);
   }
 
-  function startManual() {
-    setManualText(chosen?.name ?? query.trim());
-    setManual(true);
+  function chooseOther() {
+    setChosen(null);
+    setOther(true);
+    setQuery(OTHER_LABEL);
     setOpen(false);
     setActive(-1);
-    // Focus after the manual input mounts.
-    requestAnimationFrame(() => manualRef.current?.focus());
-  }
-
-  function backToSearch() {
-    setManual(false);
-    setQuery(manualText.trim());
-    setChosen(null);
-    requestAnimationFrame(() => inputRef.current?.focus());
+    // Focus "What school?" once it mounts.
+    requestAnimationFrame(() => otherRef.current?.focus());
   }
 
   function activate(row) {
     if (row.kind === "school") choose(row.entry);
-    else startManual();
+    else chooseOther();
   }
 
   function onChange(event) {
     ensureLoaded();
     setQuery(event.target.value);
     setChosen(null);
+    setOther(false);
     setOpen(true);
     setActive(-1);
   }
@@ -202,6 +209,7 @@ export function SchoolCombobox({
           event.preventDefault();
           setQuery("");
           setChosen(null);
+          setOther(false);
         }
         break;
       case "Tab":
@@ -220,7 +228,7 @@ export function SchoolCombobox({
     setOpen(false);
     setActive(-1);
     // Typed a full name or a unique acronym ("ucsb") without picking it.
-    const exact = !chosen && index ? exactSchool(index, query) : null;
+    const exact = !chosen && !other && index ? exactSchool(index, query) : null;
     if (exact) choose(exact);
   }
 
@@ -229,7 +237,9 @@ export function SchoolCombobox({
     ? "portal-field-input school-combobox-input"
     : "application-form-input school-combobox-input";
   const hasQuery = fold(query).length > 0;
-  const listVisible = open && !manual;
+  const listVisible = open;
+  // What gets submitted: the typed name for "Other", else the list choice.
+  const submitted = other ? otherText.trim() : (chosen?.value ?? "");
 
   let status = "";
   if (listVisible) {
@@ -250,7 +260,7 @@ export function SchoolCombobox({
       className={`${fieldClass} school-combobox`}
       data-portal={portal ? "true" : undefined}
     >
-      <label id={labelId} htmlFor={manual ? `${inputId}-manual` : inputId}>
+      <label id={labelId} htmlFor={inputId}>
         <span>{label}</span>
       </label>
       {requirementText && (
@@ -259,32 +269,7 @@ export function SchoolCombobox({
         </small>
       )}
 
-      {manual ? (
-        <div className="school-combobox-manual">
-          <input
-            ref={manualRef}
-            id={`${inputId}-manual`}
-            name={name}
-            type="text"
-            value={manualText}
-            onChange={(event) => setManualText(event.target.value)}
-            maxLength={SCHOOL_MAX_LENGTH}
-            autoComplete="organization"
-            required={required}
-            aria-describedby={hintId}
-            placeholder="Full name of your school"
-            className={inputClass}
-          />
-          <button
-            type="button"
-            className="school-combobox-link"
-            onClick={backToSearch}
-          >
-            Search the list instead
-          </button>
-        </div>
-      ) : (
-        <div className="school-combobox-control">
+      <div className="school-combobox-control">
           <input
             ref={inputRef}
             id={inputId}
@@ -316,7 +301,7 @@ export function SchoolCombobox({
             }}
             onBlur={onBlur}
           />
-          <input type="hidden" name={name} value={chosen?.value ?? ""} />
+          <input type="hidden" name={name} value={submitted} />
           <div
             ref={listRef}
             className="school-combobox-popup"
@@ -340,7 +325,7 @@ export function SchoolCombobox({
                     key={
                       row.kind === "school"
                         ? `${row.entry.name}|${row.entry.country}`
-                        : "manual"
+                        : "other"
                     }
                     id={optionId(position)}
                     role="option"
@@ -365,20 +350,32 @@ export function SchoolCombobox({
                         )}
                       </>
                     ) : (
-                      <>
-                        <span className="school-combobox-name">
-                          {NOT_LISTED}
-                        </span>
-                        <span className="school-combobox-country">
-                          Type the name of your school yourself
-                        </span>
-                      </>
+                      <span className="school-combobox-name">{OTHER_LABEL}</span>
                     )}
                   </li>
                 );
               })}
             </ul>
           </div>
+        </div>
+
+      {other && (
+        <div className="school-combobox-other">
+          <label htmlFor={otherId}>
+            <span>{OTHER_PROMPT}</span>
+          </label>
+          <input
+            ref={otherRef}
+            id={otherId}
+            type="text"
+            value={otherText}
+            onChange={(event) => setOtherText(event.target.value)}
+            maxLength={SCHOOL_MAX_LENGTH}
+            autoComplete="organization"
+            required={required}
+            placeholder="Full name of your school"
+            className={inputClass}
+          />
         </div>
       )}
 

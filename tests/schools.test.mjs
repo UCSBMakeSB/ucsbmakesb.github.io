@@ -4,12 +4,15 @@ import test from "node:test";
 import { validateApplication } from "../lib/application-validation.js";
 import {
   LEGACY_SCHOOL_NAMES,
+  OTHER_LABEL,
+  OTHER_PROMPT,
   SCHOOL_MAX_LENGTH,
   UCSB_NAME,
   UCSB_VALUE,
   buildSchoolIndex,
   canonicalSchoolKey,
   exactSchool,
+  isLegacyBucket,
   fold,
   schoolDisplayName,
   searchSchools,
@@ -29,16 +32,12 @@ function applicationWith(school) {
     preferredFirstName: "Gaucho",
     lastName: "Student",
     email: "gaucho@ucsb.edu",
-    mobileNumber: "805-555-0100",
-    emergencyContactName: "Parent",
-    emergencyContactMobileNumber: "805-555-0101",
     major: "computer-engineering",
     year: "junior",
-    age: "20",
     country: "japan",
     school,
-    waiver: "on",
     experience: "yes",
+    applicationQuestion1: "I want to build a robot.",
   };
   for (const [key, value] of Object.entries(fields)) form.set(key, value);
   return validateApplication(form);
@@ -110,6 +109,36 @@ test("UCSB stores the historical code, every other school stores its name", () =
   assert.equal(storedSchoolValue(UCSB_NAME, "Canada"), UCSB_NAME);
 });
 
+test("the picker's last row is 'Other' and asks 'What school?'", () => {
+  assert.equal(OTHER_LABEL, "Other");
+  assert.equal(OTHER_PROMPT, "What school?");
+  const component = readFileSync(
+    new URL("../components/school-combobox.jsx", import.meta.url),
+    "utf8",
+  );
+  assert.ok(!/isn't listed|isn.t listed/i.test(component));
+  assert.ok(component.includes("OTHER_LABEL") && component.includes("OTHER_PROMPT"));
+});
+
+test("old catch-all buckets still show a readable name but are never stored again", () => {
+  const expected = {
+    other: "Other (school not specified)",
+    "other-cc": "Another community college (school not specified)",
+    "other-csu": "Another California State University (school not specified)",
+    "out-of-state": "Out of state (school not specified)",
+  };
+  for (const [code, name] of Object.entries(expected)) {
+    assert.equal(schoolDisplayName(code), name);
+    assert.equal(isLegacyBucket(code), true, code);
+    assert.equal(canonicalSchoolKey(code), canonicalSchoolKey(name));
+  }
+  assert.equal(isLegacyBucket("OTHER"), true);
+  assert.equal(isLegacyBucket(" Other "), true);
+  for (const value of ["ucsb", "ucla", "Other Hill College", "", undefined, null]) {
+    assert.equal(isLegacyBucket(value), false, String(value));
+  }
+});
+
 test("legacy codes still display and count as the same school", () => {
   assert.equal(schoolDisplayName("ucsb"), UCSB_NAME);
   assert.equal(
@@ -132,7 +161,6 @@ test("server validation accepts every value the picker can store", () => {
     "ETH Zurich",
     "  Totally New Academy of Making  ",
     "ucla", // rows saved before the picker
-    "other-cc",
   ]) {
     const result = applicationWith(school);
     assert.equal(
@@ -141,6 +169,10 @@ test("server validation accepts every value the picker can store", () => {
       `${school}: ${JSON.stringify(result.errors)}`,
     );
     assert.equal(result.row.school, school.trim());
+  }
+  // The old catch-all buckets are no longer valid values.
+  for (const bucket of ["other", "other-cc", "other-csu", "out-of-state"]) {
+    assert.equal(applicationWith(bucket).ok, false, bucket);
   }
   // Empty (nothing chosen) and over-long names are still rejected.
   assert.equal(applicationWith("").ok, false);

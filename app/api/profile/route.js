@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getSupabaseAdmin, getSupabaseServer } from "../../../lib/supabase-server";
 import { revalidatePortalAccount } from "../../../lib/portal-data";
+import { isLegacyBucket } from "../../../lib/schools";
+import { SCHOOL_BUCKET_MESSAGE } from "../../../lib/application-validation";
 
 export const runtime = "nodejs";
 
@@ -70,7 +72,9 @@ export async function PATCH(request) {
     }
 
     const value = body[field].trim();
-    if (required && !value) {
+    if (field === "school" && isLegacyBucket(value)) {
+      errors[field] = SCHOOL_BUCKET_MESSAGE;
+    } else if (required && !value) {
       errors[field] = "This field is required.";
     } else if (value.length > maxLength) {
       errors[field] = `Must be ${maxLength} characters or fewer.`;

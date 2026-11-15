@@ -100,13 +100,24 @@ test("accepts names, schools and emails from outside the US and outside UCSB", (
     { preferredFirstName: "Αλέξανδρος", lastName: "Παπαδόπουλος" },
     { preferredFirstName: "Zoë", lastName: "van der Berg" },
     { email: "student@iitb.ac.in", country: "india", school: "Indian Institute of Technology Bombay" },
-    { email: "first.last+makesb@student.tu-berlin.de", country: "germany", school: "other" },
-    { email: "someone@gmail.com", country: "other", school: "out-of-state" },
+    { email: "first.last+makesb@student.tu-berlin.de", country: "germany", school: "Technische Universität Berlin" },
+    // Typed through "Other" > "What school?".
+    { email: "someone@gmail.com", country: "other", school: "Maker Academy of Anywhere" },
   ];
   for (const overrides of cases) {
     const result = validateApplication(validForm(overrides));
     assert.equal(result.ok, true, JSON.stringify(overrides));
   }
+});
+
+test("the old catch-all school buckets are rejected; the picker stores a name instead", () => {
+  for (const school of ["other", "Other", "out-of-state", "other-cc", "other-csu", " OTHER "]) {
+    const result = validateApplication(validForm({ school }));
+    assert.equal(result.ok, false, school);
+    assert.equal(result.errors.school, "Enter the name of your school.");
+  }
+  // A school whose name merely starts with one of those words is fine.
+  assert.equal(validateApplication(validForm({ school: "Other Hill College" })).ok, true);
 });
 
 test("length limits count characters, so non-Latin names get the full allowance", () => {

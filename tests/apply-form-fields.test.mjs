@@ -21,7 +21,6 @@ async function loadFieldRenderer() {
     "react/jsx-runtime": { jsx, jsxs: jsx, Fragment: "fragment" },
     "./dropdown": { Dropdown: "Dropdown" },
     "./file-upload-field": { FileUploadField: "FileUploadField" },
-    // Present once the school picker (PR #14) is merged.
     "./school-combobox": { SchoolCombobox: "SchoolCombobox" },
   };
   const exports = {};
@@ -88,10 +87,12 @@ test("the form has no UCSB-only or US-only fields (PERM number, state, ZIP, phon
   for (const word of ["perm", "zip", "postal", "state", "ssn", "tel"]) {
     assert.ok(!new RegExp(`\\b${word}\\b`).test(text), word);
   }
+  // Schools come from the searchable picker; "Other" is its own last row that
+  // asks "What school?" (see tests/schools.test.mjs), not a stored option.
   const school = formFields.find((field) => field.name === "school");
-  if (school.options) {
-    assert.ok(school.options.some((option) => option.value === "other"), "non-listed schools have a choice");
-  }
+  assert.equal(school.type, "school");
+  assert.equal(school.options, undefined);
+  assert.equal(school.requirement, "required");
 });
 
 // ------------------------------------------------------------- rate limits

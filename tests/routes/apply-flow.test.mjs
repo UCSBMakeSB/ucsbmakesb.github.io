@@ -364,6 +364,18 @@ describe("portal: post-admission details are optional", () => {
     assert.equal(db.tables.applications[0].mobile_number, null);
   });
 
+  it("the profile stores the typed name from Other and refuses the old buckets", async () => {
+    const typed = await patchProfile({ school: "Maker Academy of Anywhere" });
+    assert.equal(typed.status, 200);
+    assert.equal(db.tables.applications[0].school, "Maker Academy of Anywhere");
+    for (const school of ["other", "other-cc", "other-csu", "out-of-state"]) {
+      const response = await patchProfile({ school });
+      assert.equal(response.status, 400, school);
+      assert.ok((await response.json()).fields.school);
+    }
+    assert.equal(db.tables.applications[0].school, "Maker Academy of Anywhere");
+  });
+
   it("the profile still requires what admission is decided on", async () => {
     const response = await patchProfile({ preferredFirstName: "", major: "", school: "" });
     assert.equal(response.status, 400);
