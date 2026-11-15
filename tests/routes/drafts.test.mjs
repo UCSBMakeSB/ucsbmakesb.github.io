@@ -62,17 +62,17 @@ describe("POST /api/apply/draft (create a draft)", () => {
   const submit = (overrides) => draftRoute.POST(formRequest("/api/apply/draft", validApplicationForm(overrides)));
 
   it("rejects an invalid form with per-field errors and stores nothing", async () => {
-    const response = await submit({ email: "not-an-email", waiver: undefined });
+    const response = await submit({ email: "not-an-email", major: undefined });
     assert.equal(response.status, 400);
     const body = await response.json();
-    assert.ok(body.fields.email && body.fields.waiver);
+    assert.ok(body.fields.email && body.fields.major);
     assert.equal(db.tables.application_drafts.length, 0);
   });
 
   it("does not consume draft rate limits for invalid forms", async () => {
     db.rateLimited.add("draftCreationIp");
     db.rateLimited.add("draftCreationEmail");
-    const response = await submit({ email: "not-an-email", waiver: undefined });
+    const response = await submit({ email: "not-an-email", major: undefined });
     assert.equal(response.status, 400);
     assert.equal(db.tables.application_drafts.length, 0);
   });
@@ -85,7 +85,7 @@ describe("POST /api/apply/draft (create a draft)", () => {
     const [draft] = db.tables.application_drafts;
     assert.equal(draft.email, "gaucho@ucsb.edu");
     assert.equal(draft.payload.email, "gaucho@ucsb.edu");
-    assert.equal(draft.payload.waiver_accepted, true);
+    assert.equal(draft.payload.application_question_1, "I want to build a robot.");
     assert.equal(draft.resume_path, `drafts/${draft.id}.pdf`);
     assert.equal(db.storage.get(`resumes/${draft.resume_path}`).contentType, "application/pdf");
 
@@ -122,6 +122,27 @@ describe("POST /api/apply/draft (create a draft)", () => {
     assert.equal(response.status, 200);
     assert.equal(db.tables.application_drafts.length, 1);
     assert.equal(response.cookies.get(DRAFT_COOKIE).value, existing.id);
+  });
+
+  it("re-submitting saves the NEW answers and resume (it used to keep the old ones silently)", async () => {
+    const existing = addDraft({ email: "gaucho@ucsb.edu", resumePath: "drafts/old.pdf" });
+    const response = await submit({ preferredFirstName: "Corrected", resume: pdf("new.pdf") });
+    assert.equal(response.status, 200);
+
+    const [draft] = db.tables.application_drafts;
+    assert.equal(draft.id, existing.id);
+    assert.equal(draft.payload.preferred_first_name, "Corrected");
+    assert.notEqual(draft.resume_path, "drafts/old.pdf");
+    assert.ok(db.storage.has(`resumes/${draft.resume_path}`), "the new resume is stored");
+    assert.ok(!db.storage.has("resumes/drafts/old.pdf"), "the replaced resume is not orphaned");
+  });
+
+  it("re-submitting without a resume keeps the one already uploaded", async () => {
+    addDraft({ email: "gaucho@ucsb.edu", resumePath: "drafts/keep.pdf" });
+    const response = await submit({ resume: undefined });
+    assert.equal(response.status, 200);
+    assert.equal(db.tables.application_drafts[0].resume_path, "drafts/keep.pdf");
+    assert.ok(db.storage.has("resumes/drafts/keep.pdf"));
   });
 
   it("an expired draft is replaced and its old resume file is deleted", async () => {
@@ -173,17 +194,17 @@ describe("claim-draft: expired, missing and already-claimed drafts", () => {
   const claim = (id, query = "") =>
     claimRoute.POST(jsonRequest(`/api/apply/claim-draft${query}`, id ? withCookie(id) : {}));
 
-  it("no cookie: 404 as JSON, or a redirect to /auth/confirmed when arriving from the email link", async () => {
+  it("nothing to claim: 404 as JSON, or the /apply form for a browser (never a page that bounces back)", async () => {
     assert.equal((await claim(undefined)).status, 404);
     const redirected = await claimRoute.GET(getRequest("/api/apply/claim-draft?next=/auth/confirmed"));
-    assert.equal(redirectPath(redirected), "/auth/confirmed");
+    assert.equal(redirectPath(redirected), "/apply");
   });
 
-  it("unknown draft: 410, or redirect to /auth?error=draft_expired", async () => {
+  it("unknown draft: 410, or redirect to /apply with a draft_expired notice", async () => {
     const id = "11111111-1111-1111-1111-111111111111";
     assert.equal((await claim(id)).status, 410);
     const redirected = await claimRoute.GET(getRequest("/api/apply/claim-draft?next=/auth/confirmed", withCookie(id)));
-    assert.equal(redirectPath(redirected), "/auth?error=draft_expired");
+    assert.equal(redirectPath(redirected), "/apply?notice=draft_expired");
   });
 
   it("expired draft: 410, no application created, draft left for cleanup", async () => {
@@ -193,7 +214,7 @@ describe("claim-draft: expired, missing and already-claimed drafts", () => {
     assert.match((await response.json()).error, /expired/i);
     assert.equal(db.tables.applications.length, 0);
     const redirected = await claimRoute.GET(getRequest("/api/apply/claim-draft?next=/auth/confirmed", withCookie(draft.id)));
-    assert.equal(redirectPath(redirected), "/auth?error=draft_expired");
+    assert.equal(redirectPath(redirected), "/apply?notice=draft_expired");
   });
 
   it("already-claimed draft: 410 saying it is already linked, redirect uses draft_claimed, nothing created", async () => {
@@ -203,7 +224,7 @@ describe("claim-draft: expired, missing and already-claimed drafts", () => {
     assert.match((await response.json()).error, /already been linked/i);
     assert.equal(db.tables.applications.length, 0);
     const redirected = await claimRoute.GET(getRequest("/api/apply/claim-draft?next=/auth/confirmed", withCookie(draft.id)));
-    assert.equal(redirectPath(redirected), "/auth?error=draft_claimed");
+    assert.equal(redirectPath(redirected), "/apply?notice=draft_claimed");
   });
 });
 

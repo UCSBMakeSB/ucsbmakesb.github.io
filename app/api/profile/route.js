@@ -4,15 +4,19 @@ import { revalidatePortalAccount } from "../../../lib/portal-data";
 
 export const runtime = "nodejs";
 
+// form field name -> [database column, max length, required]
 const PROFILE_FIELDS = {
   preferredFirstName: ["preferred_first_name", 100, true],
-  lastName: ["last_name", 100, true],
-  mobileNumber: ["mobile_number", 40, true],
-  emergencyContactName: ["emergency_contact_name", 150, true],
-  emergencyContactMobileNumber: ["emergency_contact_mobile_number", 40, true],
+  lastName: ["last_name", 100, false],
+  // ASK AFTER ADMISSION: these are no longer on the application form, so they
+  // are optional here until someone is admitted. Make them required again in
+  // the post-admission step (was: true).
+  mobileNumber: ["mobile_number", 40, false],
+  emergencyContactName: ["emergency_contact_name", 150, false],
+  emergencyContactMobileNumber: ["emergency_contact_mobile_number", 40, false],
   major: ["major", 100, true],
   year: ["year", 100, true],
-  age: ["age", 100, true],
+  age: ["age", 100, false],
   country: ["country", 100, true],
   school: ["school", 200, true],
   "food-allergies": ["food_allergies", 500, false],
@@ -29,7 +33,7 @@ async function getAuthenticatedUser() {
 function applicationToAccount(application, email) {
   return {
     firstName: application.preferred_first_name,
-    lastName: application.last_name,
+    lastName: application.last_name ?? "",
     email: email ?? application.email,
     mobileNumber: application.mobile_number,
     emergencyContactName: application.emergency_contact_name,

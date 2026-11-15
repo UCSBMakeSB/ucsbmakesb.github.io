@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { beforeEach, describe, it } from "node:test";
 import { DRAFT_COOKIE, jsonRequest } from "../support/helpers.mjs";
 import { addApplication, addDraft, addUser, db, failNext, resetDb } from "../support/fakes/db.mjs";
+import { DRAFT_COOKIE_MAX_AGE } from "../../lib/draft.js";
 
 const { POST } = await import("../../app/api/auth/prepare-signup/route.js");
 
@@ -36,7 +37,7 @@ describe("signup preflight states", () => {
     }
   });
 
-  it("draft_ready: an active draft sets a short-lived, httpOnly draft cookie", async () => {
+  it("draft_ready: an active draft sets an httpOnly draft cookie", async () => {
     const draft = addDraft({ email: "gaucho@ucsb.edu" });
     const response = await preflight("Gaucho@UCSB.edu");
     assert.deepEqual(await response.json(), { code: "draft_ready" });
@@ -46,7 +47,7 @@ describe("signup preflight states", () => {
     assert.equal(cookie.httpOnly, true);
     assert.equal(cookie.sameSite, "lax");
     assert.equal(cookie.path, "/");
-    assert.equal(cookie.maxAge, 30 * 60);
+    assert.equal(cookie.maxAge, DRAFT_COOKIE_MAX_AGE);
   });
 
   it("draft_ready picks the newest ACTIVE draft when older ones are expired", async () => {

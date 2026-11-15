@@ -36,6 +36,14 @@ export const ages = [
   { value: "over-22", label: ">22" },
 ];
 
+// Keep in sync with SHORT_ANSWER_MAX_LENGTH in lib/application-validation.js.
+const SHORT_ANSWER_MAX_LENGTH = 2000;
+
+// About formFields (further down): it is the initial application and holds
+// only what is needed to decide admission, so a student can finish it in a
+// couple of minutes. Anything only needed from admitted students is commented
+// out there ("ASK AFTER ADMISSION") and lives in postAdmissionFields instead.
+
 export const countries = [
   { value: "united-states", label: "United States of America" },
   { value: "afghanistan", label: "Afghanistan" },
@@ -236,7 +244,8 @@ export const formFields = [
     name: "lastName",
     label: "Last name",
     inputType: "text",
-    requirement: "required",
+    // Optional so applicants who go by a single name can still apply.
+    requirement: "optional",
     autoComplete: "family-name",
   },
   {
@@ -248,31 +257,33 @@ export const formFields = [
     autoComplete: "email",
     requirement: "required",
   },
-  {
-    type: "input",
-    id: "mobile-number",
-    name: "mobileNumber",
-    label: "Mobile number",
-    inputType: "tel",
-    autoComplete: "tel",
-    requirement: "required",
-  },
-  {
-    type: "input",
-    id: "emergency-contact-name",
-    name: "emergencyContactName",
-    label: "Emergency contact name",
-    inputType: "text",
-    requirement: "required",
-  },
-  {
-    type: "input",
-    id: "emergency-contact-mobile-number",
-    name: "emergencyContactMobileNumber",
-    label: "Emergency contact mobile number",
-    inputType: "tel",
-    requirement: "required",
-  },
+  // ASK AFTER ADMISSION: restore in the post-admission portal.
+  // (Live, optional copy for the portal: postAdmissionFields below.)
+  // {
+  //   type: "input",
+  //   id: "mobile-number",
+  //   name: "mobileNumber",
+  //   label: "Mobile number",
+  //   inputType: "tel",
+  //   autoComplete: "tel",
+  //   requirement: "required",
+  // },
+  // {
+  //   type: "input",
+  //   id: "emergency-contact-name",
+  //   name: "emergencyContactName",
+  //   label: "Emergency contact name",
+  //   inputType: "text",
+  //   requirement: "required",
+  // },
+  // {
+  //   type: "input",
+  //   id: "emergency-contact-mobile-number",
+  //   name: "emergencyContactMobileNumber",
+  //   label: "Emergency contact mobile number",
+  //   inputType: "tel",
+  //   requirement: "required",
+  // },
   {
     type: "select",
     id: "major",
@@ -289,14 +300,16 @@ export const formFields = [
     options: years,
     requirement: "required",
   },
-  {
-    type: "select",
-    id: "age",
-    name: "age",
-    label: "Age",
-    options: ages,
-    requirement: "required",
-  },
+  // ASK AFTER ADMISSION: restore in the post-admission portal.
+  // (Live, optional copy for the portal: postAdmissionFields below.)
+  // {
+  //   type: "select",
+  //   id: "age",
+  //   name: "age",
+  //   label: "Age",
+  //   options: ages,
+  //   requirement: "required",
+  // },
   {
     type: "select",
     id: "country",
@@ -313,22 +326,24 @@ export const formFields = [
     options: schools,
     requirement: "required",
   },
-  {
-    type: "input",
-    id: "food-allergies",
-    name: "food-allergies",
-    label: "Any Food Allergies or Restrictions?",
-    inputType: "text",
-    requirement: "optional",
-  },
-  {
-    type: "checkbox",
-    id: "waiver",
-    name: "waiver",
-    label:
-      "Do you understand that, you are personally responsible for your own well being, including any injury, as well as that of any possessions you may bring?",
-    requirement: "required",
-  },
+  // ASK AFTER ADMISSION: restore in the post-admission portal.
+  // (Live, optional copy for the portal: postAdmissionFields below.)
+  // {
+  //   type: "input",
+  //   id: "food-allergies",
+  //   name: "food-allergies",
+  //   label: "Any Food Allergies or Restrictions?",
+  //   inputType: "text",
+  //   requirement: "optional",
+  // },
+  // {
+  //   type: "checkbox",
+  //   id: "waiver",
+  //   name: "waiver",
+  //   label:
+  //     "Do you understand that, you are personally responsible for your own well being, including any injury, as well as that of any possessions you may bring?",
+  //   requirement: "required",
+  // },
   {
     type: "radio",
     name: "experience",
@@ -339,6 +354,28 @@ export const formFields = [
     ],
     requirement: "required",
   },
+  // The one short answer we need to decide admission. Same column the portal
+  // uses (application_question_1), so the answer shows up there for editing.
+  {
+    type: "essay",
+    id: "application-question-1",
+    name: "applicationQuestion1",
+    label: "Why do you want to come to MakeSB?",
+    helpText: "A sentence or two is plenty.",
+    rows: 3,
+    maxLength: SHORT_ANSWER_MAX_LENGTH,
+    requirement: "required",
+  },
+  {
+    type: "essay",
+    id: "application-question-2",
+    name: "applicationQuestion2",
+    label: "Tell us about a project you're proud of.",
+    helpText: "A few sentences or a link is fine. You can add more later.",
+    rows: 3,
+    maxLength: SHORT_ANSWER_MAX_LENGTH,
+    requirement: "optional",
+  },
   {
     type: "file",
     id: "resume",
@@ -346,18 +383,69 @@ export const formFields = [
     label: "Upload your resume! It will be shared with our sponsors!",
     ariaLabelledby: "resume-label",
     accept: ".pdf,.doc,.docx",
-    helpText: "PDF, DOC, or DOCX",
-    requirement: "recommended",
+    helpText: "PDF, DOC, or DOCX, up to 4 MB. You can also add it later.",
+    requirement: "optional",
   },
 ].map((field) => ({
   ...field,
   section:
-    field.type === "checkbox"
-      ? "standalone"
-      : field.type === "radio" || field.type === "file"
-        ? "secondary"
-        : "primary",
+    field.type === "radio" || field.type === "essay" || field.type === "file"
+      ? "secondary"
+      : "primary",
 }));
+
+// Questions we only need from people who are ADMITTED. They are commented out
+// of the application form above so applying stays short, and live here so the
+// portal can still collect them (all optional until someone is admitted):
+//   - components/portal/profile.jsx        phone, emergency contact, age, food
+//   - components/portal/application-data.js  waiver, travel details
+// When an admission status exists, show these only to admitted applicants and
+// make them required there.
+export const postAdmissionFields = [
+  {
+    type: "input",
+    id: "mobile-number",
+    name: "mobileNumber",
+    label: "Mobile number",
+    inputType: "tel",
+    autoComplete: "tel",
+  },
+  {
+    type: "input",
+    id: "emergency-contact-name",
+    name: "emergencyContactName",
+    label: "Emergency contact name",
+    inputType: "text",
+  },
+  {
+    type: "input",
+    id: "emergency-contact-mobile-number",
+    name: "emergencyContactMobileNumber",
+    label: "Emergency contact mobile number",
+    inputType: "tel",
+  },
+  {
+    type: "select",
+    id: "age",
+    name: "age",
+    label: "Age",
+    options: ages,
+  },
+  {
+    type: "input",
+    id: "food-allergies",
+    name: "food-allergies",
+    label: "Any Food Allergies or Restrictions?",
+    inputType: "text",
+  },
+  {
+    type: "checkbox",
+    id: "waiver",
+    name: "waiver",
+    label:
+      "Do you understand that, you are personally responsible for your own well being, including any injury, as well as that of any possessions you may bring?",
+  },
+].map((field) => ({ ...field, requirement: "optional" }));
 
 export default function FieldRenderer({ field, portal = false }) {
   const requirement = field.requirement ?? "required";
@@ -394,6 +482,8 @@ export default function FieldRenderer({ field, portal = false }) {
             defaultValue={field.defaultValue}
             aria-label={field.ariaLabel}
             required={required}
+            readOnly={field.readOnly}
+            maxLength={field.maxLength}
             className={portal ? "portal-field-input" : "application-form-input"}
           />
         </label>
@@ -406,12 +496,18 @@ export default function FieldRenderer({ field, portal = false }) {
         >
           <span>{field.label}</span>
           <RequirementText />
+          {field.helpText && (
+            <small className="application-field-requirement">
+              {field.helpText}
+            </small>
+          )}
           <textarea
             id={field.id}
             name={field.name}
             defaultValue={field.defaultValue}
             aria-label={field.ariaLabel}
             required={required}
+            maxLength={field.maxLength}
             rows={field.rows ?? 8}
             className={
               portal

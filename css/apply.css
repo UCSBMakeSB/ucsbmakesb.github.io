@@ -290,6 +290,33 @@
   border-bottom-color: var(--sun);
 }
 
+.application-form-input[readonly] {
+  opacity: 0.7;
+}
+
+.application-form-textarea {
+  min-height: 5.5rem;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 250, 240, 0.4);
+  border-radius: 6px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.application-form-textarea:focus {
+  border-color: var(--sun);
+}
+
+.application-form-note {
+  margin: 24px 0 0;
+  color: rgba(255, 250, 240, 0.8);
+  font-size: 0.95rem;
+}
+
+.application-form-status a {
+  color: var(--sun);
+}
+
 .application-form-select {
   cursor: var(--cursor-arrow-active), pointer;
 }
@@ -315,6 +342,11 @@
 @media (min-width: 640px) {
   .application-form-fields {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* Short answers and the resume read better at full width. */
+  .application-form-fields-wide {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 

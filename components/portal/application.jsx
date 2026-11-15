@@ -7,6 +7,7 @@ import {
   applicationGroups,
   applicationQuestions,
   applicationSupplements,
+  postAdmissionSection,
 } from "./application-data";
 
 export default function Application() {
@@ -101,11 +102,31 @@ export default function Application() {
                 portal
                 field={{
                   ...field,
-                  defaultValue:
-                    field.name === "waiver" ? account.waiver : undefined,
                   existingFileName:
                     field.name === "resume" ? account.resume?.name : undefined,
                 }}
+              />
+            ))}
+          </div>
+        </section>
+        <section className="portal-form-section">
+          <div className="portal-card-heading">
+            <h2>{postAdmissionSection.title}</h2>
+            <p>{postAdmissionSection.description}</p>
+          </div>
+          <div className="portal-form-section-fields">
+            {postAdmissionSection.questions.map((field) => (
+              <FieldRenderer
+                key={field.id}
+                portal
+                field={{ ...field, defaultValue: account[field.name] }}
+              />
+            ))}
+            {postAdmissionSection.fields.map((field) => (
+              <FieldRenderer
+                key={field.name}
+                portal
+                field={{ ...field, defaultValue: Boolean(account.waiver) }}
               />
             ))}
           </div>

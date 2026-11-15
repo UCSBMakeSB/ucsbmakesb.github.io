@@ -20,7 +20,9 @@ const QUESTION_FIELDS = [
   "application_question_8",
 ];
 
-const REQUIRED_QUESTION_FIELDS = new Set(QUESTION_FIELDS.slice(0, 4));
+// Only "Why do you want to come to MakeSB?" is required; it is also asked on
+// the application form. Questions 2-4 used to be required too (slice(0, 4)).
+const REQUIRED_QUESTION_FIELDS = new Set(QUESTION_FIELDS.slice(0, 1));
 const MAX_QUESTION_LENGTH = 10000;
 const RESUME_CONTENT_TYPES = {
   pdf: "application/pdf",
@@ -39,7 +41,7 @@ async function getAuthenticatedUser() {
 function applicationToAccount(application, email) {
   return {
     firstName: application.preferred_first_name,
-    lastName: application.last_name,
+    lastName: application.last_name ?? "",
     email: email ?? application.email,
     mobileNumber: application.mobile_number,
     emergencyContactName: application.emergency_contact_name,

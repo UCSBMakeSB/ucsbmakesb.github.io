@@ -3,28 +3,39 @@
 import Link from "next/link";
 
 import { useState } from "react";
-import FieldRenderer, { formFields } from "../field-renderer";
+import FieldRenderer, { formFields, postAdmissionFields } from "../field-renderer";
 import { usePortalAccount } from "./account";
+
+const profileFields = [...formFields, ...postAdmissionFields];
 
 const profileGroups = [
   {
     title: "Personal Details",
-    description: "How we will contact you about MakeSB.",
-    names: ["preferredFirstName", "lastName", "mobileNumber"],
+    description: "How we will address you.",
+    names: ["preferredFirstName", "lastName"],
   },
   {
-    title: "Emergency Info",
-    description: "Someone we can contact in an emergency.",
+    title: "Education",
+    description: "Information about your background and education.",
+    names: ["major", "year", "country", "school"],
+  },
+  // ASK AFTER ADMISSION: everything below was removed from the application
+  // form. It is optional here so nobody is blocked; once admission decisions
+  // exist, show these groups only to admitted applicants and require them.
+  {
+    title: "If You're Admitted: Contact",
+    description:
+      "Optional for now. We only need this if you're admitted, so feel free to skip it.",
+    names: ["mobileNumber", "age"],
+  },
+  {
+    title: "If You're Admitted: Emergency Info",
+    description: "Optional for now. Someone we can contact in an emergency.",
     names: ["emergencyContactName", "emergencyContactMobileNumber"],
   },
   {
-    title: "Demographics",
-    description: "Information about your background and education.",
-    names: ["major", "year", "age", "country", "school"],
-  },
-  {
-    title: "Food Details",
-    description: "Tell us about any food allergies or restrictions.",
+    title: "If You're Admitted: Food Details",
+    description: "Optional for now. Any food allergies or restrictions.",
     names: ["food-allergies"],
   },
 ];
@@ -103,7 +114,7 @@ export default function Profile() {
               </div>
               <div className="portal-form-section-fields">
                 {group.names.map((name) => {
-                  const field = formFields.find(
+                  const field = profileFields.find(
                     (candidate) => candidate.name === name,
                   );
                   return (

@@ -5,7 +5,8 @@ import { FaqItem } from "../../components/faq-section";
 import { Header, Footer } from "../../components/page-layout";
 import { ScrollClippedForm } from "../../components/scroll-clipped-form";
 import FieldRenderer, { formFields } from "../../components/field-renderer";
-import { getSupabaseServer } from "../../lib/supabase-server";
+import { escapeLikePattern } from "../../lib/db-helpers";
+import { getSupabaseAdmin, getSupabaseServer } from "../../lib/supabase-server";
 
 const sponsorUrl =
   "mailto:patrick_liu@ucsb.edu?subject=MakeSB%202027%20Sponsorship";
@@ -28,7 +29,47 @@ We are also looking for volunteers, mentors, faculty, industry guests, and alumn
 Prizes and Tracks will be released soon!
 `;
 
-export default async function Apply() {
+const NOTICES = {
+  draft_expired:
+    "Your saved application expired before it was linked to your account. Please submit it again, it only takes a couple of minutes.",
+  draft_claimed:
+    "That application is already being linked to an account. Open the portal, or submit the form again if it is not there.",
+  email_mismatch:
+    "That application was started with a different email than the one you're signed in with. Submit it again here and it will be saved to this account.",
+  claim_failed:
+    "Your answers are saved, but we couldn't finish setting up your portal just now. Please try again in a minute. If it keeps happening, email team@makesb.org.",
+};
+
+// Signed-in applicants normally live in the portal. The form is only shown to
+// a signed-in user when their account has no application yet (for example the
+// saved draft expired), so they are never bounced between /apply and /portal.
+async function getSignedInState(user) {
+  const admin = getSupabaseAdmin();
+  const { data: application, error: applicationError } = await admin
+    .from("applications")
+    .select("id")
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (applicationError) {
+    console.error("Apply page application lookup failed:", applicationError);
+    return { hasApplication: false, hasPendingDraft: false };
+  }
+  if (application) return { hasApplication: true, hasPendingDraft: false };
+
+  const { data: drafts, error: draftError } = await admin
+    .from("application_drafts")
+    .select("id")
+    .ilike("email", escapeLikePattern(user.email ?? ""))
+    .is("claimed_at", null)
+    .gt("expires_at", new Date().toISOString())
+    .limit(1);
+  if (draftError) {
+    console.error("Apply page draft lookup failed:", draftError);
+  }
+  return { hasApplication: false, hasPendingDraft: Boolean(drafts?.length) };
+}
+
+export default async function Apply({ searchParams }) {
   const authConfigured = Boolean(
     (process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL) &&
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
@@ -36,17 +77,31 @@ export default async function Apply() {
   const submissionsConfigured = Boolean(
     authConfigured && process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY,
   );
+  const params = (await searchParams) ?? {};
+  const notice = NOTICES[params.notice] ?? null;
 
-  if (authConfigured) {
+  let signedInEmail = null;
+  let hasPendingDraft = false;
+  if (submissionsConfigured) {
     const supabase = await getSupabaseServer();
     const {
       data: { user },
     } = await supabase.auth.getUser();
 
     if (user) {
-      redirect("/portal/profile");
+      const state = await getSignedInState(user);
+      if (state.hasApplication) {
+        redirect("/portal/profile");
+      }
+      signedInEmail = user.email ?? null;
+      hasPendingDraft = state.hasPendingDraft;
     }
   }
+
+  const fieldFor = (field) =>
+    field.name === "email" && signedInEmail
+      ? { ...field, defaultValue: signedInEmail, readOnly: true }
+      : field;
 
   return (
     <>
@@ -82,25 +137,48 @@ export default async function Apply() {
               Applications are temporarily unavailable. Please try again later.
             </p>
           )}
-          <ApplicationForm className="application-form" disabled={!submissionsConfigured}>
-            <div className="application-form-fields">
-              {formFields
-                .filter((field) => field.section === "primary")
-                .map((field) => (
-                  <FieldRenderer key={field.id} field={field} />
-                ))}
+          <p className="application-form-note">
+            Applying takes about two minutes. We only ask for logistics like
+            emergency contacts and dietary needs later, if you're admitted.
+          </p>
+          {notice && (
+            <p className="application-form-status" data-status="error" role="alert">
+              {notice}
+            </p>
+          )}
+          {hasPendingDraft ? (
+            <div className="application-form-status" role="status">
+              <p>
+                We have your application on file for {signedInEmail}. One more
+                step links it to your account.
+              </p>
+              <p>
+                <a href="/api/apply/claim-draft?next=/portal/application">
+                  Finish setting up my portal
+                </a>
+              </p>
             </div>
-            <FieldRenderer
-              field={formFields.find((field) => field.section === "standalone")}
-            />
-            <div className="application-form-fields">
-              {formFields
-                .filter((field) => field.section === "secondary")
-                .map((field) => (
-                  <FieldRenderer key={field.id || field.name} field={field} />
-                ))}
-            </div>
-          </ApplicationForm>
+          ) : (
+            <ApplicationForm className="application-form" disabled={!submissionsConfigured}>
+              <div className="application-form-fields">
+                {formFields
+                  .filter((field) => field.section === "primary")
+                  .map((field) => (
+                    <FieldRenderer key={field.id} field={fieldFor(field)} />
+                  ))}
+              </div>
+              {/* The waiver checkbox used to render here (section
+                  "standalone"). ASK AFTER ADMISSION: it now lives in the
+                  portal, see postAdmissionFields in components/field-renderer.jsx. */}
+              <div className="application-form-fields application-form-fields-wide">
+                {formFields
+                  .filter((field) => field.section === "secondary")
+                  .map((field) => (
+                    <FieldRenderer key={field.id || field.name} field={field} />
+                  ))}
+              </div>
+            </ApplicationForm>
+          )}
         </ScrollClippedForm>
       </main>
 

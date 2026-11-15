@@ -57,8 +57,8 @@ export async function PATCH(request) {
 
     if (!firstName) errors.firstName = "Preferred first name is required.";
     else if (firstName.length > 100) errors.firstName = "Must be 100 characters or fewer.";
-    if (!lastName) errors.lastName = "Last name is required.";
-    else if (lastName.length > 100) errors.lastName = "Must be 100 characters or fewer.";
+    // Last name is optional (single-name applicants).
+    if (lastName.length > 100) errors.lastName = "Must be 100 characters or fewer.";
     if (Object.keys(errors).length > 0) {
       return NextResponse.json(
         { error: "Please fix the highlighted fields.", fields: errors },
@@ -70,7 +70,7 @@ export async function PATCH(request) {
       .from("applications")
       .update({
         preferred_first_name: firstName,
-        last_name: lastName,
+        last_name: lastName || null,
       })
       .eq("user_id", user.id)
       .select("preferred_first_name, last_name")
@@ -86,7 +86,7 @@ export async function PATCH(request) {
 
     revalidatePortalAccount(user.id);
     return NextResponse.json({
-      account: { firstName: application.preferred_first_name, lastName: application.last_name },
+      account: { firstName: application.preferred_first_name, lastName: application.last_name ?? "" },
     });
   }
 

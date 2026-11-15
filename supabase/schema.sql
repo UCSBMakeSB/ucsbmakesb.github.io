@@ -8,20 +8,24 @@ create table if not exists public.applications (
   user_id uuid references auth.users(id) on delete cascade,
 
   preferred_first_name text not null,
-  last_name text not null,
+  -- Optional: some applicants go by a single name.
+  last_name text,
   email text not null,
-  mobile_number text not null,
-  emergency_contact_name text not null,
-  emergency_contact_mobile_number text not null,
+  -- Asked after admission (portal), so nullable: phone, emergency contact,
+  -- age, food restrictions and the liability waiver.
+  mobile_number text,
+  emergency_contact_name text,
+  emergency_contact_mobile_number text,
 
   major text not null,
   year text not null,
-  age text not null,
+  age text,
   country text not null,
   school text not null,
   food_allergies text,
 
-  waiver_accepted boolean not null check (waiver_accepted),
+  -- NULL until accepted in the portal; never false.
+  waiver_accepted boolean check (waiver_accepted),
   prior_hackathon_experience boolean not null,
 
   -- Path of the resume inside the private "resumes" storage bucket.
@@ -55,7 +59,7 @@ create table if not exists public.application_drafts (
   payload jsonb not null,
   resume_path text,
   created_at timestamptz not null default now(),
-  expires_at timestamptz not null default (now() + interval '30 minutes'),
+  expires_at timestamptz not null default (now() + interval '30 days'),
   claimed_at timestamptz
 );
 
@@ -75,6 +79,20 @@ alter table public.applications enable row level security;
 
 alter table public.applications
   alter column food_allergies drop not null;
+
+-- 2026-11-14: the application form no longer asks for these (they are asked
+-- after admission), and last name is optional. Existing databases need this;
+-- it is also in supabase/2026-11-14-apply-simplify.sql on its own.
+alter table public.applications
+  alter column last_name drop not null,
+  alter column mobile_number drop not null,
+  alter column emergency_contact_name drop not null,
+  alter column emergency_contact_mobile_number drop not null,
+  alter column age drop not null,
+  alter column waiver_accepted drop not null;
+
+alter table public.application_drafts
+  alter column expires_at set default (now() + interval '30 days');
 
 alter table public.applications
   add column if not exists application_question_1 text,

@@ -8,26 +8,35 @@ import {
   rateLimitResponse,
 } from "../../../../lib/rate-limit";
 import { escapeLikePattern } from "../../../../lib/db-helpers";
-import { getSupabaseAdmin } from "../../../../lib/supabase-server";
+import { DRAFT_COOKIE, draftCookieOptions, draftExpiresAt } from "../../../../lib/draft";
+import { getSupabaseAdmin, getSupabaseServer } from "../../../../lib/supabase-server";
 
 export const runtime = "nodejs";
 
-const DRAFT_COOKIE = "makesb_application_draft";
-const DRAFT_MAX_AGE = 30 * 60;
 const RESUME_CONTENT_TYPES = {
   pdf: "application/pdf",
   doc: "application/msword",
   docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 };
 
-function draftCookieOptions() {
-  return {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: DRAFT_MAX_AGE,
-  };
+// Where a signed-in applicant goes after submitting: straight to the claim
+// step, skipping account creation.
+const SIGNED_IN_NEXT = "/api/apply/claim-draft?next=/portal/application";
+
+// The applicant may already be signed in (their earlier draft expired, or they
+// made the account first). A confirmed session proves the inbox, so the
+// application is saved under that address whatever the form says.
+async function getConfirmedSessionUser() {
+  try {
+    const supabase = await getSupabaseServer();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    return user?.email && user.email_confirmed_at ? user : null;
+  } catch (error) {
+    console.error("Application draft session lookup failed:", error);
+    return null;
+  }
 }
 
 export async function GET(request) {
@@ -73,15 +82,30 @@ export async function POST(request) {
     );
   }
 
+  const sessionUser = await getConfirmedSessionUser();
+  if (sessionUser) {
+    formData.set("email", sessionUser.email);
+  }
+
   const result = validateApplication(formData);
   if (!result.ok) {
+    // A tab left open from before the form was shortened still posts the old
+    // field set and lacks the new ones; tell that applicant what to do.
+    const staleForm =
+      formData.has("emergencyContactName") && !formData.has("applicationQuestion1");
     return NextResponse.json(
-      { error: "Please fix the highlighted fields.", fields: result.errors },
+      {
+        error: staleForm
+          ? "We just made this form shorter. Please refresh the page and submit again."
+          : "Please fix the highlighted fields.",
+        fields: staleForm ? {} : result.errors,
+      },
       { status: 400 },
     );
   }
 
   const { row, resume } = result;
+  const okBody = sessionUser ? { ok: true, next: SIGNED_IN_NEXT } : { ok: true };
   const limiters = getRateLimiters();
   const ipResult = await limiters.draftCreationIp.limit(
     `ip:${getClientIp(request)}`,
@@ -161,7 +185,72 @@ export async function POST(request) {
   }
 
   if (existingDraft && new Date(existingDraft.expires_at) > new Date()) {
-    const response = NextResponse.json({ ok: true }, { status: 200 });
+    // Same applicant submitting again before creating their account (fixing a
+    // typo, or coming back days later). Keep the draft id, but save what they
+    // just typed: this used to return the OLD answers silently.
+    const ext = resume ? getResumeExtension(resume) : null;
+    const newResumePath = ext
+      ? `drafts/${existingDraft.id}-${randomUUID()}.${ext}`
+      : null;
+
+    if (resume) {
+      const { error: uploadError } = await supabase.storage
+        .from("resumes")
+        .upload(newResumePath, await resume.arrayBuffer(), {
+          contentType: RESUME_CONTENT_TYPES[ext],
+          upsert: false,
+        });
+      if (uploadError) {
+        console.error("Application draft resume upload failed:", uploadError);
+        return NextResponse.json(
+          { error: "We couldn't upload your resume. Please try again." },
+          { status: 500 },
+        );
+      }
+    }
+
+    const { data: updatedDraft, error: updateError } = await supabase
+      .from("application_drafts")
+      .update({
+        payload: row,
+        resume_path: newResumePath ?? existingDraft.resume_path,
+        expires_at: draftExpiresAt(),
+      })
+      .eq("id", existingDraft.id)
+      .is("claimed_at", null)
+      .select("id")
+      .maybeSingle();
+
+    if (updateError || !updatedDraft) {
+      if (updateError) console.error("Application draft update failed:", updateError);
+      if (newResumePath) {
+        await supabase.storage.from("resumes").remove([newResumePath]);
+      }
+      // No row updated means the draft was claimed a moment ago.
+      return updateError
+        ? NextResponse.json(
+            { error: "Something went wrong saving your application. Please try again." },
+            { status: 500 },
+          )
+        : NextResponse.json(
+            {
+              code: "application_exists",
+              error: "You already have an account for this email. Please log in to continue.",
+            },
+            { status: 409 },
+          );
+    }
+
+    if (newResumePath && existingDraft.resume_path) {
+      const { error: removeError } = await supabase.storage
+        .from("resumes")
+        .remove([existingDraft.resume_path]);
+      if (removeError) {
+        console.error("Replaced draft resume cleanup failed:", removeError);
+      }
+    }
+
+    const response = NextResponse.json(okBody, { status: 200 });
     response.cookies.set(
       DRAFT_COOKIE,
       existingDraft.id,
@@ -196,6 +285,9 @@ export async function POST(request) {
     email: row.email,
     payload: row,
     resume_path: resumePath,
+    // Set explicitly: the column default is 30 minutes, which lost the
+    // application of anyone who confirmed their email later than that.
+    expires_at: draftExpiresAt(),
   });
 
   if (insertError) {
@@ -230,7 +322,7 @@ export async function POST(request) {
     }
   }
 
-  const response = NextResponse.json({ ok: true }, { status: 201 });
+  const response = NextResponse.json(okBody, { status: 201 });
   response.cookies.set(DRAFT_COOKIE, id, draftCookieOptions());
   return response;
 }

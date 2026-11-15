@@ -12,6 +12,11 @@ export const db = {
   users: new Map(), // id -> { id, email, password, email_confirmed_at }
   currentUserId: null,
   codes: new Map(), // auth code -> { userId } | { error }
+  otps: new Map(), // email-link token hash -> { userId, type } | { error }
+  // false = the database after supabase/2026-11-14-apply-simplify.sql (the
+  // post-admission columns are nullable). true = a database where that
+  // migration was never run, to test what applicants see in that case.
+  legacyNotNull: false,
   rateLimited: new Set(), // limiter names that currently deny
   failures: new Map(), // "table.op" -> error (consumed once)
   calls: [], // log of side effects worth asserting on
@@ -27,6 +32,8 @@ export function resetDb() {
   db.users.clear();
   db.currentUserId = null;
   db.codes.clear();
+  db.otps.clear();
+  db.legacyNotNull = false;
   db.rateLimited.clear();
   db.failures.clear();
   db.calls.length = 0;
@@ -144,6 +151,40 @@ function likeToRegExp(pattern) {
     }
   }
   return new RegExp(`${source}$`, "is");
+}
+
+// NOT NULL columns of public.applications, as in supabase/schema.sql.
+const REQUIRED_APPLICATION_COLUMNS = [
+  "preferred_first_name",
+  "email",
+  "major",
+  "year",
+  "country",
+  "school",
+  "prior_hackathon_experience",
+];
+// Additionally NOT NULL before supabase/2026-11-14-apply-simplify.sql.
+const LEGACY_REQUIRED_APPLICATION_COLUMNS = [
+  "last_name",
+  "mobile_number",
+  "emergency_contact_name",
+  "emergency_contact_mobile_number",
+  "age",
+  "waiver_accepted",
+];
+
+function notNullViolation(table, row) {
+  if (table !== "applications") return null;
+  const required = db.legacyNotNull
+    ? [...REQUIRED_APPLICATION_COLUMNS, ...LEGACY_REQUIRED_APPLICATION_COLUMNS]
+    : REQUIRED_APPLICATION_COLUMNS;
+  const column = required.find((name) => row[name] === null || row[name] === undefined);
+  return column
+    ? {
+        code: "23502",
+        message: `null value in column "${column}" of relation "applications" violates not-null constraint`,
+      }
+    : null;
 }
 
 const UNIQUE_VIOLATION = {
@@ -271,6 +312,8 @@ class Query {
         if (violatesUnique(this.table, row, null)) {
           return { data: null, error: { ...UNIQUE_VIOLATION } };
         }
+        const missing = notNullViolation(this.table, row);
+        if (missing) return { data: null, error: missing };
         rows.push(row);
         affected.push(row);
       }
@@ -281,6 +324,8 @@ class Query {
         if (violatesUnique(this.table, next, row)) {
           return { data: null, error: { ...UNIQUE_VIOLATION } };
         }
+        const missing = notNullViolation(this.table, next);
+        if (missing) return { data: null, error: missing };
       }
       for (const row of affected) Object.assign(row, structuredClone(this.payload));
     } else if (this.op === "delete") {
