@@ -63,6 +63,15 @@ export function SponsorsSection() {
               Reach out to us about collaborating!
             </a>
           </p>
+          <p>
+            <a
+              href="https://make-initiative.gitbook.io/make-initiative"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Run a makeathon at your school? Read the Make Initiative docs.
+            </a>
+          </p>
         </div>
       </div>
     </section>

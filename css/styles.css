@@ -853,6 +853,10 @@ a[href]:not(
   color: var(--paper);
 }
 
+.friends p + p {
+  margin-top: 12px;
+}
+
 .friends p a {
   text-decoration: underline;
   text-underline-offset: 5px;
