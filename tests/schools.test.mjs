@@ -11,10 +11,12 @@ import {
   UCSB_VALUE,
   buildSchoolIndex,
   canonicalSchoolKey,
+  compareSchoolHits,
   exactSchool,
   isLegacyBucket,
   fold,
   schoolDisplayName,
+  scoreSchool,
   searchSchools,
   storedSchoolValue,
 } from "../lib/schools.js";
@@ -61,6 +63,34 @@ test("dataset is a compact list of [name, country, aliases?] rows", () => {
   assert.ok(new Set(rows.map((row) => row[1])).size > 150, "many countries");
 });
 
+test("no control characters, stray markers or non-campus rows in the dataset", () => {
+  for (const [name, country] of rows) {
+    // Upstream had curly quotes decoded as U+0093/U+0094 (invisible, and they
+    // would be stored with the application).
+    assert.ok(!/[\u0000-\u001f\u007f-\u009f]/.test(name), JSON.stringify(name));
+    assert.ok(!/[\u0000-\u001f\u007f-\u009f]/.test(country), JSON.stringify(country));
+    assert.ok(!name.includes("|"), name);
+    assert.equal(name, name.trim().replace(/\s+/g, " "), JSON.stringify(name));
+  }
+  const have = new Set(rows.map((row) => row[0]));
+  for (const gone of [
+    "University of Malawi | Old",
+    "California State University System",
+    "University of California, Office of the President",
+  ]) {
+    assert.ok(!have.has(gone), `${gone} should not be selectable`);
+  }
+  assert.ok(have.has("University of Malawi"), "the real University of Malawi stays");
+  assert.ok(have.has('Medical Academy "Ludwik Rydygier" in Bydgoszcz'));
+  assert.ok(!names("uc", 25).some((name) => /Office of the President/.test(name)));
+  assert.ok(!names("cal state", 25).some((name) => /System/.test(name)));
+
+  // The generator is what enforces this, so a regenerated list stays clean.
+  const generator = readFileSync(new URL("../scripts/build-schools.mjs", import.meta.url), "utf8");
+  assert.match(generator, /const DROP = new Set/);
+  assert.match(generator, /function cleanText/);
+});
+
 test("UCSB, SBCC and the old fixed list are all in the dataset", () => {
   const have = new Set(rows.map((row) => row[0]));
   assert.ok(have.has(UCSB_NAME));
@@ -85,6 +115,103 @@ test("searching finds schools by name, acronym and nickname", () => {
   assert.ok(
     names("iit bombay").includes("Indian Institute of Technology, Bombay"),
   );
+});
+
+test("the curated-school bonus needs an alias match or a whole word, not a fragment", () => {
+  // "stan" is a piece of "Stanislaus": CSU Stanislaus used to outrank Stanford.
+  const stan = names("stan");
+  assert.equal(stan[0], "Stanford University");
+  assert.ok(stan.includes("California State University, Stanislaus"), "still findable");
+  assert.ok(
+    stan.indexOf("Stanford University") < stan.indexOf("California State University, Stanislaus"),
+  );
+
+  // Exact aliases and names still win outright.
+  assert.equal(names("ucsb")[0], UCSB_NAME);
+  assert.equal(names("UCSB")[0], UCSB_NAME);
+  assert.equal(names("mit")[0], "Massachusetts Institute of Technology");
+  assert.equal(names("eth")[0], "ETH Zurich");
+  assert.equal(names("ETH Zurich")[0], "ETH Zurich");
+  assert.equal(names("sbcc")[0], "Santa Barbara City College");
+
+  // A lone letter that merely appears inside a curated name gives no bonus:
+  // "u" used to list ETH Zurich ("Zurich") and Humboldt State.
+  for (const letter of ["u", "a", "o"]) {
+    const top = names(letter);
+    assert.ok(!top.includes("ETH Zurich"), `"${letter}" lists ETH Zurich`);
+    assert.ok(!top.includes("Humboldt State University"), `"${letter}" lists Humboldt State`);
+  }
+  assert.equal(names("u")[0], UCSB_NAME, "the host still leads its own alias prefix");
+
+  // Fragments of a name word never get the bonus...
+  const score = (name, query) => {
+    const entry = index.find((candidate) => candidate.name === name);
+    return scoreSchool(entry, fold(query), fold(query).split(" "));
+  };
+  assert.equal(score("California State University, Stanislaus", "stan"), 3);
+  assert.equal(score("ETH Zurich", "u"), 4);
+  assert.equal(score("University of Tokyo", "toky"), 3);
+  // ...whole words and alias prefixes do.
+  assert.equal(score("University of Tokyo", "tokyo"), 1);
+  assert.equal(score(UCSB_NAME, "santa barbara"), 1);
+  assert.equal(score(UCSB_NAME, "uc santa b"), 3);
+  assert.equal(score(UCSB_NAME, "uc"), 0);
+  assert.equal(score(UCSB_NAME, "gau"), 1);
+  assert.equal(score(LEGACY_SCHOOL_NAMES.csulb, "cal state long beach"), 1);
+  assert.equal(score("Stanford University", "stan"), 1);
+  assert.equal(score("Stanford University", "zzz"), null);
+});
+
+test("keeping only the best rows gives exactly the first rows of a full sort", () => {
+  const reference = (query, limit) => {
+    const folded = fold(query);
+    if (!folded) return [];
+    const tokens = folded.split(" ");
+    const hits = [];
+    for (const entry of index) {
+      const score = scoreSchool(entry, folded, tokens);
+      if (score !== null) hits.push({ entry, score });
+    }
+    return hits.sort(compareSchoolHits).slice(0, limit).map((hit) => hit.entry.name);
+  };
+  const queries = [
+    ..."abcdefghijklmnopqrstuvwxyz",
+    "un", "uni", "university", "university of", "uc", "ca", "cal", "st", "sa", "san",
+    "stan", "santa", "santa b", "santa barbara", "tokyo", "toky", "ucsb", "mit", "eth",
+    "college", "institute of technology", "de", "la", "of", "new york", "é", "universidad",
+  ];
+  for (const query of queries) {
+    for (const limit of [1, 8, 25]) {
+      assert.deepEqual(names(query, limit), reference(query, limit), `"${query}" limit ${limit}`);
+    }
+  }
+  assert.deepEqual(searchSchools(index, "u", 0), []);
+});
+
+test("a one-letter search stays fast enough to run while typing", () => {
+  // The old search sorted every match: 30 to 120 ms per keystroke on a laptop.
+  // This is a loose ceiling (CI machines vary), not a benchmark.
+  for (const query of ["a", "u", "s", "un"]) names(query);
+  const started = performance.now();
+  for (let run = 0; run < 5; run += 1) {
+    for (const query of ["a", "u", "s", "un"]) names(query);
+  }
+  const perSearch = (performance.now() - started) / 20;
+  assert.ok(perSearch < 25, `one search took ${perSearch.toFixed(1)} ms`);
+});
+
+test("fold's ASCII shortcut gives the same answer as the general path", () => {
+  const general = (text) =>
+    String(text ?? "")
+      .normalize("NFD")
+      .replace(/\p{M}+/gu, "")
+      .toLowerCase()
+      .replace(/[^\p{L}\p{N}]+/gu, " ")
+      .trim();
+  for (const [name] of rows) assert.equal(fold(name), general(name), name);
+  for (const text of ["", "  ", "A&M -- St. John's (Main)", "Zürich", "École 42", "東京大学", "a\tb\nc", "__x__", undefined, null, 42]) {
+    assert.equal(fold(text), general(text), String(text));
+  }
 });
 
 test("searching ignores case, accents and punctuation, and caps results", () => {

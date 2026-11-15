@@ -6,6 +6,7 @@ import {
   formRequest,
   getRequest,
   jsonRequest,
+  redirectPath,
   validApplicationForm,
 } from "../support/helpers.mjs";
 import { addApplication, addDraft, addUser, db, resetDb, signInAs } from "../support/fakes/db.mjs";
@@ -56,8 +57,6 @@ describe("unauthenticated API requests", () => {
     },
     "POST /api/apply/claim-draft": () =>
       claimDraft.POST(jsonRequest("/api/apply/claim-draft", { cookies: { [DRAFT_COOKIE]: draft.id } })),
-    "GET /api/apply/claim-draft": () =>
-      claimDraft.GET(getRequest("/api/apply/claim-draft?next=/portal", { cookies: { [DRAFT_COOKIE]: draft.id } })),
   };
 
   for (const [name, call] of Object.entries(protectedCalls)) {
@@ -69,6 +68,14 @@ describe("unauthenticated API requests", () => {
       assert.equal(db.calls.filter((c) => c.type === "signInWithPassword").length, 0);
     });
   }
+
+  it("GET /api/apply/claim-draft (a browser navigation) is sent to sign-in and changes nothing", async () => {
+    const response = await claimDraft.GET(
+      getRequest("/api/apply/claim-draft?next=/portal", { cookies: { [DRAFT_COOKIE]: draft.id } }),
+    );
+    assert.equal(redirectPath(response), "/login?next=%2Fportal");
+    assert.equal(snapshot(), before, "no data may change for an unauthenticated caller");
+  });
 
   it("a stolen draft cookie alone cannot claim a draft without a session", async () => {
     const response = await claimDraft.POST(

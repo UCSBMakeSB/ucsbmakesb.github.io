@@ -14,7 +14,7 @@ import {
   redirectPath,
   validApplicationForm,
 } from "../support/helpers.mjs";
-import { addApplication, addDraft, addUser, db, resetDb, signInAs } from "../support/fakes/db.mjs";
+import { addApplication, addDraft, addUser, db, failNext, resetDb, signInAs } from "../support/fakes/db.mjs";
 import { DRAFT_TTL_MS } from "../../lib/draft.js";
 
 const draftRoute = await import("../../app/api/apply/draft/route.js");
@@ -99,10 +99,23 @@ describe("drafts survive a slow or cross-device email confirmation", () => {
     assert.ok(lifetime > 29 * DAY);
   });
 
-  it("re-submitting extends an existing draft's life", async () => {
-    addDraft({ email: "gaucho@ucsb.edu", expiresInMs: 60_000 });
-    await submit({});
+  it("re-submitting from the same browser extends an existing draft's life", async () => {
+    const draft = addDraft({ email: "gaucho@ucsb.edu", expiresInMs: 60_000 });
+    await submit({}, { cookies: { [DRAFT_COOKIE]: draft.id } });
+    assert.equal(db.tables.application_drafts.length, 1);
     assert.ok(new Date(db.tables.application_drafts[0].expires_at) - Date.now() > 29 * DAY);
+  });
+
+  it("after someone else submits for the same address, the applicant's own browser still links their own answers", async () => {
+    const mine = await submit({ preferredFirstName: "Real" });
+    const myCookie = mine.cookies.get(DRAFT_COOKIE).value;
+    await submit({ preferredFirstName: "Planted" }); // no cookie: a separate draft
+    assert.equal(db.tables.application_drafts.length, 2);
+
+    signInAs(user);
+    const response = await claimPost({ cookies: { [DRAFT_COOKIE]: myCookie } });
+    assert.equal(response.status, 200);
+    assert.equal(db.tables.applications[0].preferred_first_name, "Real");
   });
 
   it("the draft cookie outlives a slow confirmation", async () => {
@@ -206,6 +219,135 @@ describe("no redirect loop between /portal and /apply", () => {
 
     assert.equal(redirectPath(await claimGet("/portal/application")), "/portal/application");
     assert.equal(db.tables.applications[0].email, user.email);
+  });
+
+  it("a signed-in applicant is never dead-ended by a claim that did not finish (draft claimed, no application)", async () => {
+    // The function died between claiming the draft and saving the application.
+    const stuck = addDraft({ email: user.email, claimed: true, resumePath: "drafts/stuck.pdf" });
+
+    // The portal sends them to the claim step, which sends them to the form
+    // (with the notice in the browser that still holds the draft cookie)...
+    assert.equal(redirectPath(await claimGet("/portal")), "/apply");
+    assert.equal(
+      redirectPath(await claimGet("/portal", { cookies: { [DRAFT_COOKIE]: stuck.id } })),
+      "/apply?notice=draft_claimed",
+    );
+
+    // ...and submitting the form used to answer 409 "please log in" for ever.
+    const response = await submit({ preferredFirstName: "Again", resume: undefined });
+    assert.equal(response.status, 200);
+    assert.equal((await response.json()).next, "/api/apply/claim-draft?next=/portal/application");
+
+    const [draft] = db.tables.application_drafts;
+    assert.equal(db.tables.application_drafts.length, 1, "the stuck draft is reused, not duplicated");
+    assert.equal(draft.id, stuck.id);
+    assert.equal(draft.claimed_at, null, "the unfinished claim is released");
+    assert.equal(draft.payload.preferred_first_name, "Again");
+    assert.equal(draft.resume_path, "drafts/stuck.pdf", "the resume they already uploaded is kept");
+    assert.ok(new Date(draft.expires_at) - Date.now() > 29 * DAY);
+
+    assert.equal(
+      redirectPath(await claimGet("/portal/application", { cookies: { [DRAFT_COOKIE]: response.cookies.get(DRAFT_COOKIE).value } })),
+      "/portal/application",
+    );
+    assert.equal(db.tables.applications.length, 1);
+    assert.equal(db.tables.applications[0].user_id, user.id);
+    assert.equal(db.tables.applications[0].preferred_first_name, "Again");
+    assert.equal(db.tables.applications[0].resume_path, `applications/${user.id}.pdf`);
+  });
+
+  it("an anonymous visitor still cannot take over a claimed draft: they are told to sign in", async () => {
+    signInAs(null);
+    const stuck = addDraft({ email: user.email, claimed: true });
+    const before = structuredClone(stuck);
+    const response = await submit({ preferredFirstName: "Mallory" }, { cookies: { [DRAFT_COOKIE]: stuck.id } });
+    assert.equal(response.status, 409);
+    assert.equal((await response.json()).code, "application_exists");
+    assert.deepEqual(db.tables.application_drafts, [before]);
+  });
+
+  it("an application saved for this email with no account on it is linked, not answered with 'please log in'", async () => {
+    const orphan = addApplication({ email: user.email, preferred_first_name: "Earlier" });
+    assert.equal(orphan.user_id, null);
+
+    // Visiting the portal is enough: the claim step links it.
+    assert.equal(redirectPath(await claimGet("/portal")), "/portal");
+    assert.equal(db.tables.applications.length, 1);
+    assert.equal(db.tables.applications[0].user_id, user.id);
+    assert.deepEqual(db.revalidated, [user.id]);
+  });
+
+  it("submitting the form with such an application goes on to the portal instead of a 409", async () => {
+    addApplication({ email: user.email, preferred_first_name: "Earlier" });
+    const response = await submit({});
+    assert.equal(response.status, 200);
+    const body = await response.json();
+    assert.equal(body.next, "/api/apply/claim-draft?next=/portal/application");
+    assert.equal(db.tables.application_drafts.length, 0, "no second copy of the application is saved");
+
+    assert.equal(redirectPath(await claimGet("/portal/application")), "/portal/application");
+    assert.equal(db.tables.applications[0].user_id, user.id);
+    assert.equal(db.tables.applications[0].preferred_first_name, "Earlier");
+  });
+
+  it("the same with a pending draft as well: the saved application wins and nothing loops on claim_failed", async () => {
+    addApplication({ email: user.email });
+    addDraft({ email: user.email, resumePath: "drafts/later.pdf" });
+    assert.equal(redirectPath(await claimGet("/portal")), "/portal");
+    assert.equal(db.tables.applications.length, 1);
+    assert.equal(db.tables.applications[0].user_id, user.id);
+    assert.equal(db.tables.application_drafts[0].claimed_at, null);
+    assert.ok(db.storage.has("resumes/drafts/later.pdf"));
+  });
+
+  it("a signed-in applicant who already applied is sent to the portal, not told to log in", async () => {
+    addApplication({ user });
+    const response = await submit({});
+    assert.equal(response.status, 200);
+    assert.equal((await response.json()).next, "/api/apply/claim-draft?next=/portal/application");
+    assert.equal(redirectPath(await claimGet("/portal/application")), "/portal/application");
+    assert.equal(db.tables.applications.length, 1);
+  });
+
+  it("an application linked to a DIFFERENT account is never handed over, and the message does not say 'log in'", async () => {
+    const other = addUser({ email: "other@ucsb.edu" });
+    addApplication({ user: other, email: user.email });
+
+    const response = await submit({});
+    assert.equal(response.status, 409);
+    const body = await response.json();
+    assert.equal(body.code, "application_linked_elsewhere");
+    assert.ok(!/log in/i.test(body.error));
+    assert.equal(db.tables.applications[0].user_id, other.id);
+
+    assert.equal(redirectPath(await claimGet("/portal")), "/apply");
+    assert.equal(db.tables.applications[0].user_id, other.id);
+  });
+
+  it("an UNCONFIRMED account is not linked to an application saved for its address", async () => {
+    const squatter = addUser({ email: "victim@ucsb.edu", confirmed: false });
+    addApplication({ email: "victim@ucsb.edu" });
+    signInAs(squatter);
+    assert.equal(redirectPath(await claimGet("/portal")), "/login?notice=confirm_link");
+    assert.equal((await claimPost()).status, 403);
+    assert.equal(db.tables.applications[0].user_id, null);
+  });
+
+  it("a browser navigation never ends on raw JSON: signed out goes to sign-in, a failed lookup to the retry notice", async () => {
+    signInAs(null);
+    assert.equal(redirectPath(await claimGet("/portal/application")), "/login?next=%2Fportal%2Fapplication");
+    assert.equal(redirectPath(await claimGet("/%5Cevil.com")), "/login?next=%2Fportal");
+    assert.equal((await claimPost()).status, 401, "the sign-up page's fetch still gets JSON");
+
+    signInAs(user);
+    addDraft({ email: user.email });
+    failNext("application_drafts.select", { message: "boom" });
+    assert.equal(redirectPath(await claimGet("/portal")), "/apply?notice=claim_failed");
+    failNext("application_drafts.update", { message: "boom" });
+    assert.equal(redirectPath(await claimGet("/portal")), "/apply?notice=claim_failed");
+    failNext("application_drafts.update", { message: "boom" });
+    assert.equal((await claimPost()).status, 500);
+    assert.equal(db.tables.applications.length, 0);
   });
 
   it("an anonymous applicant is not given a `next` (they go on to create an account)", async () => {
@@ -374,6 +516,49 @@ describe("portal: post-admission details are optional", () => {
       assert.ok((await response.json()).fields.school);
     }
     assert.equal(db.tables.applications[0].school, "Maker Academy of Anywhere");
+  });
+
+  it("an account saved with an old bucket can still save the rest of its profile, and keeps the bucket", async () => {
+    for (const bucket of ["other", "other-cc", "other-csu", "out-of-state"]) {
+      db.tables.applications[0].school = bucket;
+      const response = await patchProfile({
+        preferredFirstName: "Gaucho",
+        mobileNumber: "805-555-0199",
+        major: "computer-engineering",
+        year: "junior",
+        country: "united-states",
+        school: bucket,
+      });
+      assert.equal(response.status, 200, bucket);
+      assert.equal(db.tables.applications[0].school, bucket);
+      assert.equal(db.tables.applications[0].mobile_number, "805-555-0199");
+
+      // But only the bucket the row already holds, never a different one...
+      const other = bucket === "other" ? "other-cc" : "other";
+      const switched = await patchProfile({ school: other, mobileNumber: "805-555-0000" });
+      assert.equal(switched.status, 400, `${bucket} -> ${other}`);
+      assert.ok((await switched.json()).fields.school);
+      assert.equal(db.tables.applications[0].school, bucket);
+      assert.equal(db.tables.applications[0].mobile_number, "805-555-0199", "nothing is half-saved");
+    }
+    // ...and it can be replaced by a real name at any time.
+    const named = await patchProfile({ school: "Maker Academy of Anywhere" });
+    assert.equal(named.status, 200);
+    assert.equal(db.tables.applications[0].school, "Maker Academy of Anywhere");
+  });
+
+  it("a line break in an answer counts as one character, as it does in the browser", async () => {
+    // The browser's maxLength counts "\n" as 1, then submits it as "\r\n".
+    const answer = `${"a".repeat(4999)}\r\n${"b".repeat(5000)}`; // 10,000 as typed (the portal's limit)
+    const form = new FormData();
+    form.set("application_question_1", answer);
+    const response = await applicationRoute.PATCH(formRequest("/api/application", form, { method: "PATCH" }));
+    assert.equal(response.status, 200);
+    assert.equal(db.tables.applications[0].application_question_1, `${"a".repeat(4999)}\n${"b".repeat(5000)}`);
+
+    form.set("application_question_1", `${answer}c`);
+    const tooLong = await applicationRoute.PATCH(formRequest("/api/application", form, { method: "PATCH" }));
+    assert.equal(tooLong.status, 400);
   });
 
   it("the profile still requires what admission is decided on", async () => {

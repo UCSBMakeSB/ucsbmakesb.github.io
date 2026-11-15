@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import { finishEmailLink, linkNotUsable } from "../../../lib/auth-callback";
 import { getSupabaseServer } from "../../../lib/supabase-server";
 

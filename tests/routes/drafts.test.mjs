@@ -12,6 +12,8 @@ import {
   validApplicationForm,
 } from "../support/helpers.mjs";
 import { addApplication, addDraft, addUser, db, failNext, resetDb, signInAs } from "../support/fakes/db.mjs";
+import { BASE } from "../support/helpers.mjs";
+import { HOSTILE_NEXT } from "../support/hostile-next.mjs";
 
 const draftRoute = await import("../../app/api/apply/draft/route.js");
 const claimRoute = await import("../../app/api/apply/claim-draft/route.js");
@@ -59,7 +61,8 @@ describe("GET /api/apply/draft (draft lookup)", () => {
 describe("POST /api/apply/draft (create a draft)", () => {
   beforeEach(resetDb);
 
-  const submit = (overrides) => draftRoute.POST(formRequest("/api/apply/draft", validApplicationForm(overrides)));
+  const submit = (overrides, options) =>
+    draftRoute.POST(formRequest("/api/apply/draft", validApplicationForm(overrides), options));
 
   it("rejects an invalid form with per-field errors and stores nothing", async () => {
     const response = await submit({ email: "not-an-email", major: undefined });
@@ -116,9 +119,9 @@ describe("POST /api/apply/draft (create a draft)", () => {
     assert.equal((await response.json()).code, "application_exists");
   });
 
-  it("re-submitting while a draft is active reuses it instead of creating a second one", async () => {
+  it("re-submitting from the same browser (draft cookie) reuses the draft instead of creating a second one", async () => {
     const existing = addDraft({ email: "gaucho@ucsb.edu" });
-    const response = await submit({});
+    const response = await submit({}, withCookie(existing.id));
     assert.equal(response.status, 200);
     assert.equal(db.tables.application_drafts.length, 1);
     assert.equal(response.cookies.get(DRAFT_COOKIE).value, existing.id);
@@ -126,7 +129,10 @@ describe("POST /api/apply/draft (create a draft)", () => {
 
   it("re-submitting saves the NEW answers and resume (it used to keep the old ones silently)", async () => {
     const existing = addDraft({ email: "gaucho@ucsb.edu", resumePath: "drafts/old.pdf" });
-    const response = await submit({ preferredFirstName: "Corrected", resume: pdf("new.pdf") });
+    const response = await submit(
+      { preferredFirstName: "Corrected", resume: pdf("new.pdf") },
+      withCookie(existing.id),
+    );
     assert.equal(response.status, 200);
 
     const [draft] = db.tables.application_drafts;
@@ -138,11 +144,88 @@ describe("POST /api/apply/draft (create a draft)", () => {
   });
 
   it("re-submitting without a resume keeps the one already uploaded", async () => {
-    addDraft({ email: "gaucho@ucsb.edu", resumePath: "drafts/keep.pdf" });
-    const response = await submit({ resume: undefined });
+    const existing = addDraft({ email: "gaucho@ucsb.edu", resumePath: "drafts/keep.pdf" });
+    const response = await submit({ resume: undefined }, withCookie(existing.id));
     assert.equal(response.status, 200);
     assert.equal(db.tables.application_drafts[0].resume_path, "drafts/keep.pdf");
     assert.ok(db.storage.has("resumes/drafts/keep.pdf"));
+  });
+
+  it("knowing an applicant's email is NOT enough to overwrite their draft or delete their resume", async () => {
+    const victim = addDraft({ email: "gaucho@ucsb.edu", resumePath: "drafts/victim.pdf" });
+    const before = structuredClone(victim);
+
+    // No cookie, a made-up cookie, and the cookie of a draft for another address.
+    const mine = addDraft({ email: "attacker@ucsb.edu" });
+    for (const options of [undefined, withCookie("22222222-2222-2222-2222-222222222222"), withCookie(mine.id)]) {
+      const response = await submit(
+        { email: "Gaucho@UCSB.edu", preferredFirstName: "Mallory", resume: pdf("evil.pdf") },
+        options,
+      );
+      assert.equal(response.status, 201, "a separate draft is created");
+      assert.notEqual(response.cookies.get(DRAFT_COOKIE).value, victim.id, "the victim's draft id is not handed out");
+    }
+
+    const stored = db.tables.application_drafts.find((draft) => draft.id === victim.id);
+    assert.deepEqual(stored, before, "answers, resume path and expiry are untouched");
+    assert.ok(db.storage.has("resumes/drafts/victim.pdf"), "the victim's resume is still there");
+    assert.equal(
+      db.tables.application_drafts.filter((draft) => draft.email === "gaucho@ucsb.edu").length,
+      4,
+      "the victim's draft plus one separate draft per attempt",
+    );
+  });
+
+  it("a draft cookie only unlocks a draft for the SAME email as the form", async () => {
+    const other = addDraft({ email: "roommate@ucsb.edu", resumePath: "drafts/roommate.pdf" });
+    const before = structuredClone(other);
+    const response = await submit({ email: "gaucho@ucsb.edu" }, withCookie(other.id));
+    assert.equal(response.status, 201);
+    assert.deepEqual(db.tables.application_drafts.find((draft) => draft.id === other.id), before);
+    assert.ok(db.storage.has("resumes/drafts/roommate.pdf"));
+  });
+
+  it("an expired or claimed draft cannot be overwritten with its old cookie", async () => {
+    const expired = addDraft({ email: "gaucho@ucsb.edu", expiresInMs: -1000 });
+    const first = await submit({}, withCookie(expired.id));
+    assert.equal(first.status, 201);
+    assert.notEqual(db.tables.application_drafts[0].id, expired.id);
+
+    resetDb();
+    const claimed = addDraft({ email: "gaucho@ucsb.edu", claimed: true });
+    const second = await submit({ preferredFirstName: "Mallory" }, withCookie(claimed.id));
+    assert.equal(second.status, 409);
+    assert.equal(db.tables.application_drafts[0].payload.preferred_first_name, "Gaucho");
+  });
+
+  it("a confirmed session for the address may overwrite its draft without the cookie; an unconfirmed one may not", async () => {
+    const existing = addDraft({ email: "gaucho@ucsb.edu", resumePath: "drafts/old.pdf" });
+
+    signInAs(addUser({ email: "gaucho@ucsb.edu", confirmed: false }));
+    const squatter = await submit({ preferredFirstName: "Mallory" });
+    assert.equal(squatter.status, 201, "an unconfirmed account gets a separate draft");
+    assert.equal(
+      db.tables.application_drafts.find((draft) => draft.id === existing.id).payload.preferred_first_name,
+      "Gaucho",
+    );
+
+    db.tables.application_drafts.splice(1);
+    db.users.clear();
+    signInAs(addUser({ email: "gaucho@ucsb.edu" }));
+    const owner = await submit({ preferredFirstName: "Corrected" });
+    assert.equal(owner.status, 200);
+    assert.equal(db.tables.application_drafts.length, 1);
+    assert.equal(db.tables.application_drafts[0].id, existing.id);
+    assert.equal(db.tables.application_drafts[0].payload.preferred_first_name, "Corrected");
+  });
+
+  it("with two live drafts for one address, the browser's own cookie decides which one it rewrites", async () => {
+    const mine = addDraft({ email: "gaucho@ucsb.edu" });
+    const planted = addDraft({ email: "gaucho@ucsb.edu", payload: { planted: true } });
+    const response = await submit({ preferredFirstName: "Corrected" }, withCookie(mine.id));
+    assert.equal(response.status, 200);
+    assert.equal(db.tables.application_drafts.find((draft) => draft.id === mine.id).payload.preferred_first_name, "Corrected");
+    assert.deepEqual(db.tables.application_drafts.find((draft) => draft.id === planted.id).payload, { planted: true });
   });
 
   it("an expired draft is replaced and its old resume file is deleted", async () => {
@@ -285,21 +368,43 @@ describe("claim-draft: ownership and success", () => {
     assert.equal(db.tables.applications[0].resume_path, null);
   });
 
-  it("redirects to a same-site `next` path and ignores external ones (no open redirect)", async () => {
+  it("redirects to a same-site `next` path and never off-site (no open redirect)", async () => {
     const draft = addDraft({ email: user.email });
     const response = await claim(draft.id, "?next=/portal/application");
     assert.equal(redirectPath(response), "/portal/application");
 
-    resetDb();
-    const again = addUser({ email: "gaucho@ucsb.edu" });
-    signInAs(again);
-    for (const next of ["//evil.example", "https://evil.example", "javascript:alert(1)"]) {
-      const fresh = addDraft({ email: again.email });
-      const result = await claim(fresh.id, `?next=${encodeURIComponent(next)}`);
-      assert.equal(result.status, 200, next);
-      assert.equal(result.headers.get("location"), null, `${next} must not redirect`);
+    for (const next of HOSTILE_NEXT) {
+      // Every exit of the route that redirects to `next`: a fresh claim, an
+      // account that already has its application (with and without a draft).
+      const exits = {
+        "fresh claim": () => addDraft({ email: user.email }),
+        "already applied": () => addApplication({ user }),
+        "already applied, draft pending": () => {
+          addApplication({ user });
+          addDraft({ email: user.email });
+        },
+      };
+      for (const [exit, seed] of Object.entries(exits)) {
+        db.tables.applications.length = 0;
+        db.tables.application_drafts.length = 0;
+        seed();
+        const result = await claimRoute.GET(
+          getRequest(`/api/apply/claim-draft?next=${encodeURIComponent(next)}`),
+        );
+        const location = result.headers.get("location");
+        assert.ok(location, `${exit}: a browser navigation ends on a page`);
+        assert.equal(new URL(location).origin, BASE, `${exit}: ${JSON.stringify(next)} left the site: ${location}`);
+        assert.equal(redirectPath(result), "/portal", `${exit}: ${JSON.stringify(next)}`);
+      }
+    }
+  });
+
+  it("the raw query string forms of the reported exploit stay on the site", async () => {
+    for (const query of ["?next=/%5Cevil.com", "?next=/%09/evil.com", "?next=%2F%2Fevil.com", "?next=/%5C%5Cevil.com", "?next=%5C%5Cevil.com", "?next=/%0A/evil.com"]) {
+      addApplication({ user });
+      const result = await claimRoute.GET(getRequest(`/api/apply/claim-draft${query}`));
+      assert.equal(new URL(result.headers.get("location")).origin, BASE, query);
       db.tables.applications.length = 0;
-      db.users.get(again.id);
     }
   });
 

@@ -126,6 +126,24 @@ test("length limits count characters, so non-Latin names get the full allowance"
   assert.equal(validateApplication(validForm({ lastName: "😀".repeat(101) })).ok, false);
 });
 
+test("a line break counts as one character, as the browser's maxLength counts it", () => {
+  // A <textarea> counts "\n" as 1 for maxLength but a multipart form submits
+  // it as "\r\n", so a full-length answer with line breaks was rejected.
+  const typed = `${"a".repeat(SHORT_ANSWER_MAX_LENGTH - 6)}\n\n\nend`;
+  assert.equal([...typed].length, SHORT_ANSWER_MAX_LENGTH);
+  const submitted = typed.replaceAll("\n", "\r\n");
+  const result = validateApplication(validForm({ applicationQuestion1: submitted }));
+  assert.equal(result.ok, true, JSON.stringify(result.errors));
+  assert.equal(result.row.application_question_1, typed, "stored with plain line breaks");
+
+  const lone = validateApplication(validForm({ applicationQuestion1: "one\rtwo\r\nthree\nfour" }));
+  assert.equal(lone.row.application_question_1, "one\ntwo\nthree\nfour");
+
+  const tooLong = validateApplication(validForm({ applicationQuestion1: `${submitted}!` }));
+  assert.equal(tooLong.ok, false);
+  assert.ok(tooLong.errors.applicationQuestion1);
+});
+
 test("maps 'no' experience to false", () => {
   const result = validateApplication(validForm({ experience: "no" }));
   assert.equal(result.ok, true);

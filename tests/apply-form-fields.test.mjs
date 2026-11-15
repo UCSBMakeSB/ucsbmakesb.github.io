@@ -159,6 +159,36 @@ test("with no Redis configured the limiters allow requests instead of throwing",
   }
 });
 
+test("a Redis URL that the client refuses (stray newline, wrong scheme) allows requests instead of a 500 on every submit", async () => {
+  const saved = [process.env.LIMITER_KV_REST_API_URL, process.env.LIMITER_KV_REST_API_TOKEN];
+  const originalError = console.error;
+  const originalWarn = console.warn;
+  const logged = [];
+  console.error = (...args) => logged.push(args.join(" "));
+  console.warn = () => {};
+  try {
+    for (const [tag, url] of [["newline", " https://example.upstash.io\n"], ["scheme", "redis://example.upstash.io"], ["junk", "not a url"]]) {
+      process.env.LIMITER_KV_REST_API_URL = url;
+      process.env.LIMITER_KV_REST_API_TOKEN = "token";
+      logged.length = 0;
+      const { getRateLimiters } = await import(`../lib/rate-limit.js?real&malformed-${tag}`);
+      let limiters;
+      assert.doesNotThrow(() => { limiters = getRateLimiters(); }, tag);
+      for (const name of Object.keys(limits)) {
+        assert.equal((await limiters[name].limit("ip:1.2.3.4")).success, true, `${tag}: ${name}`);
+      }
+      assert.ok(logged.some((line) => /LIMITER_KV_REST_API_URL/.test(line)), `${tag}: the logs say what to check`);
+    }
+  } finally {
+    console.error = originalError;
+    console.warn = originalWarn;
+    for (const [index, key] of ["LIMITER_KV_REST_API_URL", "LIMITER_KV_REST_API_TOKEN"].entries()) {
+      if (saved[index] === undefined) delete process.env[key];
+      else process.env[key] = saved[index];
+    }
+  }
+});
+
 // ------------------------------------------------------------------- proxy
 
 test("a confirmation code that lands on the homepage is handed to the callback", async () => {

@@ -1,11 +1,11 @@
 import "../support/helpers.mjs";
 import assert from "node:assert/strict";
 import { beforeEach, describe, it } from "node:test";
-import { DRAFT_COOKIE, jsonRequest } from "../support/helpers.mjs";
+import { DRAFT_COOKIE, formRequest, jsonRequest, validApplicationForm } from "../support/helpers.mjs";
 import { addApplication, addDraft, addUser, db, failNext, resetDb } from "../support/fakes/db.mjs";
-import { DRAFT_COOKIE_MAX_AGE } from "../../lib/draft.js";
 
 const { POST } = await import("../../app/api/auth/prepare-signup/route.js");
+const draftRoute = await import("../../app/api/apply/draft/route.js");
 
 const preflight = (email, options = {}) =>
   POST(jsonRequest("/api/auth/prepare-signup", { body: { email }, ...options }));
@@ -37,25 +37,38 @@ describe("signup preflight states", () => {
     }
   });
 
-  it("draft_ready: an active draft sets an httpOnly draft cookie", async () => {
+  it("draft_ready: reports an active draft but never hands out its cookie (the endpoint is public)", async () => {
     const draft = addDraft({ email: "gaucho@ucsb.edu" });
     const response = await preflight("Gaucho@UCSB.edu");
     assert.deepEqual(await response.json(), { code: "draft_ready" });
-
-    const cookie = response.cookies.get(DRAFT_COOKIE);
-    assert.equal(cookie.value, draft.id);
-    assert.equal(cookie.httpOnly, true);
-    assert.equal(cookie.sameSite, "lax");
-    assert.equal(cookie.path, "/");
-    assert.equal(cookie.maxAge, DRAFT_COOKIE_MAX_AGE);
+    // The cookie is what lets a browser overwrite a draft. Anyone can call
+    // this with any email, so it must not give that away.
+    assert.equal(response.cookies.get(DRAFT_COOKIE), undefined);
+    assert.ok(!JSON.stringify([...response.headers]).includes(draft.id));
   });
 
-  it("draft_ready picks the newest ACTIVE draft when older ones are expired", async () => {
+  it("the preflight cannot be used to get a cookie that overwrites someone's draft", async () => {
+    const victim = addDraft({ email: "gaucho@ucsb.edu", resumePath: "drafts/victim.pdf" });
+    const before = structuredClone(victim);
+    const leaked = (await preflight("gaucho@ucsb.edu")).cookies.get(DRAFT_COOKIE)?.value;
+    const attack = await draftRoute.POST(
+      formRequest(
+        "/api/apply/draft",
+        validApplicationForm({ preferredFirstName: "Mallory" }),
+        leaked ? { cookies: { [DRAFT_COOKIE]: leaked } } : {},
+      ),
+    );
+    assert.equal(attack.status, 201);
+    assert.deepEqual(db.tables.application_drafts.find((draft) => draft.id === victim.id), before);
+    assert.ok(db.storage.has("resumes/drafts/victim.pdf"));
+  });
+
+  it("draft_ready when older drafts are expired and a newer one is active", async () => {
     addDraft({ email: "gaucho@ucsb.edu", expiresInMs: -60_000 });
     const active = addDraft({ email: "gaucho@ucsb.edu" });
     const response = await preflight("gaucho@ucsb.edu");
     assert.deepEqual(await response.json(), { code: "draft_ready" });
-    assert.equal(response.cookies.get(DRAFT_COOKIE).value, active.id);
+    assert.deepEqual(db.tables.application_drafts.map((draft) => draft.id), [active.id]);
   });
 
   it("an expired draft is treated as no application and cleaned up, resume included", async () => {

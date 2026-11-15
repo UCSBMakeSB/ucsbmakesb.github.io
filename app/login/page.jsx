@@ -2,13 +2,16 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { safeNextPath } from "../../lib/safe-next";
 import { getSupabaseBrowser } from "../../lib/supabase-browser";
 
+// Same-site, allow-listed pages only: see lib/safe-next.js for why the old
+// startsWith("/") check let "/\evil.com" through.
 function getSafeNextPath() {
   if (typeof window === "undefined") return "/portal";
 
   const next = new URLSearchParams(window.location.search).get("next");
-  return next?.startsWith("/") && !next.startsWith("//") ? next : "/portal";
+  return safeNextPath(next, "/portal");
 }
 
 // Why someone was sent here from an emailed link (see lib/auth-callback.js).

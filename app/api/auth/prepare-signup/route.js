@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { escapeLikePattern } from "../../../../lib/db-helpers";
-import { DRAFT_COOKIE, draftCookieOptions } from "../../../../lib/draft";
 import { getSupabaseAdmin } from "../../../../lib/supabase-server";
 import {
   getClientIp,
@@ -127,7 +126,11 @@ export async function POST(request) {
     return NextResponse.json({ code: "no_application" });
   }
 
-  const response = NextResponse.json({ code: "draft_ready" });
-  response.cookies.set(DRAFT_COOKIE, activeDrafts[0].id, draftCookieOptions());
-  return response;
+  // No draft cookie is handed out here. This endpoint is public and takes only
+  // an email address, and the cookie is what lets a browser overwrite a saved
+  // draft (POST /api/apply/draft), so setting it here gave anyone who knew an
+  // applicant's email the key to their draft. It is not needed either: the
+  // browser that filled in the form already holds its cookie, and the claim
+  // step finds the draft by the account's confirmed email.
+  return NextResponse.json({ code: "draft_ready" });
 }

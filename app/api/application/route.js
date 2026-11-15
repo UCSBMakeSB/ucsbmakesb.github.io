@@ -4,6 +4,7 @@ import { getSupabaseAdmin, getSupabaseServer } from "../../../lib/supabase-serve
 import { revalidatePortalAccount } from "../../../lib/portal-data";
 import {
   getResumeExtension,
+  normalizeNewlines,
   validateResume,
 } from "../../../lib/application-validation";
 
@@ -116,7 +117,8 @@ export async function PATCH(request) {
       continue;
     }
 
-    const text = value.trim();
+    // See normalizeNewlines: the browser counts a line break as one character.
+    const text = normalizeNewlines(value).trim();
     if (REQUIRED_QUESTION_FIELDS.has(field) && !text) {
       errors[field] = "This field is required.";
     } else if (text.length > MAX_QUESTION_LENGTH) {

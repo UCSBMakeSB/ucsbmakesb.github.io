@@ -4,6 +4,7 @@ import { escapeLikePattern } from "../../../../lib/db-helpers";
 import { DRAFT_COOKIE } from "../../../../lib/draft";
 import { getSupabaseAdmin, getSupabaseServer } from "../../../../lib/supabase-server";
 import { revalidatePortalAccount } from "../../../../lib/portal-data";
+import { safeNextPath } from "../../../../lib/safe-next";
 
 export const runtime = "nodejs";
 
@@ -11,9 +12,55 @@ const CLAIMED_MESSAGE =
   "This application has already been linked to an account. Sign in to continue.";
 const EXPIRED_MESSAGE = "Your application draft has expired. Please start again.";
 
-function safeNextPath(request) {
-  const next = request.nextUrl?.searchParams.get("next");
-  return next?.startsWith("/") && !next.startsWith("//") ? next : null;
+// A request with ?next= is a browser navigation (the portal, the emailed link
+// or the "Finish setting up my portal" link); without it, it is the sign-up
+// page's fetch, which reads JSON.
+function isBrowserNavigation(request) {
+  return Boolean(request.nextUrl?.searchParams.has("next"));
+}
+
+// Where a browser goes on to. Only same-site pages on the allow-list in
+// lib/safe-next.js; anything else ("/\evil.com", "//evil.com", an absolute
+// URL) falls back to the portal instead of leaving the site.
+function nextPath(request) {
+  if (!isBrowserNavigation(request)) return null;
+  return safeNextPath(request.nextUrl.searchParams.get("next"), "/portal");
+}
+
+function redirectTo(request, path) {
+  return NextResponse.redirect(new URL(path, request.nextUrl.origin));
+}
+
+// The account's application. An application saved for this confirmed email
+// with no account on it (user_id null) is linked to the account here: the
+// confirmed address is the same proof of ownership a draft claim relies on.
+// Without this, such an applicant was sent to the form, and the form answered
+// "you already have an account, please log in" while they were logged in.
+async function findOrAttachApplication(supabase, user, userEmail) {
+  const { data: own, error: ownError } = await supabase
+    .from("applications")
+    .select("id")
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (ownError || own || !userEmail) return { application: own ?? null, error: ownError };
+
+  const { data: orphan, error: orphanError } = await supabase
+    .from("applications")
+    .select("id, user_id")
+    .ilike("email", escapeLikePattern(userEmail))
+    .maybeSingle();
+  if (orphanError || !orphan || orphan.user_id) {
+    return { application: null, error: orphanError };
+  }
+
+  const { data: attached, error: attachError } = await supabase
+    .from("applications")
+    .update({ user_id: user.id })
+    .eq("id", orphan.id)
+    .is("user_id", null)
+    .select("id")
+    .maybeSingle();
+  return { application: attached ?? null, error: attachError };
 }
 
 // A browser navigation (?next=...) must always end on a page, never on raw
@@ -21,7 +68,7 @@ function safeNextPath(request) {
 // to a signed-in user without an application and never redirects back here,
 // so there is no way to loop.
 function draftUnavailable(request, reason) {
-  if (request.nextUrl?.searchParams.get("next")) {
+  if (isBrowserNavigation(request)) {
     return NextResponse.redirect(
       new URL(
         reason === "none" ? "/apply" : `/apply?notice=${reason}`,
@@ -55,6 +102,14 @@ async function claimDraft(request) {
   } = await supabaseServer.auth.getUser();
 
   if (!user) {
+    // Signed out (the session expired, or the link was opened in another
+    // browser): sign in, then carry on to the same place. The portal sends
+    // an account without an application back through this route.
+    if (isBrowserNavigation(request)) {
+      const login = new URL("/login", request.nextUrl.origin);
+      login.searchParams.set("next", nextPath(request));
+      return NextResponse.redirect(login);
+    }
     return NextResponse.json({ error: "You must be signed in." }, { status: 401 });
   }
 
@@ -62,10 +117,23 @@ async function claimDraft(request) {
   // with someone else's address stays unconfirmed until that person clicks the
   // link. Never hand an application to an unconfirmed account.
   if (!user.email_confirmed_at) {
+    if (isBrowserNavigation(request)) {
+      // The sign-in page explains and offers to resend the confirmation email.
+      return redirectTo(request, "/login?notice=confirm_link");
+    }
     return NextResponse.json(
       { error: "Confirm your email address before continuing your application." },
       { status: 403 },
     );
+  }
+
+  // A lookup that fails before anything was claimed: the answers are still
+  // saved, so a browser gets the /apply retry notice instead of raw JSON.
+  function lookupFailed(message) {
+    if (isBrowserNavigation(request)) {
+      return redirectTo(request, "/apply?notice=claim_failed");
+    }
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 
   const supabase = getSupabaseAdmin();
@@ -82,7 +150,7 @@ async function claimDraft(request) {
 
     if (draftError) {
       console.error("Application draft lookup failed:", draftError);
-      return NextResponse.json({ error: "Couldn't load your application draft." }, { status: 500 });
+      return lookupFailed("Couldn't load your application draft.");
     }
     cookieDraft = data;
   }
@@ -108,7 +176,7 @@ async function claimDraft(request) {
 
     if (ownDraftError) {
       console.error("Application draft email lookup failed:", ownDraftError);
-      return NextResponse.json({ error: "Couldn't load your application draft." }, { status: 500 });
+      return lookupFailed("Couldn't load your application draft.");
     }
     if (ownDrafts?.[0]) draft = ownDrafts[0];
   }
@@ -116,16 +184,16 @@ async function claimDraft(request) {
   if (!isClaimable(draft) || draft.email !== userEmail) {
     // Already applied (for example a second click on the emailed link, or the
     // portal sent them here): a browser goes on to where it was heading.
-    const next = safeNextPath(request);
+    const next = nextPath(request);
     if (next) {
-      const { data: applied } = await supabase
-        .from("applications")
-        .select("id")
-        .eq("user_id", user.id)
-        .maybeSingle();
+      const { application: applied, error: appliedError } =
+        await findOrAttachApplication(supabase, user, userEmail);
+      if (appliedError) {
+        console.error("Existing application lookup failed:", appliedError);
+      }
       if (applied) {
         revalidatePortalAccount(user.id);
-        return NextResponse.redirect(new URL(next, request.url));
+        return redirectTo(request, next);
       }
     }
 
@@ -152,7 +220,7 @@ async function claimDraft(request) {
 
   if (claimError) {
     console.error("Application draft claim failed:", claimError);
-    return NextResponse.json({ error: "Couldn't claim your application draft." }, { status: 500 });
+    return lookupFailed("Couldn't claim your application draft.");
   }
   if (!claimed) {
     // Lost a race with another request (or the draft expired a moment ago).
@@ -163,8 +231,8 @@ async function claimDraft(request) {
   // still saved in the draft, so a browser is sent to /apply, which offers a
   // retry, instead of being shown a JSON error.
   function claimFailed(message, status = 500) {
-    if (request.nextUrl?.searchParams.get("next")) {
-      return NextResponse.redirect(new URL("/apply?notice=claim_failed", request.url));
+    if (isBrowserNavigation(request)) {
+      return redirectTo(request, "/apply?notice=claim_failed");
     }
     return NextResponse.json({ error: message }, { status });
   }
@@ -178,11 +246,8 @@ async function claimDraft(request) {
     if (error) console.error("Releasing the draft claim failed:", error);
   }
 
-  const { data: existing, error: existingError } = await supabase
-    .from("applications")
-    .select("id")
-    .eq("user_id", user.id)
-    .maybeSingle();
+  const { application: existing, error: existingError } =
+    await findOrAttachApplication(supabase, user, userEmail);
 
   if (existingError) {
     console.error("Existing application lookup failed:", existingError);
@@ -191,11 +256,9 @@ async function claimDraft(request) {
   }
   if (existing) {
     await releaseClaim();
-    const next = safeNextPath(request);
-    if (next) {
-      revalidatePortalAccount(user.id);
-      return NextResponse.redirect(new URL(next, request.url));
-    }
+    revalidatePortalAccount(user.id);
+    const next = nextPath(request);
+    if (next) return redirectTo(request, next);
     return NextResponse.json(
       { error: "An application already exists for this account or email." },
       { status: 409 },
@@ -267,10 +330,8 @@ async function claimDraft(request) {
   }
 
   revalidatePortalAccount(user.id);
-  const safeNext = safeNextPath(request);
-  const response = safeNext
-    ? NextResponse.redirect(new URL(safeNext, request.url))
-    : NextResponse.json({ ok: true });
+  const next = nextPath(request);
+  const response = next ? redirectTo(request, next) : NextResponse.json({ ok: true });
   response.cookies.delete(DRAFT_COOKIE);
   return response;
 }

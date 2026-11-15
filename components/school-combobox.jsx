@@ -15,7 +15,14 @@
 // Form value: a hidden input named `name` carries what gets stored (see
 // lib/schools.js). The visible search input has no name, so it never submits.
 
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import {
+  useDeferredValue,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   OTHER_LABEL,
   OTHER_PROMPT,
@@ -31,6 +38,10 @@ import {
 const RESULT_LIMIT = 8;
 const SCHOOLS_URL = "/schools.json";
 const PICK_MESSAGE = `Choose your school from the list, or choose "${OTHER_LABEL}".`;
+const OTHER_MESSAGE = "Enter the name of your school.";
+// After a failed download of the list, wait this long before trying again, so
+// typing while offline does not fire a request per keystroke.
+const RETRY_AFTER_MS = 2000;
 
 // One shared fetch per page load, started the first time a picker is used.
 let indexPromise = null;
@@ -88,10 +99,21 @@ export function SchoolCombobox({
   const inputRef = useRef(null);
   const otherRef = useRef(null);
   const listRef = useRef(null);
+  const loadingRef = useRef(false);
+  const failedAtRef = useRef(0);
 
+  // The search runs over about 10,000 rows. Deferring it keeps each keystroke
+  // on screen immediately: React shows the typed letter first and works out
+  // the matching schools right after, dropping a search that a newer
+  // keystroke has already replaced. This is the use React documents for
+  // useDeferredValue (react.dev reference, "Deferring re-rendering for a part
+  // of the UI"); it is not ported from a particular project's combobox (APG
+  // and Downshift, credited above, both filter synchronously).
+  const deferredQuery = useDeferredValue(query);
+  const searching = deferredQuery !== query;
   const results = useMemo(
-    () => (index ? searchSchools(index, query, RESULT_LIMIT) : []),
-    [index, query],
+    () => (index ? searchSchools(index, deferredQuery, RESULT_LIMIT) : []),
+    [index, deferredQuery],
   );
   // Results, then the always-present "Other" row.
   const rows = [
@@ -99,9 +121,21 @@ export function SchoolCombobox({
     { kind: "other" },
   ];
 
+  // Called on focus, click and typing. A failed download is retried the next
+  // time (it used to stay failed until the page was reloaded).
   function ensureLoaded() {
-    if (index || loadError) return;
-    loadSchoolIndex().then(setIndex, () => setLoadError(true));
+    if (index || loadingRef.current) return;
+    if (Date.now() - failedAtRef.current < RETRY_AFTER_MS) return;
+    loadingRef.current = true;
+    setLoadError(false);
+    loadSchoolIndex()
+      .then(setIndex, () => {
+        failedAtRef.current = Date.now();
+        setLoadError(true);
+      })
+      .finally(() => {
+        loadingRef.current = false;
+      });
   }
 
   // The visible input is `required`; it is invalid until a choice is committed.
@@ -112,6 +146,16 @@ export function SchoolCombobox({
       required && !chosen && !other ? PICK_MESSAGE : "",
     );
   }, [chosen, required, other]);
+
+  // "What school?" must hold a name, not just spaces (the server trims it and
+  // would answer "required" after the browser had let it through).
+  useEffect(() => {
+    const input = otherRef.current;
+    if (!input) return;
+    input.setCustomValidity(
+      other && otherText && !otherText.trim() ? OTHER_MESSAGE : "",
+    );
+  }, [other, otherText]);
 
   // Keep the highlighted option scrolled into view inside the list.
   useEffect(() => {
@@ -238,14 +282,34 @@ export function SchoolCombobox({
     : "application-form-input school-combobox-input";
   const hasQuery = fold(query).length > 0;
   const listVisible = open;
+  // A name typed under "Other" that is exactly a listed school (or its unique
+  // acronym, "UCSB") is stored the way picking it from the list would be, so
+  // the same school is not saved under two spellings.
+  const otherMatch = useMemo(
+    () => (other && index ? exactSchool(index, otherText) : null),
+    [other, index, otherText],
+  );
+  // An account saved with an old catch-all ("other-cc") reopens on "Other"
+  // with "What school?" empty. Until a name is typed it keeps what it has, so
+  // the rest of the profile can be saved without being made to name a school.
+  const keepsLegacy = startsOther && other && !otherText.trim();
   // What gets submitted: the typed name for "Other", else the list choice.
-  const submitted = other ? otherText.trim() : (chosen?.value ?? "");
+  let submitted = chosen?.value ?? "";
+  if (other) {
+    submitted = keepsLegacy
+      ? defaultValue
+      : (otherMatch?.value ?? otherText.trim());
+  }
 
   let status = "";
   if (listVisible) {
-    if (loadError) status = "The school list could not be loaded.";
+    if (loadError)
+      status = `The school list could not be loaded. Choose "${OTHER_LABEL}" to type your school.`;
     else if (!index) status = "Loading schools";
     else if (!hasQuery) status = "Type to search for your school.";
+    // While the deferred search catches up, the rows are for the previous
+    // query: say nothing rather than announce a count that is about to change.
+    else if (searching) status = "";
     else if (results.length === 0) status = "No matching schools.";
     else
       status = `${results.length} ${results.length === 1 ? "school" : "schools"} found.`;
@@ -253,7 +317,9 @@ export function SchoolCombobox({
 
   // Visible hint above the options (screen readers get `status` instead).
   const note =
-    loadError || !index || !hasQuery || results.length === 0 ? status : "";
+    loadError || !index || !hasQuery || (!searching && results.length === 0)
+      ? status
+      : "";
 
   return (
     <div
@@ -281,7 +347,7 @@ export function SchoolCombobox({
             aria-activedescendant={
               listVisible && active >= 0 ? optionId(active) : undefined
             }
-            aria-describedby={hintId}
+            aria-describedby={requirementText ? hintId : undefined}
             aria-labelledby={labelId}
             autoComplete="off"
             autoCorrect="off"
@@ -372,7 +438,7 @@ export function SchoolCombobox({
             onChange={(event) => setOtherText(event.target.value)}
             maxLength={SCHOOL_MAX_LENGTH}
             autoComplete="organization"
-            required={required}
+            required={required && !startsOther}
             placeholder="Full name of your school"
             className={inputClass}
           />

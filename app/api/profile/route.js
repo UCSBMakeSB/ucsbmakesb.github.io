@@ -64,6 +64,7 @@ export async function PATCH(request) {
 
   const updates = {};
   const errors = {};
+  let keptBucket = null;
   for (const [field, [column, maxLength, required]] of Object.entries(PROFILE_FIELDS)) {
     if (!(field in body)) continue;
     if (typeof body[field] !== "string") {
@@ -73,13 +74,39 @@ export async function PATCH(request) {
 
     const value = body[field].trim();
     if (field === "school" && isLegacyBucket(value)) {
-      errors[field] = SCHOOL_BUCKET_MESSAGE;
+      // Decided below, once we know what the row holds now.
+      keptBucket = value;
     } else if (required && !value) {
       errors[field] = "This field is required.";
     } else if (value.length > maxLength) {
       errors[field] = `Must be ${maxLength} characters or fewer.`;
     } else {
       updates[column] = value || null;
+    }
+  }
+
+  // The old catch-all choices ("other-cc", "out-of-state", ...) can no longer
+  // be CHOSEN, but an account saved with one before the picker existed must
+  // still be able to save the rest of its profile (a phone number, say)
+  // without first being made to name a school. So the bucket is accepted only
+  // when it is exactly what the row already holds, and it is left as it is.
+  if (keptBucket !== null) {
+    const { data: current, error: currentError } = await getSupabaseAdmin()
+      .from("applications")
+      .select("school")
+      .eq("user_id", user.id)
+      .maybeSingle();
+    if (currentError) {
+      console.error("Profile school lookup failed:", currentError);
+      return NextResponse.json({ error: "Couldn't save your profile." }, { status: 500 });
+    }
+    if (!current) {
+      return NextResponse.json({ error: "Application not found." }, { status: 404 });
+    }
+    if (current.school === keptBucket) {
+      updates.school = current.school;
+    } else {
+      errors.school = SCHOOL_BUCKET_MESSAGE;
     }
   }
 

@@ -71,6 +71,16 @@ export async function GET(request) {
   return NextResponse.json({ email: data.email });
 }
 
+function alreadyApplied() {
+  return NextResponse.json(
+    {
+      code: "application_exists",
+      error: "You already have an account for this email. Please log in to continue.",
+    },
+    { status: 409 },
+  );
+}
+
 export async function POST(request) {
   let formData;
   try {
@@ -136,7 +146,7 @@ export async function POST(request) {
   const { data: existingApplication, error: applicationLookupError } =
     await supabase
       .from("applications")
-      .select("id")
+      .select("id, user_id")
       .ilike("email", emailPattern)
       .maybeSingle();
 
@@ -149,22 +159,34 @@ export async function POST(request) {
   }
 
   if (existingApplication) {
-    return NextResponse.json(
-      {
-        code: "application_exists",
-        error: "You already have an account for this email. Please log in to continue.",
-      },
-      { status: 409 },
-    );
+    // Signed in with this (confirmed) address: "please log in" is a dead end.
+    // The application is theirs, or it has no account on it yet and the claim
+    // step links it (findOrAttachApplication in the claim route). Either way
+    // they continue to the portal, where the saved application can be edited.
+    if (
+      sessionUser &&
+      (!existingApplication.user_id || existingApplication.user_id === sessionUser.id)
+    ) {
+      return NextResponse.json({ ok: true, next: SIGNED_IN_NEXT }, { status: 200 });
+    }
+    if (sessionUser) {
+      return NextResponse.json(
+        {
+          code: "application_linked_elsewhere",
+          error:
+            "An application for this email is linked to a different account. Email team@makesb.org and we'll sort it out.",
+        },
+        { status: 409 },
+      );
+    }
+    return alreadyApplied();
   }
 
-  const { data: existingDraft, error: draftLookupError } = await supabase
+  const { data: emailDrafts, error: draftLookupError } = await supabase
     .from("application_drafts")
     .select("id, expires_at, claimed_at, resume_path")
     .ilike("email", emailPattern)
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
+    .order("created_at", { ascending: false });
 
   if (draftLookupError) {
     console.error("Application draft email lookup failed:", draftLookupError);
@@ -174,23 +196,45 @@ export async function POST(request) {
     );
   }
 
-  if (existingDraft?.claimed_at) {
-    return NextResponse.json(
-      {
-        code: "application_exists",
-        error: "You already have an account for this email. Please log in to continue.",
-      },
-      { status: 409 },
-    );
+  const drafts = emailDrafts ?? [];
+  const now = new Date();
+  const isLive = (draft) => !draft.claimed_at && new Date(draft.expires_at) > now;
+  const cookieDraftId = request.cookies.get(DRAFT_COOKIE)?.value ?? null;
+  // The draft this very browser saved earlier (the cookie is only ever set to
+  // a draft the browser itself created or already proved it owns).
+  const cookieDraft =
+    drafts.find((draft) => draft.id === cookieDraftId && isLive(draft)) ?? null;
+
+  // Which saved draft this request may overwrite. Knowing an email address is
+  // NOT enough: this used to overwrite the newest draft for the address, so
+  // anyone who knew an applicant's email could replace their answers and
+  // delete their resume before they confirmed. Now it takes proof:
+  //   - the draft's own cookie, or
+  //   - a confirmed session for the address (the form's email was replaced
+  //     with the session's above).
+  // Everyone else gets a separate draft and the existing one is left alone.
+  let ownDraft = cookieDraft;
+  if (sessionUser) {
+    // A draft marked claimed while no application exists (checked above) is a
+    // claim that never finished: the function died between claiming and
+    // saving, or releasing the claim failed. It used to answer "you already
+    // have an account, please log in" to someone who WAS logged in, with no
+    // way forward. Take it back and save what they just typed into it.
+    ownDraft ??=
+      drafts.find(isLive) ?? drafts.find((draft) => draft.claimed_at) ?? null;
+  } else if (drafts.some((draft) => draft.claimed_at)) {
+    // Being linked to an account right now, or stuck as described above.
+    // Signing in is the way forward in both cases.
+    return alreadyApplied();
   }
 
-  if (existingDraft && new Date(existingDraft.expires_at) > new Date()) {
-    // Same applicant submitting again before creating their account (fixing a
-    // typo, or coming back days later). Keep the draft id, but save what they
-    // just typed: this used to return the OLD answers silently.
+  if (ownDraft) {
+    // Same applicant submitting again (fixing a typo, or coming back days
+    // later). Keep the draft id, but save what they just typed: this used to
+    // return the OLD answers silently.
     const ext = resume ? getResumeExtension(resume) : null;
     const newResumePath = ext
-      ? `drafts/${existingDraft.id}-${randomUUID()}.${ext}`
+      ? `drafts/${ownDraft.id}-${randomUUID()}.${ext}`
       : null;
 
     if (resume) {
@@ -209,15 +253,20 @@ export async function POST(request) {
       }
     }
 
-    const { data: updatedDraft, error: updateError } = await supabase
+    const update = supabase
       .from("application_drafts")
       .update({
         payload: row,
-        resume_path: newResumePath ?? existingDraft.resume_path,
+        resume_path: newResumePath ?? ownDraft.resume_path,
         expires_at: draftExpiresAt(),
+        // Releases an unfinished claim; a no-op for a draft that has none.
+        ...(sessionUser ? { claimed_at: null } : {}),
       })
-      .eq("id", existingDraft.id)
-      .is("claimed_at", null)
+      .eq("id", ownDraft.id);
+    // Without a session, never write into a draft that was claimed meanwhile.
+    const { data: updatedDraft, error: updateError } = await (
+      sessionUser ? update : update.is("claimed_at", null)
+    )
       .select("id")
       .maybeSingle();
 
@@ -226,54 +275,50 @@ export async function POST(request) {
       if (newResumePath) {
         await supabase.storage.from("resumes").remove([newResumePath]);
       }
-      // No row updated means the draft was claimed a moment ago.
-      return updateError
-        ? NextResponse.json(
-            { error: "Something went wrong saving your application. Please try again." },
-            { status: 500 },
-          )
-        : NextResponse.json(
-            {
-              code: "application_exists",
-              error: "You already have an account for this email. Please log in to continue.",
-            },
-            { status: 409 },
-          );
+      if (updateError) {
+        return NextResponse.json(
+          { error: "Something went wrong saving your application. Please try again." },
+          { status: 500 },
+        );
+      }
+      // No row updated: the draft was claimed (or, for a signed-in applicant,
+      // linked and deleted) a moment ago. The claim step sends a signed-in
+      // applicant on to their application.
+      return sessionUser
+        ? NextResponse.json(okBody, { status: 200 })
+        : alreadyApplied();
     }
 
-    if (newResumePath && existingDraft.resume_path) {
+    if (newResumePath && ownDraft.resume_path) {
       const { error: removeError } = await supabase.storage
         .from("resumes")
-        .remove([existingDraft.resume_path]);
+        .remove([ownDraft.resume_path]);
       if (removeError) {
         console.error("Replaced draft resume cleanup failed:", removeError);
       }
     }
 
     const response = NextResponse.json(okBody, { status: 200 });
-    response.cookies.set(
-      DRAFT_COOKIE,
-      existingDraft.id,
-      draftCookieOptions(),
-    );
+    response.cookies.set(DRAFT_COOKIE, ownDraft.id, draftCookieOptions());
     return response;
   }
 
-  if (existingDraft) {
-    // The expired draft is being replaced; don't leave its resume orphaned in
-    // storage (it holds the applicant's personal data).
-    if (existingDraft.resume_path) {
+  // Expired drafts for this address can no longer be linked to an account;
+  // don't leave them or their resumes behind (they hold personal data). Live
+  // drafts are never touched here: without proof of ownership (above), this
+  // request only adds a draft of its own.
+  for (const expired of drafts.filter(
+    (draft) => !draft.claimed_at && new Date(draft.expires_at) <= now,
+  )) {
+    if (expired.resume_path) {
       const { error: removeError } = await supabase.storage
         .from("resumes")
-        .remove([existingDraft.resume_path]);
+        .remove([expired.resume_path]);
       if (removeError) {
         console.error("Expired draft resume cleanup failed:", removeError);
       }
     }
-    await supabase
-      .from("application_drafts")
-      .delete()
-      .eq("id", existingDraft.id);
+    await supabase.from("application_drafts").delete().eq("id", expired.id);
   }
 
   const id = randomUUID();

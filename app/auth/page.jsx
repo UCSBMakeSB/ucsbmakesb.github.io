@@ -52,17 +52,10 @@ export default function AuthPage() {
   }, [resendWait]);
 
   useEffect(() => {
+    // The only error still sent here (lib/auth-callback.js). Links that can't
+    // be used now go to /login?notice=..., and a claimed draft to /apply.
     const error = new URLSearchParams(window.location.search).get("error");
-    if (error === "confirmation_failed") {
-      setStatus("error");
-      setMessage("We couldn't confirm your email. Please request a new confirmation email.");
-    } else if (error === "missing_code") {
-      setStatus("error");
-      setMessage("That confirmation link is incomplete. Please request a new one.");
-    } else if (error === "draft_claimed") {
-      setStatus("error");
-      setMessage("This application is already linked to an account. Sign in to continue.");
-    } else if (error === "email_sync_failed") {
+    if (error === "email_sync_failed") {
       setStatus("error");
       setMessage(
         "Your email was confirmed, but we couldn't sync your application. Please contact MakeSB support.",
