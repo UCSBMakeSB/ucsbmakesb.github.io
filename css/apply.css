@@ -422,3 +422,144 @@
   list-style: none;
   font-size: 0.9em;
 }
+
+/* School picker (components/school-combobox.jsx) */
+.school-combobox {
+  position: relative;
+  align-content: start;
+}
+
+.school-combobox > label {
+  display: block;
+}
+
+.school-combobox-control,
+.school-combobox-manual {
+  position: relative;
+  display: grid;
+  gap: 8px;
+}
+
+.school-combobox-input {
+  text-overflow: ellipsis;
+}
+
+.school-combobox-popup {
+  position: absolute;
+  z-index: 20;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: min(18rem, 50svh);
+  margin-top: 4px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  color: var(--paper);
+  background: var(--panel);
+  border: 1px solid rgba(255, 250, 240, 0.4);
+  border-radius: 6px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
+  font-family: var(--mono);
+  font-size: 0.85rem;
+}
+
+.school-combobox-popup[hidden] {
+  display: none;
+}
+
+.school-combobox-list {
+  margin: 0;
+  padding: 4px 0;
+  list-style: none;
+}
+
+.school-combobox-note {
+  margin: 0;
+  padding: 10px 12px 2px;
+  color: rgba(255, 250, 240, 0.7);
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+.school-combobox-option {
+  display: grid;
+  gap: 2px;
+  padding: 10px 12px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  cursor: var(--cursor-arrow-active), pointer;
+}
+
+.school-combobox-option[data-kind="manual"] {
+  margin-top: 4px;
+  border-top: 1px solid rgba(255, 250, 240, 0.25);
+  color: var(--sun);
+}
+
+.school-combobox-option[data-active="true"] {
+  color: var(--ink);
+  background: var(--sun);
+}
+
+.school-combobox-country {
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+.school-combobox-link {
+  justify-self: start;
+  padding: 0;
+  color: var(--sun);
+  background: none;
+  border: 0;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.school-combobox-link:focus-visible,
+.school-combobox-input:focus-visible {
+  outline: 2px solid var(--sun);
+  outline-offset: 3px;
+}
+
+.school-combobox-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+/* Portal profile uses the light, boxed inputs. */
+.school-combobox[data-portal="true"] .school-combobox-popup {
+  color: var(--ink);
+  background: var(--paper);
+  border-color: #9a96a3;
+  border-radius: 0;
+  box-shadow: 0 10px 24px rgba(11, 25, 48, 0.25);
+  font-family: inherit;
+  font-size: 0.95rem;
+}
+
+.school-combobox[data-portal="true"] .school-combobox-note {
+  color: #5d5868;
+}
+
+.school-combobox[data-portal="true"] .school-combobox-option[data-kind="manual"] {
+  color: var(--ink);
+  border-top-color: #cfc9d6;
+}
+
+.school-combobox[data-portal="true"] .school-combobox-link {
+  color: var(--ink);
+}
+
+@media (forced-colors: active) {
+  .school-combobox-option[data-active="true"] {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+  }
+}
