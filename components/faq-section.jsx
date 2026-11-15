@@ -26,9 +26,10 @@ const questions = [
   [
     "Do you provide travel reimbursements?",
     <>
-      At the moment, no. However, we are working hard to try to get travel
-      reimbursements. If attending MakeSB poses a financial burden, please
-      contact <a href="mailto:patrick_liu@ucsb.edu">patrick_liu@ucsb.edu</a>.
+      Yes, but not for all participants yet. We offer flights to Santa Barbara
+      for low-income students, and we are working hard to fly out everyone. If
+      attending MakeSB poses a financial burden, please contact{" "}
+      <a href="mailto:patrick_liu@ucsb.edu">patrick_liu@ucsb.edu</a>.
     </>,
   ],
   [
