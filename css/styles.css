@@ -827,6 +827,39 @@ a[href]:not(
   }
 }
 
+.friends {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: clamp(64px, 9vw, 112px);
+  text-align: center;
+}
+
+.friends h3 {
+  margin: 0 0 20px;
+  color: var(--paper);
+  font-family: var(--mono);
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.friends .friends-row {
+  margin-bottom: 32px;
+}
+
+.friends p {
+  margin: 0 0 24px;
+  color: var(--paper);
+}
+
+.friends .friends-button {
+  max-width: 100%;
+  text-transform: none;
+  letter-spacing: 0.04em;
+}
+
 .schedule-legend {
   display: flex;
   flex-wrap: wrap;
