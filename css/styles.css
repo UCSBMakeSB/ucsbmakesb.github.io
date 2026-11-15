@@ -577,8 +577,8 @@ a[href]:not(
 #special.page-section,
 #travel.page-section,
 #perks.page-section {
-  padding-top: clamp(88px, 12vw, 150px);
-  padding-bottom: clamp(88px, 12vw, 150px);
+  padding-top: clamp(52px, 7vw, 96px);
+  padding-bottom: clamp(52px, 7vw, 96px);
 }
 
 .page-section p.lead {
