@@ -58,14 +58,11 @@ export function SponsorsSection() {
               ))}
             </ul>
           )}
-          <p>Reach out to us about collaborating!</p>
-          <a
-            className="apply-button friends-button"
-            href={`mailto:${FRIENDS_EMAIL}`}
-          >
-            {FRIENDS_EMAIL}
-            <span aria-hidden="true">→</span>
-          </a>
+          <p>
+            <a href={`mailto:${FRIENDS_EMAIL}`}>
+              Reach out to us about collaborating!
+            </a>
+          </p>
         </div>
       </div>
     </section>
