@@ -94,10 +94,10 @@ describe("POST /api/apply/draft (create a draft)", () => {
     assert.equal(cookie.httpOnly, true);
   });
 
-  it("the resume is optional", async () => {
+  it("the resume is required", async () => {
     const response = await submit({ resume: undefined });
-    assert.equal(response.status, 201);
-    assert.equal(db.tables.application_drafts[0].resume_path, null);
+    assert.equal(response.status, 400);
+    assert.equal(db.tables.application_drafts.length, 0);
     assert.equal(db.storage.size, 0);
   });
 

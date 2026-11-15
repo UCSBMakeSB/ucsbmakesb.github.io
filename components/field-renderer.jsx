@@ -353,7 +353,7 @@ export const formFields = [
     ariaLabelledby: "resume-label",
     accept: ".pdf,.doc,.docx",
     helpText: "PDF, DOC, or DOCX",
-    requirement: "recommended",
+    requirement: "required",
   },
 ].map((field) => ({
   ...field,
