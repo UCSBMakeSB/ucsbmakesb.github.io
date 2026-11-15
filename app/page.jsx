@@ -2,13 +2,7 @@ import { FaqSection } from "../components/faq-section";
 import { Header, Footer } from "../components/page-layout";
 import { TeamGrid } from "../components/team-grid";
 import { SponsorsSection } from "../components/sponsors-section";
-import {
-  ApplySection,
-  MissionSection,
-  ProvidedSection,
-  SpecialBlock,
-  TracksSection,
-} from "../components/home-sections";
+import { AboutSection, TracksSection } from "../components/home-sections";
 import { HomeScrollReset } from "../components/home-scroll-reset";
 
 import Image from "next/image";
@@ -44,6 +38,9 @@ export default function HomePage() {
               <span className="hero-date-line">January 15—17, 2027</span>
               <br />
               UC Santa Barbara
+              <span className="hero-tagline">
+                UCSB’s first hardware makeathon
+              </span>
             </p>
           </div>
           <div className="hero-bottom">
@@ -73,50 +70,24 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section
-          id="about"
-          className="page-section"
-          aria-labelledby="about-title"
-        >
-          <div className="page-section-inner">
-            <h2 id="about-title">What is MakeSB?</h2>
-            <p>
-              MakeSB is UCSB’s first hardware makeathon! It’s a weekend-long
-              engineering event where students come together to design and build
-              innovative projects from scratch. As something that is first of
-              its kind, we are extremely excited to bring together hundreds of
-              undergraduate students. Additionally, we offer workshops,
-              mentorship, and events where makers can learn and build technical
-              skills, learn from others, and meet and make new friends.
-            </p>
-            <SpecialBlock />
-          </div>
-        </section>
-
-        <MissionSection />
+        <AboutSection />
 
         <TracksSection />
-
-        <ProvidedSection />
-
-        {/* The schedule is hidden until the event timeline is final. The
-            component and its styles are kept. To restore it, import Schedule
-            from "../components/schedule", render <Schedule /> here, and add
-            ["schedule", "Schedule"] back to links in components/page-layout.jsx. */}
 
         <FaqSection />
 
         <SponsorsSection />
-
-        <ApplySection sponsorUrl={sponsorUrl} />
 
         <section
           id="team"
           className="page-section"
           aria-labelledby="team-title"
         >
-          <div className="page-section-inner">
-            <h2 id="team-title">Meet Our Team</h2>
+          <div className="page-section-inner team-inner">
+            <div className="team-head">
+              <h2 id="team-title">Meet Our Team</h2>
+              <p className="team-note">The students building MakeSB</p>
+            </div>
             <TeamGrid />
           </div>
         </section>

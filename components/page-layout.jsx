@@ -9,11 +9,10 @@ import { ContactEmail } from "./contact-email";
 
 const links = [
   ["about", "About"],
-  ["mission", "Mission"],
   ["tracks", "Tracks"],
-  ["faqs", "FAQs"],
+  ["faqs", "FAQ"],
   ["sponsors", "Sponsors"],
-  ["team", "Meet Our Team"],
+  ["team", "Team"],
 ];
 
 export function Header({ fixed = false }) {

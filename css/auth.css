@@ -3,9 +3,8 @@
   min-height: 100svh;
   padding: clamp(24px, 6vw, 72px);
   place-items: center;
-  background:
-    linear-gradient(rgba(11, 25, 48, 0.62), rgba(11, 25, 48, 0.88)),
-    url("/assets/homepage.png") center / cover;
+  background: #2c3b57 url("/assets/homepage.png") center / cover;
+  background-blend-mode: multiply;
 }
 
 .auth-card {

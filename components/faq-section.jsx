@@ -5,34 +5,26 @@ import { useEffect, useId, useRef, useState } from "react";
 const questions = [
   [
     "When is MakeSB?",
-    "MakeSB runs January 15 to 17, 2027. It starts Friday evening and ends Sunday afternoon.",
+    "January 15 to 17, 2027. It starts Friday evening and ends Sunday afternoon.",
   ],
   [
     "Where is it?",
     "On UCSB’s main campus.",
   ],
   [
-    "Is there a cost to participate in MakeSB?",
-    "Nothing! We provide sleeping accommodations, food, hardware, and other resources. All you have to do is get to Santa Barbara!",
+    "Is there a cost to participate?",
+    "Nothing! We provide sleeping accommodations, food, hardware, and other resources.",
   ],
   [
     "I don't have any experience. Can I still participate?",
-    "Of course, and in fact we encourage it! We have structured Make Weeks around this! If any of the workshops interest you, attend!",
+    "Of course, and in fact we encourage it! MakeWeek workshops the week before cover CAD, electronics, and hardware prototyping, so come to any that interest you.",
   ],
   [
     "Can students from other schools attend?",
-    "Yes! MakeSB welcomes builders from across the Central Coast, not just UCSB students.",
+    "Yes! MakeSB welcomes builders from across the Central Coast and beyond, not just UCSB students.",
   ],
   [
-    "Do I need a team?",
-    "No! We'll help you find a team or pair you up with other builders looking for teammates — you don't need to show up with one already formed.",
-  ],
-  [
-    "What should I bring?",
-    "Just yourself and a laptop! We provide meals, sleeping accommodations, and hardware to build with. If you'd like extra comfort, feel free to bring a sleeping bag or pillow, plus any personal items you need for the weekend.",
-  ],
-  [
-    "Do you provide travel reimbursements?",
+    "Do you help with travel?",
     <>
       Yes. We offer flights to Santa Barbara for low-income students, and we
       are working to fly out all participants. Makers from other schools can
@@ -42,11 +34,12 @@ const questions = [
     </>,
   ],
   [
-    "I have a question or idea. Who do I contact?",
-    <>
-      We are always looking for feedback! Please reach us at{" "}
-      <a href="mailto:team@makesb.org">team@makesb.org</a>.
-    </>,
+    "Do I need a team?",
+    "No! We'll help you find a team or pair you up with other builders looking for teammates.",
+  ],
+  [
+    "What should I bring?",
+    "Just yourself and a laptop! If you'd like extra comfort, bring a sleeping bag or pillow, plus any personal items you need for the weekend.",
   ],
 ];
 

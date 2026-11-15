@@ -2,7 +2,7 @@ import "../css/styles.css";
 import "../css/apply.css";
 import "../css/auth.css";
 
-import { mono, serif, sans } from "./fonts";
+import { hand, mono, serif, sans } from "./fonts";
 
 const domain = "https://" + (process.env.VERCEL_PROJECT_PRODUCTION_URL || "localhost:3000");
 
@@ -43,7 +43,7 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${mono.variable} ${serif.variable} ${sans.variable}`}>
+      <body className={`${mono.variable} ${serif.variable} ${sans.variable} ${hand.variable}`}>
         {children}
       </body>
     </html>
