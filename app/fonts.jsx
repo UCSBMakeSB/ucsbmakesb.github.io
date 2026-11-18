@@ -1,4 +1,4 @@
-import { DM_Mono, Instrument_Serif, Manrope } from "next/font/google";
+import { Caveat, DM_Mono, Instrument_Serif, Manrope } from "next/font/google";
 
 export const mono = DM_Mono({
   subsets: ["latin"],
@@ -17,4 +17,11 @@ export const sans = Manrope({
   subsets: ["latin"],
   variable: "--font-sans",
   weight: ["400", "500", "600", "700", "800"],
+});
+
+// Handwritten names on the team board.
+export const hand = Caveat({
+  subsets: ["latin"],
+  variable: "--font-hand",
+  weight: "700",
 });

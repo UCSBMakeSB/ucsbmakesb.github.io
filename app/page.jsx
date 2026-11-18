@@ -1,6 +1,7 @@
 import { FaqSection } from "../components/faq-section";
 import { Header, Footer } from "../components/page-layout";
-import { TeamSelector } from "../components/team-selector";
+import { TeamGrid } from "../components/team-grid";
+import { SponsorsSection } from "../components/sponsors-section";
 import { Schedule } from "../components/schedule";
 import { HomeScrollReset } from "../components/home-scroll-reset";
 
@@ -83,50 +84,28 @@ export default function HomePage() {
 
         <Schedule />
 
+        <section
+          id="perks"
+          className="page-section"
+          aria-labelledby="perks-title"
+        >
+          <div className="page-section-inner">
+            <h2 id="perks-title">Perks and prizes</h2>
+            <p>
+              Outstanding projects will be recognized with prizes from our
+              sponsors. The best first-year project will receive a skydiving
+              experience.
+            </p>
+            <p>
+              Additional prizes and tracks will be announced as our sponsors
+              confirm them.
+            </p>
+          </div>
+        </section>
+
         <FaqSection />
 
-        <section
-          id="sponsors"
-          className="page-section"
-          aria-labelledby="sponsors-title"
-        >
-          <div className="page-section-inner">
-            <h2 id="sponsors-title">Sponsors</h2>
-            <ul className="sponsor-row">
-              <li>
-                <a
-                  href="https://rotatrix.com/"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <Image
-                    className="sponsor-logo"
-                    src="/assets/sponsors/Rotatrix.png"
-                    width={240}
-                    height={100}
-                    alt="Rotatrix"
-                  />
-                </a>
-              </li>
-            </ul>
-          </div>
-        </section>
-
-        <section
-          id="contact"
-          className="page-section"
-          aria-labelledby="contact-title"
-        >
-          <div className="page-section-inner">
-            <h2 id="contact-title">Apply Here</h2>
-            <ApplyLink className="apply-button">
-              Apply to MakeSB <span aria-hidden="true">↗</span>
-            </ApplyLink>
-            <a className="sponsor-link" href={sponsorUrl}>
-              Sponsor MakeSB <span aria-hidden="true">→</span>
-            </a>
-          </div>
-        </section>
+        <SponsorsSection />
 
         <section
           id="team"
@@ -134,8 +113,11 @@ export default function HomePage() {
           aria-labelledby="team-title"
         >
           <div className="page-section-inner">
-            <h2 id="team-title">Meet Our Team</h2>
-            <TeamSelector />
+            <div className="team-head">
+              <h2 id="team-title">Meet Our Team</h2>
+              <p className="team-note">The students building MakeSB</p>
+            </div>
+            <TeamGrid />
           </div>
         </section>
       </main>
