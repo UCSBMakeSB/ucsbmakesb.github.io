@@ -118,6 +118,10 @@ export default function Application() {
             {feedback}
           </p>
         )}
+        <p>
+          You can edit your submitted application through November 30. Click Save
+          each time you make changes to update your application.
+        </p>
         <button className="portal-button" type="submit" disabled={saving}>
           {saving ? "Saving..." : "Save"}
         </button>
