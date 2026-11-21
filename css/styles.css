@@ -908,7 +908,9 @@ a[href]:not(
 .sponsor-row a {
   display: block;
   opacity: 0.88;
-  transition: opacity 180ms ease, translate 180ms ease;
+  transition:
+    opacity 180ms ease,
+    translate 180ms ease;
 }
 
 .sponsor-row a:focus-visible {
@@ -1509,7 +1511,9 @@ a[href]:not(
   font-family: var(--mono);
   font-size: 0.85rem;
 }
-.contact-email > p { margin: 8px 0; }
+.contact-email > p {
+  margin: 8px 0;
+}
 .contact-email > a {
   overflow-wrap: anywhere;
   text-underline-offset: 4px;

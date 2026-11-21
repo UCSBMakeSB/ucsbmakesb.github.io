@@ -39,7 +39,8 @@ export default function HomePage() {
               <br />
               UC Santa Barbara
             </p>
-            <p className="hero-tagline">UCSB’s First Hardware Makeathon</p>          </div>
+            <p className="hero-tagline">UCSB’s First Hardware Makeathon</p>{" "}
+          </div>
           <div className="hero-bottom">
             <div className="hero-info">
               <nav className="social-links" aria-label="Social links">
@@ -63,10 +64,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section
-          className="deadline-banner"
-          aria-label="Application deadline"
-        >
+        <section className="deadline-banner" aria-label="Application deadline">
           <p>
             <strong>Applications are due November 30.</strong>
             <span>
@@ -87,11 +85,11 @@ export default function HomePage() {
             <h2 id="about-title">What is MakeSB?</h2>
             <p className="lead">
               MakeSB is UCSB’s first hardware makeathon. Over one weekend in
-              January, student teams design and build original projects from
-              the ground up. Participation is free, and we provide the parts,
-              tools, meals and mentorship. An on-site pop-up parts store
-              supplies components when you need them, and MakeWeek workshops
-              the week before prepare you for the event.
+              January, student teams design and build original projects from the
+              ground up. Participation is free, and we provide the parts, tools,
+              meals and mentorship. An on-site pop-up parts store supplies
+              components when you need them, and MakeWeek workshops the week
+              before prepare you for the event.
             </p>
             <p className="lead">
               MakeSB was created for students who have faced barriers to
@@ -220,8 +218,8 @@ export default function HomePage() {
             </ul>
             <p>
               If cost is preventing you from attending, please contact{" "}
-              <a href="mailto:patrick_liu@ucsb.edu">patrick_liu@ucsb.edu</a>.
-              We will do our best to support you.
+              <a href="mailto:patrick_liu@ucsb.edu">patrick_liu@ucsb.edu</a>. We
+              will do our best to support you.
             </p>
           </div>
         </section>
@@ -264,12 +262,12 @@ export default function HomePage() {
           </div>
         </section>
 
-        <Schedule />
+        {/* <Schedule /> */}
 
         <FaqSection />
 
         <SponsorsSection />
-
+{/* 
         <section
           id="contact"
           className="page-section"
@@ -278,8 +276,8 @@ export default function HomePage() {
           <div className="page-section-inner">
             <h2 id="contact-title">Apply Here</h2>
             <p className="lead">
-              Applications are due <strong>November 30</strong>. Questions? Email{" "}
-              <a href="mailto:team@makesb.org">team@makesb.org</a>.
+              Applications are due <strong>November 30</strong>. Questions?
+              Email <a href="mailto:team@makesb.org">team@makesb.org</a>.
             </p>
             <ApplyLink className="apply-button">
               Apply to MakeSB <span aria-hidden="true">↗</span>
@@ -288,7 +286,7 @@ export default function HomePage() {
               Sponsor MakeSB <span aria-hidden="true">→</span>
             </a>
           </div>
-        </section>
+        </section> */}
 
         <section
           id="team"
