@@ -628,12 +628,15 @@ a[href]:not(
 }
 
 .deadline-banner {
+  position: sticky;
+  z-index: 20;
+  top: 0;
   display: flex;
   flex-wrap: wrap;
   gap: 16px 32px;
   align-items: center;
   justify-content: center;
-  padding: 22px clamp(20px, 4vw, 68px);
+  padding: 12px clamp(20px, 4vw, 68px);
   color: var(--ink);
   background: var(--sun);
   text-align: center;
@@ -900,7 +903,9 @@ a[href]:not(
 .sponsor-row a {
   display: block;
   opacity: 0.88;
-  transition: opacity 180ms ease, translate 180ms ease;
+  transition:
+    opacity 180ms ease,
+    translate 180ms ease;
 }
 
 .sponsor-row a:focus-visible {
@@ -1049,8 +1054,20 @@ a[href]:not(
   scroll-behavior: smooth;
   scrollbar-width: thin;
   scrollbar-color: var(--sun) var(--panel);
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 var(--fade-left), #000 calc(100% - var(--fade-right)), transparent);
-  mask-image: linear-gradient(to right, transparent, #000 var(--fade-left), #000 calc(100% - var(--fade-right)), transparent);
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 var(--fade-left),
+    #000 calc(100% - var(--fade-right)),
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 var(--fade-left),
+    #000 calc(100% - var(--fade-right)),
+    transparent
+  );
 }
 
 .puzzle-strip::-webkit-scrollbar {
@@ -1510,7 +1527,9 @@ a[href]:not(
   font-family: var(--mono);
   font-size: 0.85rem;
 }
-.contact-email > p { margin: 8px 0; }
+.contact-email > p {
+  margin: 8px 0;
+}
 .contact-email-actions {
   display: flex;
   flex-wrap: wrap;
