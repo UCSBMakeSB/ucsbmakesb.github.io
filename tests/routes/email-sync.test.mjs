@@ -102,6 +102,8 @@ describe("auth callback: email synchronization after confirmation", () => {
 
   it("hands off to claim-draft when a pending application draft cookie is present", async () => {
     const response = await callback("?code=good-code", { cookies: { [DRAFT_COOKIE]: "draft-id" } });
-    assert.equal(redirectPath(response), "/api/apply/claim-draft?next=/auth/confirmed");
+    const { pathname, searchParams } = new URL(response.headers.get("location"));
+    assert.equal(pathname, "/api/apply/claim-draft");
+    assert.equal(searchParams.get("next"), "/auth/confirmed");
   });
 });

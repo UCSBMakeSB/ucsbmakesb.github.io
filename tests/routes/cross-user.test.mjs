@@ -76,6 +76,20 @@ describe("cross-user application access", () => {
     assert.equal(appFor(bob).email, "bob@ucsb.edu");
   });
 
+  it("PATCH /api/profile preserves an existing school bucket and rejects a new one", async () => {
+    signInAs(alice);
+    appFor(alice).school = "other-cc";
+    const save = (body) => profile.PATCH(jsonRequest("/api/profile", { method: "PATCH", body }));
+
+    assert.equal((await save({ school: "other-cc" })).status, 200);
+    assert.equal((await save({ school: "other-cc", mobileNumber: "555-0100" })).status, 200);
+    assert.equal(appFor(alice).mobile_number, "555-0100");
+    assert.equal(appFor(alice).school, "other-cc");
+    assert.equal((await save({ school: "out-of-state" })).status, 400);
+    assert.equal((await save({ school: "Stanford University" })).status, 200);
+    assert.equal(appFor(alice).school, "Stanford University");
+  });
+
   it("PATCH /api/settings (profile) edits only the caller's row", async () => {
     signInAs(alice);
     const response = await settings.PATCH(

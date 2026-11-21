@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { sponsorTiers, TIER_SCALE } from "../lib/sponsors";
+import { friends, FRIENDS_EMAIL, sponsorTiers, TIER_SCALE } from "../lib/sponsors";
 
 export function SponsorsSection() {
   return (
@@ -33,6 +33,46 @@ export function SponsorsSection() {
             ))}
           </ul>
         ))}
+        <div className="friends" aria-labelledby="friends-title">
+          <h3 id="friends-title">Friends of MakeSB</h3>
+          {friends.length > 0 && (
+            <ul className="sponsor-row friends-row">
+              {friends.map(({ name, href, src, width, height, display }) => (
+                <li key={name}>
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={name}
+                  >
+                    <Image
+                      className="sponsor-logo"
+                      src={src}
+                      width={width}
+                      height={height}
+                      alt={name}
+                      style={{ "--logo-w": display }}
+                    />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
+          <p>
+            <a href={`mailto:${FRIENDS_EMAIL}`}>
+              Reach out to us about collaborating!
+            </a>
+          </p>
+          <p>
+            <a
+              href="https://make-initiative.gitbook.io/make-initiative"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Run a makeathon at your school? Read the Make Initiative docs.
+            </a>
+          </p>
+        </div>
       </div>
     </section>
   );

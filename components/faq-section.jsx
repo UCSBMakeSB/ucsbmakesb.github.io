@@ -39,7 +39,14 @@ const questions = [
   ],
   [
     "What should I bring?",
-    "Just yourself and a laptop! If you'd like extra comfort, bring a sleeping bag or pillow, plus any personal items you need for the weekend.",
+    "Just yourself and a laptop! We provide meals, sleeping accommodations, and hardware to build with. If you'd like extra comfort, feel free to bring a sleeping bag or pillow, plus any personal items you need for the weekend.",
+  ],
+  [
+    "I have a question or idea. Who do I contact?",
+    <>
+      We are always looking for feedback! Please reach us at{" "}
+      <a href="mailto:team@makesb.org">team@makesb.org</a>.
+    </>,
   ],
 ];
 

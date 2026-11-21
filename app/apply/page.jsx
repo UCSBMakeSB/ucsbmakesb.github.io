@@ -21,7 +21,7 @@ Participants will have access to resources such as 3D printing through the Libra
 
 Leading up to MakeSB, we will host MakeWeek, a series of hour-long workshops covering topics such as CAD, ESP32 development, electronics, and hardware prototyping.
 
-You may register with a team of up to 4 people. Each team member must register individually and enter the exact same team name. If you do not have a team, register as an individual, and we will help place you into a team before or during the event.
+You may join with a team of up to 4 people. Each team member must create their own account and enter the exact same team name. If you do not have a team, create an account on your own, and we will help place you into a team before or during the event.
 
 We are also looking for volunteers, mentors, faculty, industry guests, and alumni who are interested in helping students build and refine their projects.
 
@@ -48,6 +48,9 @@ export default async function Apply() {
     }
   }
 
+  // Questions asked only after admission (still used by the portal).
+  const applyFields = formFields.filter((field) => !field.postAdmission);
+
   return (
     <>
       <Header fixed />
@@ -59,7 +62,7 @@ export default async function Apply() {
                 Build Something <span>Real</span>
               </h1>
               <h2>
-                Register today for UCSB's first hardware hackathon and make
+                Create your account for UCSB's first hardware hackathon and make
                 something special. <em>How will you change the world?</em>
               </h2>
             </div>
@@ -69,7 +72,7 @@ export default async function Apply() {
                 className="apply-bird"
                 width={540 / 5}
                 height={710 / 5}
-                alt="Bird that's so excited for you to register that it's jumping up and down."
+                alt="Bird that's so excited for you to create your account that it's jumping up and down."
               />
               <div className="apply-bird-shadow" />
             </div>
@@ -82,19 +85,19 @@ export default async function Apply() {
               Applications are temporarily unavailable. Please try again later.
             </p>
           )}
-          <ApplicationForm className="application-form" disabled={!submissionsConfigured}>
+          <ApplicationForm className="application-form" submitLabel="Create account" disabled={!submissionsConfigured}>
             <div className="application-form-fields">
-              {formFields
+              {applyFields
                 .filter((field) => field.section === "primary")
                 .map((field) => (
                   <FieldRenderer key={field.id} field={field} />
                 ))}
             </div>
             <FieldRenderer
-              field={formFields.find((field) => field.section === "standalone")}
+              field={applyFields.find((field) => field.section === "standalone")}
             />
             <div className="application-form-fields">
-              {formFields
+              {applyFields
                 .filter((field) => field.section === "secondary")
                 .map((field) => (
                   <FieldRenderer key={field.id || field.name} field={field} />

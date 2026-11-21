@@ -163,6 +163,11 @@ async function claimDraft(request) {
   const { error: insertError } = await supabase.from("applications").insert({
     id: randomUUID(),
     user_id: user.id,
+    // NOT NULL columns the application no longer asks for (ask after admission).
+    mobile_number: "",
+    emergency_contact_name: "",
+    emergency_contact_mobile_number: "",
+    age: "",
     ...payload,
     resume_path: resumePath,
   });

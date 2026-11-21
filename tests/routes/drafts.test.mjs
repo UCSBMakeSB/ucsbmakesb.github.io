@@ -94,10 +94,10 @@ describe("POST /api/apply/draft (create a draft)", () => {
     assert.equal(cookie.httpOnly, true);
   });
 
-  it("the resume is optional", async () => {
+  it("the resume is required", async () => {
     const response = await submit({ resume: undefined });
-    assert.equal(response.status, 201);
-    assert.equal(db.tables.application_drafts[0].resume_path, null);
+    assert.equal(response.status, 400);
+    assert.equal(db.tables.application_drafts.length, 0);
     assert.equal(db.storage.size, 0);
   });
 
@@ -256,6 +256,20 @@ describe("claim-draft: ownership and success", () => {
     assert.equal(db.tables.application_drafts.length, 0);
     assert.ok(isCookieCleared(response, DRAFT_COOKIE));
     assert.deepEqual(db.revalidated, [user.id]);
+  });
+
+  it("fills the NOT NULL post-admission columns with empty strings when the draft lacks them", async () => {
+    const draft = addDraft({
+      email: user.email,
+      payload: { preferred_first_name: "Gaucho", last_name: "Student", email: user.email, major: "math", year: "junior", country: "united-states", school: "Stanford", waiver_accepted: true, prior_hackathon_experience: false },
+    });
+    const response = await claim(draft.id);
+    assert.equal(response.status, 200);
+    const [created] = db.tables.applications;
+    for (const column of ["mobile_number", "emergency_contact_name", "emergency_contact_mobile_number", "age"]) {
+      assert.equal(created[column], "");
+    }
+    assert.equal(created.school, "Stanford");
   });
 
   it("works without a resume", async () => {

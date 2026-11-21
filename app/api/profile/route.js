@@ -1,20 +1,25 @@
 import { NextResponse } from "next/server";
 import { getSupabaseAdmin, getSupabaseServer } from "../../../lib/supabase-server";
 import { revalidatePortalAccount } from "../../../lib/portal-data";
+import { SCHOOL_BUCKET_MESSAGE } from "../../../lib/application-validation";
+import { isLegacyBucket, SCHOOL_MAX_LENGTH } from "../../../lib/schools";
 
 export const runtime = "nodejs";
+
+// NOT NULL columns that may be blank now: store "" rather than null.
+const BLANK_OK_COLUMNS = new Set(["mobile_number", "emergency_contact_name", "emergency_contact_mobile_number", "age"]);
 
 const PROFILE_FIELDS = {
   preferredFirstName: ["preferred_first_name", 100, true],
   lastName: ["last_name", 100, true],
-  mobileNumber: ["mobile_number", 40, true],
-  emergencyContactName: ["emergency_contact_name", 150, true],
-  emergencyContactMobileNumber: ["emergency_contact_mobile_number", 40, true],
+  mobileNumber: ["mobile_number", 40, false], // not asked on the application any more
+  emergencyContactName: ["emergency_contact_name", 150, false], // not asked on the application any more
+  emergencyContactMobileNumber: ["emergency_contact_mobile_number", 40, false], // not asked on the application any more
   major: ["major", 100, true],
   year: ["year", 100, true],
-  age: ["age", 100, true],
+  age: ["age", 100, false], // not asked on the application any more
   country: ["country", 100, true],
-  school: ["school", 200, true],
+  school: ["school", SCHOOL_MAX_LENGTH, true],
   "food-allergies": ["food_allergies", 500, false],
 };
 
@@ -71,8 +76,27 @@ export async function PATCH(request) {
     } else if (value.length > maxLength) {
       errors[field] = `Must be ${maxLength} characters or fewer.`;
     } else {
-      updates[column] = value || null;
+      updates[column] = value || (BLANK_OK_COLUMNS.has(column) ? "" : null);
     }
+  }
+
+  const legacySchool = isLegacyBucket(updates.school) ? updates.school : null;
+  if (legacySchool) {
+    // Allow old profiles to keep their existing catch-all when editing other fields.
+    const { data: current, error } = await getSupabaseAdmin()
+      .from("applications")
+      .select("school")
+      .eq("user_id", user.id)
+      .maybeSingle();
+    if (error) {
+      console.error("Profile school lookup failed:", error);
+      return NextResponse.json({ error: "Couldn't save your profile." }, { status: 500 });
+    }
+    if (!current) {
+      return NextResponse.json({ error: "Application not found." }, { status: 404 });
+    }
+    if (current.school !== legacySchool) errors.school = SCHOOL_BUCKET_MESSAGE;
+    delete updates.school;
   }
 
   if (Object.keys(errors).length > 0) {
@@ -81,15 +105,15 @@ export async function PATCH(request) {
       { status: 400 },
     );
   }
-  if (Object.keys(updates).length === 0) {
+  const hasUpdates = Object.keys(updates).length > 0;
+  if (!hasUpdates && !legacySchool) {
     return NextResponse.json({ error: "No profile changes submitted." }, { status: 400 });
   }
 
-  const { data: application, error } = await getSupabaseAdmin()
-    .from("applications")
-    .update(updates)
-    .eq("user_id", user.id)
+  const applications = getSupabaseAdmin().from("applications");
+  const { data: application, error } = await (hasUpdates ? applications.update(updates) : applications)
     .select("*")
+    .eq("user_id", user.id)
     .maybeSingle();
 
   if (error) {

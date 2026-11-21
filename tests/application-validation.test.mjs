@@ -43,7 +43,8 @@ test("accepts a complete application and normalizes the email", () => {
   assert.equal(result.row.preferred_first_name, "Gaucho");
   assert.equal(result.row.waiver_accepted, true);
   assert.equal(result.row.prior_hackathon_experience, true);
-  assert.equal(result.row.food_allergies, "None");
+  // food allergies are no longer asked on the application (ask after admission)
+  assert.equal(result.row.food_allergies, undefined);
 });
 
 test("maps 'no' experience to false", () => {
@@ -52,13 +53,12 @@ test("maps 'no' experience to false", () => {
   assert.equal(result.row.prior_hackathon_experience, false);
 });
 
-test("accepts empty optional fields", () => {
+test("rejects a missing resume", () => {
   const result = validateApplication(
-    validForm({ "food-allergies": "", resume: undefined }),
+    validForm({ resume: undefined }),
   );
-  assert.equal(result.ok, true);
-  assert.equal(result.row.food_allergies, null);
-  assert.equal(result.resume, null);
+  assert.equal(result.ok, false);
+  assert.ok(result.errors.resume);
 });
 
 test("rejects missing and blank required fields", () => {
@@ -68,6 +68,33 @@ test("rejects missing and blank required fields", () => {
   assert.equal(result.ok, false);
   assert.ok(result.errors.lastName);
   assert.ok(result.errors.major);
+});
+
+test("does not require the post-admission questions", () => {
+  const result = validateApplication(
+    validForm({
+      mobileNumber: undefined,
+      emergencyContactName: undefined,
+      emergencyContactMobileNumber: undefined,
+      age: undefined,
+    }),
+  );
+  assert.equal(result.ok, true);
+  assert.equal(result.row.mobile_number, undefined);
+});
+
+test("rejects legacy school buckets for new applications", () => {
+  for (const school of ["other", "Other-CC", "other-csu", "out-of-state"]) {
+    const result = validateApplication(validForm({ school }));
+    assert.equal(result.ok, false);
+    assert.equal(result.errors.school, "Enter the name of your school.");
+  }
+});
+
+test("stores a school name typed through the picker", () => {
+  const result = validateApplication(validForm({ school: "  Stanford  " }));
+  assert.equal(result.ok, true);
+  assert.equal(result.row.school, "Stanford");
 });
 
 test("rejects an invalid email", () => {
@@ -88,11 +115,11 @@ test("rejects over-long text", () => {
   assert.ok(result.errors.lastName);
 });
 
-test("accepts a missing or empty optional resume", () => {
+test("requires a non-empty resume", () => {
   for (const resume of [undefined, pdf("resume.pdf", 0)]) {
     const result = validateApplication(validForm({ resume }));
-    assert.equal(result.ok, true);
-    assert.equal(result.resume, null);
+    assert.equal(result.ok, false);
+    assert.equal(result.errors.resume, "Please upload your resume.");
   }
 });
 

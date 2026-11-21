@@ -1,5 +1,6 @@
 import { Dropdown } from "./dropdown";
 import { FileUploadField } from "./file-upload-field";
+import { SchoolCombobox } from "./school-combobox";
 
 export const majors = [
   { value: "electrical-engineering", label: "Electrical Engineering" },
@@ -148,78 +149,6 @@ export const countries = [
   { value: "other", label: "Other" },
 ];
 
-export const schools = [
-  {
-    value: "ucsb",
-    label: "University of California, Santa Barbara (UCSB)",
-  },
-  {
-    value: "sbcc",
-    label: "Santa Barbara City College (SBCC)",
-  },
-  {
-    value: "ucla",
-    label: "University of California, Los Angeles (UCLA)",
-  },
-  {
-    value: "calpoly",
-    label:
-      "California Polytechnic State University, San Luis Obispo (Cal Poly SLO)",
-  },
-  {
-    value: "csulb",
-    label: "California State University, Long Beach (CSULB)",
-  },
-  {
-    value: "csuf",
-    label: "California State University, Fullerton (CSUF)",
-  },
-  {
-    value: "uci",
-    label: "University of California, Irvine (UCI)",
-  },
-  {
-    value: "ucr",
-    label: "University of California, Riverside (UCR)",
-  },
-  {
-    value: "ucsd",
-    label: "University of California, San Diego (UCSD)",
-  },
-  {
-    value: "ucsc",
-    label: "University of California, Santa Cruz (UCSC)",
-  },
-  {
-    value: "ucm",
-    label: "University of California, Merced (UCM)",
-  },
-  {
-    value: "ucb",
-    label: "University of California, Berkeley (UCB)",
-  },
-  {
-    value: "ucd",
-    label: "University of California, Davis (UCD)",
-  },
-  {
-    value: "other-csu",
-    label: "Another California State University (CSU)",
-  },
-  {
-    value: "other-cc",
-    label: "Another Community College",
-  },
-  {
-    value: "out-of-state",
-    label: "Out of State",
-  },
-  {
-    value: "other",
-    label: "Other",
-  },
-];
-
 export const formFields = [
   {
     type: "input",
@@ -255,7 +184,9 @@ export const formFields = [
     label: "Mobile number",
     inputType: "tel",
     autoComplete: "tel",
-    requirement: "required",
+    // ask after admission, restore in post-admission portal
+    postAdmission: true,
+    requirement: "optional",
   },
   {
     type: "input",
@@ -263,7 +194,9 @@ export const formFields = [
     name: "emergencyContactName",
     label: "Emergency contact name",
     inputType: "text",
-    requirement: "required",
+    // ask after admission, restore in post-admission portal
+    postAdmission: true,
+    requirement: "optional",
   },
   {
     type: "input",
@@ -271,7 +204,9 @@ export const formFields = [
     name: "emergencyContactMobileNumber",
     label: "Emergency contact mobile number",
     inputType: "tel",
-    requirement: "required",
+    // ask after admission, restore in post-admission portal
+    postAdmission: true,
+    requirement: "optional",
   },
   {
     type: "select",
@@ -295,7 +230,9 @@ export const formFields = [
     name: "age",
     label: "Age",
     options: ages,
-    requirement: "required",
+    // ask after admission, restore in post-admission portal
+    postAdmission: true,
+    requirement: "optional",
   },
   {
     type: "select",
@@ -306,11 +243,10 @@ export const formFields = [
     requirement: "required",
   },
   {
-    type: "select",
+    type: "school",
     id: "school",
     name: "school",
     label: "Institution",
-    options: schools,
     requirement: "required",
   },
   {
@@ -319,6 +255,8 @@ export const formFields = [
     name: "food-allergies",
     label: "Any Food Allergies or Restrictions?",
     inputType: "text",
+    // ask after admission, restore in post-admission portal
+    postAdmission: true,
     requirement: "optional",
   },
   {
@@ -346,8 +284,8 @@ export const formFields = [
     label: "Upload your resume! It will be shared with our sponsors!",
     ariaLabelledby: "resume-label",
     accept: ".pdf,.doc,.docx",
-    helpText: "PDF, DOC, or DOCX",
-    requirement: "recommended",
+    helpText: "PDF, DOC, or DOCX, up to 4 MB.",
+    requirement: "required",
   },
 ].map((field) => ({
   ...field,
@@ -432,6 +370,18 @@ export default function FieldRenderer({ field, portal = false }) {
           requirementText={requirementText}
           portal={portal}
           options={field.options}
+        />
+      );
+    case "school":
+      return (
+        <SchoolCombobox
+          id={field.id}
+          name={field.name}
+          label={field.label}
+          required={required}
+          defaultValue={field.defaultValue}
+          requirementText={requirementText}
+          portal={portal}
         />
       );
     case "checkbox":
