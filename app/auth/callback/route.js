@@ -56,9 +56,13 @@ export async function GET(request) {
   }
 
   const hasDraft = Boolean(request.cookies.get(DRAFT_COOKIE)?.value);
-  if (hasDraft) {
+  const draftToken = request.nextUrl.searchParams.get("draft_token");
+  if (hasDraft || draftToken) {
+    const claimUrl = new URL("/api/apply/claim-draft", request.url);
+    claimUrl.searchParams.set("next", "/auth/confirmed");
+    if (draftToken) claimUrl.searchParams.set("draft_token", draftToken);
     return NextResponse.redirect(
-      new URL("/api/apply/claim-draft?next=/auth/confirmed", request.url),
+      claimUrl,
     );
   }
 

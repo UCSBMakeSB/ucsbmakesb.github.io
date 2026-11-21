@@ -3,6 +3,9 @@ import assert from "node:assert/strict";
 import { beforeEach, describe, it } from "node:test";
 import { DRAFT_COOKIE, jsonRequest } from "../support/helpers.mjs";
 import { addApplication, addDraft, addUser, db, failNext, resetDb } from "../support/fakes/db.mjs";
+import { verifyDraftToken } from "../../lib/draft-token.js";
+
+process.env.DRAFT_TOKEN_SECRET = "signup-preflight-test-secret";
 
 const { POST } = await import("../../app/api/auth/prepare-signup/route.js");
 
@@ -36,10 +39,14 @@ describe("signup preflight states", () => {
     }
   });
 
-  it("draft_ready: an active draft sets a short-lived, httpOnly draft cookie", async () => {
+  it("draft_ready: an active draft returns a signed token and sets a short-lived, httpOnly draft cookie", async () => {
     const draft = addDraft({ email: "gaucho@ucsb.edu" });
     const response = await preflight("Gaucho@UCSB.edu");
-    assert.deepEqual(await response.json(), { code: "draft_ready" });
+    const { code, draftToken } = await response.json();
+    assert.equal(code, "draft_ready");
+    const token = verifyDraftToken(draftToken);
+    assert.equal(token?.draftId, draft.id);
+    assert.equal(token.email, "gaucho@ucsb.edu");
 
     const cookie = response.cookies.get(DRAFT_COOKIE);
     assert.equal(cookie.value, draft.id);
@@ -53,7 +60,9 @@ describe("signup preflight states", () => {
     addDraft({ email: "gaucho@ucsb.edu", expiresInMs: -60_000 });
     const active = addDraft({ email: "gaucho@ucsb.edu" });
     const response = await preflight("gaucho@ucsb.edu");
-    assert.deepEqual(await response.json(), { code: "draft_ready" });
+    const { code, draftToken } = await response.json();
+    assert.equal(code, "draft_ready");
+    assert.equal(verifyDraftToken(draftToken)?.draftId, active.id);
     assert.equal(response.cookies.get(DRAFT_COOKIE).value, active.id);
   });
 

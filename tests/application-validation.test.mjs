@@ -83,16 +83,18 @@ test("does not require the post-admission questions", () => {
   assert.equal(result.row.mobile_number, undefined);
 });
 
-test("'other' school needs a typed name and saves it as the school", () => {
-  const missing = validateApplication(validForm({ school: "other" }));
-  assert.equal(missing.ok, false);
-  assert.ok(missing.errors.schoolOther);
+test("rejects legacy school buckets for new applications", () => {
+  for (const school of ["other", "Other-CC", "other-csu", "out-of-state"]) {
+    const result = validateApplication(validForm({ school }));
+    assert.equal(result.ok, false);
+    assert.equal(result.errors.school, "Enter the name of your school.");
+  }
+});
 
-  const typed = validateApplication(
-    validForm({ school: "other", schoolOther: "  Stanford  " }),
-  );
-  assert.equal(typed.ok, true);
-  assert.equal(typed.row.school, "Stanford");
+test("stores a school name typed through the picker", () => {
+  const result = validateApplication(validForm({ school: "  Stanford  " }));
+  assert.equal(result.ok, true);
+  assert.equal(result.row.school, "Stanford");
 });
 
 test("rejects an invalid email", () => {

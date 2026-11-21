@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { escapeLikePattern } from "../../../../lib/db-helpers";
 import { getSupabaseAdmin } from "../../../../lib/supabase-server";
+import { createDraftToken } from "../../../../lib/draft-token";
 import {
   getClientIp,
   getEmailIdentifier,
@@ -139,7 +140,13 @@ export async function POST(request) {
     return NextResponse.json({ code: "no_application" });
   }
 
-  const response = NextResponse.json({ code: "draft_ready" });
-  response.cookies.set(DRAFT_COOKIE, activeDrafts[0].id, draftCookieOptions());
+  const draft = activeDrafts[0];
+  const token = createDraftToken({
+    draftId: draft.id,
+    email: draft.email,
+    expiresAt: draft.expires_at,
+  });
+  const response = NextResponse.json({ code: "draft_ready", draftToken: token });
+  response.cookies.set(DRAFT_COOKIE, draft.id, draftCookieOptions());
   return response;
 }

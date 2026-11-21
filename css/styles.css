@@ -1,4 +1,6 @@
 :root {
+  --cork: #784e5f;
+  --cork-specks: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='46' height='46'%3E%3Cg fill='%23653f4f'%3E%3Ccircle cx='5' cy='7' r='1.3'/%3E%3Ccircle cx='31' cy='15' r='1.5'/%3E%3Ccircle cx='25' cy='37' r='1.3'/%3E%3Ccircle cx='22' cy='21' r='.8'/%3E%3C/g%3E%3Cg fill='%238c6272'%3E%3Ccircle cx='19' cy='3' r='.9'/%3E%3Ccircle cx='41' cy='30' r='1'/%3E%3Ccircle cx='38' cy='43' r='.8'/%3E%3Ccircle cx='3' cy='40' r='1.1'/%3E%3C/g%3E%3Cg fill='%23704657'%3E%3Ccircle cx='12' cy='25' r='1.2'/%3E%3Ccircle cx='44' cy='8' r='1'/%3E%3C/g%3E%3C/svg%3E");
   --ink: #0b1930;
   --paper: #fffaf0;
   --sun: #f3bf52;
@@ -382,6 +384,11 @@ a[href]:not(
   text-transform: uppercase;
 }
 
+.hero-title > p.hero-tagline {
+  margin-top: 10px;
+  color: var(--sun);
+}
+
 .hero-date-line {
   position: relative;
   top: 10px;
@@ -505,35 +512,50 @@ a[href]:not(
 }
 
 .page-section {
-  padding: 80px clamp(20px, 4vw, 68px);
+  padding: clamp(64px, 8vw, 112px) clamp(20px, 4vw, 68px);
   font-size: clamp(1.0625rem, 0.95rem + 0.4vw, 1.1875rem);
 }
 
+#main > .page-section + .page-section {
+  box-shadow: inset 0 1px rgba(255, 250, 240, 0.1);
+}
+
 #about.page-section {
-  border-top: 0;
   background: linear-gradient(to bottom, var(--layer1), var(--layer2));
 }
 
 #schedule.page-section {
+  background: var(--layer4);
+}
+
+#special.page-section {
   background: linear-gradient(to bottom, var(--layer2), var(--layer3));
 }
 
-/* Schedule is hidden, so FAQs continue straight from About (layer2). When the
-   Schedule is restored, change layer2 back to layer3 here. */
+#travel.page-section {
+  background: linear-gradient(to bottom, var(--layer3), var(--layer4));
+}
+
+#perks.page-section {
+  background: var(--layer4);
+}
+
 #faqs.page-section {
-  background: linear-gradient(to bottom, var(--layer2), var(--layer4));
+  background: var(--layer4);
 }
 
 #sponsors.page-section {
   background: linear-gradient(to bottom, var(--layer4), var(--panel));
 }
 
-#contact.page-section {
-  background: linear-gradient(to bottom, var(--panel), var(--ink));
+#team.page-section {
+  background-color: var(--cork);
+  background-image: var(--cork-specks);
 }
 
-#team.page-section {
-  background: var(--ink);
+#team .page-section-inner,
+#sponsors .page-section-inner {
+  max-width: 1080px;
 }
 
 .page-section-inner {
@@ -553,6 +575,106 @@ a[href]:not(
 .page-section p {
   margin: 0 0 12px;
   line-height: 1.6;
+}
+
+/* Long, airy content sections (About, Special, Travel, Perks). */
+#about.page-section,
+#special.page-section,
+#travel.page-section,
+#perks.page-section {
+  padding-top: clamp(52px, 7vw, 96px);
+  padding-bottom: clamp(52px, 7vw, 96px);
+}
+
+.page-section p.lead {
+  margin: 0 0 24px;
+  font-size: clamp(1.2rem, 1rem + 0.8vw, 1.55rem);
+  line-height: 1.55;
+}
+
+.subhead {
+  margin: 56px 0 16px;
+  color: var(--sun);
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 40px 48px;
+  margin: 48px 0 40px;
+  padding: 0;
+  list-style: none;
+}
+
+.feature-grid li {
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 250, 240, 0.28);
+}
+
+.feature-grid h3 {
+  margin: 0 0 10px;
+  font-family: var(--serif);
+  font-size: 1.6rem;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+.feature-grid p {
+  margin: 0;
+}
+
+.page-section a {
+  text-underline-offset: 4px;
+}
+
+.deadline-banner {
+  position: sticky;
+  z-index: 20;
+  top: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 32px;
+  align-items: center;
+  justify-content: center;
+  padding: 12px clamp(20px, 4vw, 68px);
+  color: var(--ink);
+  background: var(--sun);
+  text-align: center;
+}
+
+.deadline-banner p {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 24px;
+  align-items: baseline;
+  justify-content: center;
+  margin: 0;
+  font-family: var(--mono);
+  font-size: clamp(0.9rem, 0.8rem + 0.4vw, 1.1rem);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.deadline-banner a {
+  font-weight: 500;
+  text-underline-offset: 4px;
+}
+
+.deadline-banner .apply-button {
+  color: var(--paper);
+  background: var(--ink);
+  border-color: var(--ink);
+}
+
+.deadline-banner .apply-button:hover,
+.deadline-banner .apply-button:focus-visible {
+  color: var(--ink);
+  background: var(--paper);
 }
 
 .faq-layout {
@@ -935,8 +1057,20 @@ a[href]:not(
   scroll-behavior: smooth;
   scrollbar-width: thin;
   scrollbar-color: var(--sun) var(--panel);
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 var(--fade-left), #000 calc(100% - var(--fade-right)), transparent);
-  mask-image: linear-gradient(to right, transparent, #000 var(--fade-left), #000 calc(100% - var(--fade-right)), transparent);
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 var(--fade-left),
+    #000 calc(100% - var(--fade-right)),
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 var(--fade-left),
+    #000 calc(100% - var(--fade-right)),
+    transparent
+  );
 }
 
 .puzzle-strip::-webkit-scrollbar {
@@ -1022,11 +1156,6 @@ a[href]:not(
   font-weight: 500;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-}
-
-#contact.page-section .apply-button,
-#contact.page-section .sponsor-link {
-  margin-right: 16px;
 }
 
 :focus-visible {
@@ -1192,10 +1321,6 @@ a[href]:not(
     width: 96px;
   }
 
-  .page-section {
-    padding: 52px 20px;
-  }
-
   .page-section-inner,
   .faq-questions {
     min-width: 0;
@@ -1206,18 +1331,6 @@ a[href]:not(
     min-height: 44px;
     font-size: 1rem;
     line-height: 1.5;
-  }
-
-  #contact .page-section-inner {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
-  }
-
-  #contact.page-section .apply-button,
-  #contact.page-section .sponsor-link {
-    margin-right: 0;
   }
 
   .site-header {
@@ -1397,32 +1510,11 @@ a[href]:not(
   font-size: 0.85rem;
 }
 .contact-email > p { margin: 8px 0; }
-.contact-email-actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-}
-.contact-email-actions > a {
+.contact-email > a {
   overflow-wrap: anywhere;
   text-underline-offset: 4px;
 }
-.contact-email-actions > button {
-  min-height: 44px;
-  padding: 8px 14px;
-  border: 1px solid currentColor;
-  border-radius: 6px;
-  background: transparent;
-  color: inherit;
-  font: inherit;
-  cursor: pointer;
-}
-.contact-email-actions > :focus-visible {
+.contact-email > a:focus-visible {
   outline: 2px solid var(--sun);
   outline-offset: 4px;
-}
-.contact-email-status {
-  min-height: 1.5em;
-  font-size: 0.8rem;
 }
