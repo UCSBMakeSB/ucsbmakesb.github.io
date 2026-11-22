@@ -520,6 +520,24 @@ a[href]:not(
   box-shadow: inset 0 1px rgba(255, 250, 240, 0.1);
 }
 
+#travel-funded.page-section {
+  padding-bottom: 0;
+  background: var(--layer1);
+}
+
+#travel-funded .travel-line {
+  margin: 0 auto;
+  color: color-mix(in srgb, var(--paper) 72%, transparent);
+  font-size: clamp(1.5rem, 1rem + 2.2vw, 2.6rem);
+  font-weight: 300;
+  line-height: 1.25;
+}
+
+#travel-funded .travel-line strong {
+  color: var(--paper);
+  font-weight: 700;
+}
+
 #about.page-section {
   background: linear-gradient(to bottom, var(--layer1), var(--layer2));
 }

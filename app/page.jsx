@@ -76,6 +76,18 @@ export default function HomePage() {
           </ApplyLink>
         </section>
 
+        {/* id is travel-funded (not "travel") because #travel is the Flights and housing section below. */}
+        <section
+          id="travel-funded"
+          className="page-section"
+          aria-label="Travel"
+        >
+          <p className="page-section-inner travel-line">
+            <strong>Travel is funded for all accepted participants.</strong>{" "}
+            Spend a weekend in Santa Barbara building hardware from scratch.
+          </p>
+        </section>
+
         <section
           id="about"
           className="page-section"
