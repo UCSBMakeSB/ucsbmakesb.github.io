@@ -39,6 +39,9 @@ export default function HomePage() {
               <br />
               UC Santa Barbara
             </p>
+            <p className="hero-travel">
+              Travel reimbursed for all accepted participants
+            </p>
           </div>
           <div className="hero-bottom">
             <div className="hero-info">

@@ -387,6 +387,16 @@ a[href]:not(
   top: 10px;
 }
 
+.hero-title > .hero-travel {
+  margin-top: 14px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  background: rgba(3, 12, 29, 0.55);
+  color: var(--sun);
+  font-weight: 700;
+  font-size: 1rem;
+}
+
 .hero-bottom {
   position: absolute;
   right: clamp(24px, 4vw, 68px);
