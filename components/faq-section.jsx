@@ -20,6 +20,16 @@ const questions = [
     "No! We'll help you find a team or pair you up with other builders looking for teammates — you don't need to show up with one already formed.",
   ],
   [
+    "How do I apply as a team?",
+    <>
+      Everyone on your team completes their own individual application. After
+      that, one person creates a team join code and the rest of your team uses
+      it to join. Teams are up to 5 people. If you want a team smaller or larger
+      than 5, email <a href="mailto:team@makesb.org">team@makesb.org</a> and we
+      will decide case by case.
+    </>,
+  ],
+  [
     "What should I bring?",
     "Just yourself and a laptop! We provide meals, sleeping accommodations, and hardware to build with. If you'd like extra comfort, feel free to bring a sleeping bag or pillow, plus any personal items you need for the weekend.",
   ],
