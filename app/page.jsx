@@ -39,9 +39,6 @@ export default function HomePage() {
               <br />
               UC Santa Barbara
             </p>
-            <p className="hero-travel">
-              Travel reimbursed for all accepted participants
-            </p>
           </div>
           <div className="hero-bottom">
             <div className="hero-info">
@@ -67,6 +64,13 @@ export default function HomePage() {
               </a>
             </div>
           </div>
+        </section>
+
+        <section id="travel" className="page-section" aria-label="Travel">
+          <p className="page-section-inner travel-line">
+            <strong>Travel is funded for all accepted participants.</strong>{" "}
+            Spend a weekend at UC Santa Barbara building hardware from scratch.
+          </p>
         </section>
 
         <section

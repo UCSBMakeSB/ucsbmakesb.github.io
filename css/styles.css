@@ -387,16 +387,6 @@ a[href]:not(
   top: 10px;
 }
 
-.hero-title > .hero-travel {
-  margin-top: 14px;
-  padding: 6px 16px;
-  border-radius: 999px;
-  background: rgba(3, 12, 29, 0.55);
-  color: var(--sun);
-  font-weight: 700;
-  font-size: 1rem;
-}
-
 .hero-bottom {
   position: absolute;
   right: clamp(24px, 4vw, 68px);
@@ -517,6 +507,24 @@ a[href]:not(
 .page-section {
   padding: 80px clamp(20px, 4vw, 68px);
   font-size: clamp(1.0625rem, 0.95rem + 0.4vw, 1.1875rem);
+}
+
+#travel.page-section {
+  padding-bottom: 0;
+  background: var(--layer1);
+}
+
+#travel .travel-line {
+  margin: 0 auto;
+  color: color-mix(in srgb, var(--paper) 72%, transparent);
+  font-size: clamp(1.5rem, 1rem + 2.2vw, 2.6rem);
+  font-weight: 300;
+  line-height: 1.25;
+}
+
+#travel .travel-line strong {
+  color: var(--paper);
+  font-weight: 700;
 }
 
 #about.page-section {
