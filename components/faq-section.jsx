@@ -20,6 +20,15 @@ const questions = [
     "No! Once you're accepted, you'll join our Discord, where you can introduce yourself and say you're looking for a team. You can also come to our team-forming sessions and socials, in person or online, to meet people and talk through your dream (or funniest) project ideas. If you don't have a team by late December, we'll place you in a team of 5. From there, your team picks a project you all find cool and unique.",
   ],
   [
+    "How do I apply as a team?",
+    <>
+      Everyone completes an individual application, then one person creates a
+      join code and the rest enter it. Teams are 4 to 5 people. For a bigger or
+      smaller team, email <a href="mailto:team@makesb.org">team@makesb.org</a>{" "}
+      and we'll decide case by case.
+    </>,
+  ],
+  [
     "What should I bring?",
     "Just yourself and a laptop! We provide meals, sleeping accommodations, and hardware to build with. If you'd like extra comfort, feel free to bring a sleeping bag or pillow, plus any personal items you need for the weekend.",
   ],
