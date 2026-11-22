@@ -69,7 +69,7 @@ export default function HomePage() {
         <section id="travel" className="page-section" aria-label="Travel">
           <p className="page-section-inner travel-line">
             <strong>Travel is funded for all accepted participants.</strong>{" "}
-            Spend a weekend at UC Santa Barbara building hardware from scratch.
+            Spend a weekend in Santa Barbara building hardware from scratch.
           </p>
         </section>
 
