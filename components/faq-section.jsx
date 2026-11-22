@@ -22,11 +22,10 @@ const questions = [
   [
     "How do I apply as a team?",
     <>
-      Everyone on your team completes their own individual application. After
-      that, one person creates a team join code and the rest of your team uses
-      it to join. Teams are up to 5 people. If you want a team smaller or larger
-      than 5, email <a href="mailto:team@makesb.org">team@makesb.org</a> and we
-      will decide case by case.
+      Everyone completes an individual application, then one person creates a
+      join code and the rest enter it. Teams are up to 5 people. For a
+      different size, email <a href="mailto:team@makesb.org">team@makesb.org</a>{" "}
+      and we'll decide case by case.
     </>,
   ],
   [

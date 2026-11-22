@@ -21,7 +21,7 @@ Participants will have access to resources such as 3D printing through the Libra
 
 Leading up to MakeSB, we will host MakeWeek, a series of hour-long workshops covering topics such as CAD, ESP32 development, electronics, and hardware prototyping.
 
-Teams can have up to 5 people. Each team member completes their own individual application, then one person creates a team join code and everyone else enters it. If you do not have a team, apply on your own and we will help place you into a team before or during the event. If you want a team smaller or larger than 5, email team@makesb.org and we will decide case by case.
+Teams can have up to 5 people. Everyone completes an individual application, then one person creates a join code and the rest enter it. If you do not have a team, apply on your own and we will help place you. For a different team size, email team@makesb.org.
 
 We are also looking for volunteers, mentors, faculty, industry guests, and alumni who are interested in helping students build and refine their projects.
 
