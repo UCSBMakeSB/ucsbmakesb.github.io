@@ -76,6 +76,20 @@ describe("cross-user application access", () => {
     assert.equal(appFor(bob).email, "bob@ucsb.edu");
   });
 
+  it("PATCH /api/profile preserves an existing school bucket and rejects a new one", async () => {
+    signInAs(alice);
+    appFor(alice).school = "other-cc";
+    const save = (body) => profile.PATCH(jsonRequest("/api/profile", { method: "PATCH", body }));
+
+    assert.equal((await save({ school: "other-cc" })).status, 200);
+    assert.equal((await save({ school: "other-cc", mobileNumber: "555-0100" })).status, 200);
+    assert.equal(appFor(alice).mobile_number, "555-0100");
+    assert.equal(appFor(alice).school, "other-cc");
+    assert.equal((await save({ school: "out-of-state" })).status, 400);
+    assert.equal((await save({ school: "Stanford University" })).status, 200);
+    assert.equal(appFor(alice).school, "Stanford University");
+  });
+
   it("PATCH /api/settings (profile) edits only the caller's row", async () => {
     signInAs(alice);
     const response = await settings.PATCH(
@@ -106,6 +120,20 @@ describe("cross-user application access", () => {
     assert.ok(db.storage.has(`resumes/applications/${bob.id}.pdf`), "bob's resume is untouched");
   });
 
+  it("PATCH /api/application allows saving without reuploading an existing required resume", async () => {
+    signInAs(alice);
+    const form = new FormData();
+    form.set("application_question_2", "Updated essay");
+
+    const response = await application.PATCH(
+      formRequest("/api/application", form, { method: "PATCH" }),
+    );
+
+    assert.equal(response.status, 200);
+    assert.equal(appFor(alice).application_question_2, "Updated essay");
+    assert.equal(appFor(alice).resume_path, `applications/${alice.id}.pdf`);
+  });
+
   it("a signed-in user with no application gets 404 and cannot touch anyone else's", async () => {
     const carol = addUser({ email: "carol@ucsb.edu" });
     signInAs(carol);
@@ -127,7 +155,7 @@ describe("cross-user application access", () => {
     const response = await claimDraft.POST(
       jsonRequest("/api/apply/claim-draft", { cookies: { [DRAFT_COOKIE]: draft.id } }),
     );
-    assert.equal(response.status, 403);
+    assert.equal(response.status, 404);
     assert.equal(db.tables.application_drafts.length, 1);
     assert.equal(db.tables.application_drafts[0].claimed_at, null, "the owner's draft must stay claimable");
     assert.ok(db.storage.has("resumes/drafts/bobs.pdf"));

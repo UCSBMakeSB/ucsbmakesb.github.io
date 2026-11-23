@@ -8,11 +8,11 @@ import {
 import { escapeLikePattern } from "../../../lib/db-helpers";
 import { getSupabaseAdmin, getSupabaseServer } from "../../../lib/supabase-server";
 import { revalidatePortalAccount } from "../../../lib/portal-data";
+import { getPasswordError, PASSWORD_REQUIREMENTS } from "../../../lib/password-policy.js";
 
 export const runtime = "nodejs";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const SECURE_PASSWORD = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{12,}$/;
 
 async function getAuthenticatedUser() {
   const supabase = await getSupabaseServer();
@@ -149,11 +149,10 @@ export async function PATCH(request) {
         { status: 400 },
       );
     }
-    if (!SECURE_PASSWORD.test(newPassword)) {
+    if (getPasswordError(newPassword)) {
       return NextResponse.json(
         {
-          error:
-            "Password must be at least 12 characters and include uppercase, lowercase, a number, and a symbol.",
+          error: PASSWORD_REQUIREMENTS,
         },
         { status: 400 },
       );

@@ -173,17 +173,17 @@ describe("claim-draft: expired, missing and already-claimed drafts", () => {
   const claim = (id, query = "") =>
     claimRoute.POST(jsonRequest(`/api/apply/claim-draft${query}`, id ? withCookie(id) : {}));
 
-  it("no cookie: 404 as JSON, or a redirect to /auth/confirmed when arriving from the email link", async () => {
+  it("no cookie and no draft for the email: 404 as JSON, or a redirect to the /apply notice page (never a loop)", async () => {
     assert.equal((await claim(undefined)).status, 404);
-    const redirected = await claimRoute.GET(getRequest("/api/apply/claim-draft?next=/auth/confirmed"));
-    assert.equal(redirectPath(redirected), "/auth/confirmed");
+    const redirected = await claimRoute.GET(getRequest("/api/apply/claim-draft?next=/portal/profile"));
+    assert.equal(redirectPath(redirected), "/apply?notice=no_application");
   });
 
-  it("unknown draft: 410, or redirect to /auth?error=draft_expired", async () => {
+  it("unknown draft: 410, or redirect to /apply?notice=draft_expired", async () => {
     const id = "11111111-1111-1111-1111-111111111111";
     assert.equal((await claim(id)).status, 410);
     const redirected = await claimRoute.GET(getRequest("/api/apply/claim-draft?next=/auth/confirmed", withCookie(id)));
-    assert.equal(redirectPath(redirected), "/auth?error=draft_expired");
+    assert.equal(redirectPath(redirected), "/apply?notice=draft_expired");
   });
 
   it("expired draft: 410, no application created, draft left for cleanup", async () => {
@@ -193,7 +193,7 @@ describe("claim-draft: expired, missing and already-claimed drafts", () => {
     assert.match((await response.json()).error, /expired/i);
     assert.equal(db.tables.applications.length, 0);
     const redirected = await claimRoute.GET(getRequest("/api/apply/claim-draft?next=/auth/confirmed", withCookie(draft.id)));
-    assert.equal(redirectPath(redirected), "/auth?error=draft_expired");
+    assert.equal(redirectPath(redirected), "/apply?notice=draft_expired");
   });
 
   it("already-claimed draft: 410 saying it is already linked, redirect uses draft_claimed, nothing created", async () => {
@@ -203,7 +203,52 @@ describe("claim-draft: expired, missing and already-claimed drafts", () => {
     assert.match((await response.json()).error, /already been linked/i);
     assert.equal(db.tables.applications.length, 0);
     const redirected = await claimRoute.GET(getRequest("/api/apply/claim-draft?next=/auth/confirmed", withCookie(draft.id)));
-    assert.equal(redirectPath(redirected), "/auth?error=draft_claimed");
+    assert.equal(redirectPath(redirected), "/apply?notice=draft_claimed");
+  });
+
+  it("DIFFERENT BROWSER: with no draft cookie, the draft is claimed by the confirmed email", async () => {
+    const draft = addDraft({ email: user.email, resumePath: "drafts/other-browser.pdf" });
+    db.storage.set("resumes/drafts/other-browser.pdf", { size: 10 });
+    const response = await claim(undefined);
+    assert.equal(response.status, 200);
+    assert.equal(db.tables.applications.length, 1);
+    assert.equal(db.tables.applications[0].user_id, user.id);
+    assert.equal(db.tables.applications[0].resume_path, `applications/${user.id}.pdf`);
+    assert.equal(db.tables.application_drafts.some((row) => row.id === draft.id), false);
+  });
+
+  it("DIFFERENT BROWSER via the emailed/portal link: ends on the portal, not an error page", async () => {
+    addDraft({ email: user.email });
+    const redirected = await claimRoute.GET(getRequest("/api/apply/claim-draft?next=/portal/profile"));
+    assert.equal(redirectPath(redirected), "/portal/profile");
+    assert.equal(db.tables.applications.length, 1);
+  });
+
+  it("DIFFERENT BROWSER: an email-match claim ignores expired, claimed and other people's drafts", async () => {
+    addDraft({ email: user.email, expiresInMs: -1000 });
+    addDraft({ email: user.email, claimed: true });
+    addDraft({ email: "someone-else@ucsb.edu" });
+    const response = await claim(undefined);
+    assert.equal(response.status, 404);
+    assert.equal(db.tables.applications.length, 0);
+  });
+
+  it("DIFFERENT BROWSER: matches the email case-insensitively and treats % and _ literally", async () => {
+    const wild = addUser({ email: "a_b@ucsb.edu" });
+    signInAs(wild);
+    addDraft({ email: "axb@ucsb.edu" });
+    assert.equal((await claim(undefined)).status, 404, "underscore must not match another letter");
+    addDraft({ email: "a_b@ucsb.edu" });
+    assert.equal((await claim(undefined)).status, 200);
+  });
+
+  it("DIFFERENT BROWSER: an unconfirmed account cannot claim by email", async () => {
+    const unconfirmed = addUser({ email: "new@ucsb.edu", confirmed: false });
+    signInAs(unconfirmed);
+    addDraft({ email: "new@ucsb.edu" });
+    const response = await claim(undefined);
+    assert.equal(response.status, 403);
+    assert.equal(db.tables.applications.length, 0);
   });
 });
 
@@ -219,12 +264,29 @@ describe("claim-draft: ownership and success", () => {
   const claim = (id, query = "") =>
     claimRoute.POST(jsonRequest(`/api/apply/claim-draft${query}`, withCookie(id)));
 
-  it("rejects an account whose email does not match the draft, leaving the draft claimable", async () => {
+  it("never claims another email's draft: the cookie is ignored, the draft stays claimable", async () => {
     const draft = addDraft({ email: "someone-else@ucsb.edu" });
     const response = await claim(draft.id);
-    assert.equal(response.status, 403);
+    assert.equal(response.status, 404);
     assert.equal(db.tables.application_drafts[0].claimed_at, null);
     assert.equal(db.tables.applications.length, 0);
+  });
+
+  it("a stale cookie for someone else's draft does not block the account's OWN draft (found by email)", async () => {
+    const other = addDraft({ email: "someone-else@ucsb.edu" });
+    const mine = addDraft({ email: user.email });
+    const response = await claim(other.id);
+    assert.equal(response.status, 200);
+    assert.equal(db.tables.applications.length, 1);
+    assert.equal(db.tables.applications[0].email, user.email);
+    assert.equal(db.tables.application_drafts.some((row) => row.id === mine.id), false);
+    assert.equal(db.tables.application_drafts.find((row) => row.id === other.id).claimed_at, null);
+  });
+
+  it("a stale cookie for someone else's draft, followed from the portal, ends on the /apply notice (no JSON, no loop)", async () => {
+    const other = addDraft({ email: "someone-else@ucsb.edu" });
+    const redirected = await claimRoute.GET(getRequest("/api/apply/claim-draft?next=/portal/profile", withCookie(other.id)));
+    assert.equal(redirectPath(redirected), "/apply?notice=no_application");
   });
 
   it("rejects an account whose email is NOT confirmed, even when the address matches", async () => {
