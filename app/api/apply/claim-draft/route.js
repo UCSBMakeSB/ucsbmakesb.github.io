@@ -1,8 +1,8 @@
 import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { getSupabaseAdmin, getSupabaseServer } from "../../../../lib/supabase-server";
+import { escapeLikePattern } from "../../../../lib/db-helpers";
 import { revalidatePortalAccount } from "../../../../lib/portal-data";
-import { verifyDraftToken } from "../../../../lib/draft-token";
 
 export const runtime = "nodejs";
 
@@ -12,14 +12,16 @@ const CLAIMED_MESSAGE =
 const EXPIRED_MESSAGE = "Your application draft has expired. Please start again.";
 
 function draftUnavailable(request, reason) {
-  // Arriving from the emailed confirmation link (?next=...) means a browser
-  // navigation, so send the user to a page instead of returning JSON.
+  // Arriving from the emailed link or the portal (?next=...) means a browser
+  // navigation, so send the user to a page instead of returning JSON. Always
+  // /apply: for a signed-in user without an application it shows an
+  // explanation and never redirects back here, so these cannot loop.
   if (request.nextUrl?.searchParams.get("next")) {
     return NextResponse.redirect(
       new URL(
         reason === "claimed"
-          ? "/auth?error=draft_claimed"
-          : "/auth?error=draft_expired",
+          ? "/apply?notice=draft_claimed"
+          : "/apply?notice=draft_expired",
         request.url,
       ),
     );
@@ -50,20 +52,37 @@ async function claimDraft(request) {
     );
   }
 
-  const token = request.nextUrl?.searchParams.get("draft_token");
-  const tokenData = token ? verifyDraftToken(token) : null;
-  if (token && !tokenData) return draftUnavailable(request, "expired");
+  const supabase = getSupabaseAdmin();
 
-  const draftId = tokenData?.draftId || request.cookies.get(DRAFT_COOKIE)?.value;
+  let draftId = request.cookies.get(DRAFT_COOKIE)?.value;
   if (!draftId) {
-    const next = request.nextUrl?.searchParams.get("next");
-    if (next) {
-      return NextResponse.redirect(new URL("/auth/confirmed", request.url));
+    // No draft cookie: the link was opened in another browser or on another
+    // device. The confirmed email is the proof of ownership, so claim the
+    // newest active draft saved for that address.
+    const { data: byEmail, error: byEmailError } = await supabase
+      .from("application_drafts")
+      .select("id, expires_at, claimed_at")
+      .ilike("email", escapeLikePattern(user.email ?? ""))
+      .is("claimed_at", null)
+      .gt("expires_at", new Date().toISOString())
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (byEmailError) {
+      console.error("Application draft lookup by email failed:", byEmailError);
+      return NextResponse.json({ error: "Couldn't load your application draft." }, { status: 500 });
     }
-    return NextResponse.json({ error: "No application draft found." }, { status: 404 });
+
+    if (!byEmail) {
+      if (request.nextUrl?.searchParams.get("next")) {
+        return NextResponse.redirect(new URL("/apply?notice=no_application", request.url));
+      }
+      return NextResponse.json({ error: "No application draft found." }, { status: 404 });
+    }
+    draftId = byEmail.id;
   }
 
-  const supabase = getSupabaseAdmin();
   const { data: draft, error: draftError } = await supabase
     .from("application_drafts")
     .select("*")
@@ -86,9 +105,6 @@ async function claimDraft(request) {
       { error: "The account email must match the application email." },
       { status: 403 },
     );
-  }
-  if (tokenData && (tokenData.email !== draft.email || tokenData.draftId !== draft.id)) {
-    return draftUnavailable(request, "expired");
   }
 
   // Atomic claim: only one concurrent request can flip claimed_at from null.

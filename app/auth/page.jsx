@@ -26,6 +26,9 @@ export default function AuthPage() {
     } else if (error === "draft_claimed") {
       setStatus("error");
       setMessage("This application is already linked to an account. Sign in to continue.");
+    } else if (error === "draft_expired") {
+      setStatus("error");
+      setMessage("Your saved application expired. Please start a new application.");
     } else if (error === "email_sync_failed") {
       setStatus("error");
       setMessage(
@@ -128,17 +131,11 @@ export default function AuthPage() {
         window.location.replace("/login");
         return;
       }
-      const signupDraftToken = preflight.draftToken || "";
-      const emailRedirectUrl = new URL("/auth/callback", window.location.origin);
-      if (signupDraftToken) {
-        emailRedirectUrl.searchParams.set("draft_token", signupDraftToken);
-      }
-
       const { data, error } = await getSupabaseBrowser().auth.signUp({
         email: normalizedEmail,
         password,
         options: {
-          emailRedirectTo: emailRedirectUrl.toString(),
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
       });
 
@@ -160,10 +157,7 @@ export default function AuthPage() {
         return;
       }
 
-      const claimUrl = signupDraftToken
-        ? `/api/apply/claim-draft?draft_token=${encodeURIComponent(signupDraftToken)}`
-        : "/api/apply/claim-draft";
-      const claimResponse = await fetch(claimUrl, {
+      const claimResponse = await fetch("/api/apply/claim-draft", {
         method: "POST",
       });
       const claimData = await claimResponse.json().catch(() => ({}));

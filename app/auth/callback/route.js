@@ -1,9 +1,24 @@
 import { NextResponse } from "next/server";
 import { getSupabaseAdmin, getSupabaseServer } from "../../../lib/supabase-server";
 
-const DRAFT_COOKIE = "makesb_application_draft";
+// A link that could not be turned into a session is NOT always a failure. The
+// usual causes are:
+//   - the link was opened in a different browser or device from the one that
+//     created the account (the ?code= flow needs a secret that only the
+//     original browser has), and
+//   - an email scanner opened the one-time link before the person did.
+// In both, Supabase has ALREADY confirmed the address, so the person only has
+// to sign in. The sign-in page explains that, and signing in claims the saved
+// application by confirmed email (see app/api/apply/claim-draft).
+function linkNotUsable(request, { recovery = false } = {}) {
+  const url = new URL("/login", request.url);
+  url.searchParams.set("notice", recovery ? "reset_link" : "confirm_link");
+  return NextResponse.redirect(url);
+}
 
 export async function GET(request) {
+  const next = request.nextUrl.searchParams.get("next");
+  const recovery = next === "/auth/reset";
   const code = request.nextUrl.searchParams.get("code");
   if (!code) {
     return NextResponse.redirect(new URL("/auth?error=missing_code", request.url));
@@ -14,7 +29,7 @@ export async function GET(request) {
 
   if (error) {
     console.error("Auth callback failed:", error);
-    return NextResponse.redirect(new URL("/auth?error=confirmation_failed", request.url));
+    return linkNotUsable(request, { recovery });
   }
 
   const {
@@ -23,7 +38,7 @@ export async function GET(request) {
   } = await supabase.auth.getUser();
   if (userError || !user) {
     console.error("Auth callback user lookup failed:", userError);
-    return NextResponse.redirect(new URL("/auth?error=confirmation_failed", request.url));
+    return linkNotUsable(request, { recovery });
   }
 
   const admin = getSupabaseAdmin();
@@ -50,19 +65,15 @@ export async function GET(request) {
     }
   }
 
-  const next = request.nextUrl.searchParams.get("next");
-  if (next === "/auth/reset") {
+  if (recovery) {
     return NextResponse.redirect(new URL(next, request.url));
   }
 
-  const hasDraft = Boolean(request.cookies.get(DRAFT_COOKIE)?.value);
-  const draftToken = request.nextUrl.searchParams.get("draft_token");
-  if (hasDraft || draftToken) {
-    const claimUrl = new URL("/api/apply/claim-draft", request.url);
-    claimUrl.searchParams.set("next", "/auth/confirmed");
-    if (draftToken) claimUrl.searchParams.set("draft_token", draftToken);
+  // No application on the account yet: link the pending draft. The claim route
+  // finds it by the confirmed email when this browser has no draft cookie.
+  if (!application) {
     return NextResponse.redirect(
-      claimUrl,
+      new URL("/api/apply/claim-draft?next=/auth/confirmed", request.url),
     );
   }
 

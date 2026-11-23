@@ -302,8 +302,7 @@ describe("live: auth and application flows", { skip }, () => {
       const draft = await createDraft(email);
       const response = await preflight(email);
       assert.equal(response.body.code, "draft_ready");
-      assert.equal(typeof response.body.draftToken, "string");
-      assert.ok(response.body.draftToken.length > 40);
+      assert.equal(response.body.draftToken, undefined, "no token is handed out; the confirmed email is the proof");
       const { value, header } = draftCookieFrom(response);
       assert.equal(value, draft.id);
       assert.match(header, /HttpOnly/i);
@@ -409,62 +408,85 @@ describe("live: auth and application flows", { skip }, () => {
       assert.equal(replay.status, 410);
     });
 
-    it("claims a draft with its signed token in the same browser", async () => {
-      const email = uniqueEmail("d-token-same");
+    it("SAME browser: claims the draft using the draft cookie", async () => {
+      const email = uniqueEmail("d-same");
       const user = await createUser(email);
       await createDraft(email);
 
-      const preflight = await api("/api/auth/prepare-signup", {
-        method: "POST",
-        json: { email },
-      });
+      const preflight = await api("/api/auth/prepare-signup", { method: "POST", json: { email } });
       assert.equal(preflight.body.code, "draft_ready");
       const { value: draftId } = draftCookieFrom(preflight);
       const cookie = `${await sessionCookie(email)}; ${DRAFT_COOKIE}=${draftId}`;
 
-      const claimed = await api(
-        `/api/apply/claim-draft?draft_token=${encodeURIComponent(preflight.body.draftToken)}`,
-        { method: "POST", cookie },
-      );
+      const claimed = await api("/api/apply/claim-draft", { method: "POST", cookie });
       assert.equal(claimed.status, 200);
-      assert.ok(await findApplication(user.id), "the token-linked draft was claimed");
+      assert.ok(await findApplication(user.id), "the draft was claimed");
     });
 
-    it("claims a draft with its signed token in a different browser", async () => {
-      const email = uniqueEmail("d-token-cross");
+    it("DIFFERENT browser: no draft cookie, the draft is claimed by the confirmed email", async () => {
+      const email = uniqueEmail("d-cross");
       const user = await createUser(email);
-      await createDraft(email);
+      const draft = await createDraft(email);
 
-      const preflight = await api("/api/auth/prepare-signup", {
+      // Only a session, as after signing in on another device. No draft cookie.
+      const claimed = await api("/api/apply/claim-draft", {
         method: "POST",
-        json: { email },
+        cookie: await sessionCookie(email),
       });
-      assert.equal(preflight.body.code, "draft_ready");
-      const { value: draftId } = draftCookieFrom(preflight);
-
-      // Simulate opening the confirmation link in a browser with no draft
-      // cookie. The signed token is the only draft identifier supplied.
-      const claimed = await api(
-        `/api/apply/claim-draft?draft_token=${encodeURIComponent(preflight.body.draftToken)}`,
-        { method: "POST", cookie: await sessionCookie(email) },
-      );
       assert.equal(claimed.status, 200);
-      assert.ok(await findApplication(user.id), "the cross-browser token claim succeeded");
-      const { data: drafts } = await admin()
-        .from("application_drafts")
-        .select("id")
-        .eq("id", draftId);
-      assert.equal(drafts.length, 0, "the token-linked draft was consumed");
+      assert.ok(await findApplication(user.id), "the cross-browser claim succeeded");
+      const { data: drafts } = await admin().from("application_drafts").select("id").eq("id", draft.id);
+      assert.equal(drafts.length, 0, "the draft was consumed");
+    });
+
+    it("DIFFERENT browser: someone else's session cannot claim another email's draft", async () => {
+      const victim = uniqueEmail("d-victim");
+      const attacker = uniqueEmail("d-attacker");
+      await createDraft(victim);
+      await createUser(attacker);
+
+      const response = await api("/api/apply/claim-draft", {
+        method: "POST",
+        cookie: await sessionCookie(attacker),
+      });
+      assert.equal(response.status, 404, "no draft exists for the attacker's own address");
+      const { data } = await admin().from("application_drafts").select("claimed_at").ilike("email", victim);
+      assert.equal(data[0].claimed_at, null, "the victim's draft is untouched");
+    });
+
+    it("a signed-in user with no application and no draft is not stuck in a redirect loop", async () => {
+      const email = uniqueEmail("d-loop");
+      await createUser(email);
+      const cookie = await sessionCookie(email);
+
+      // /portal sends them to the claim route, which sends them to /apply...
+      const portal = await api("/portal/profile", { cookie });
+      assert.match(portal.location ?? "", /\/api\/apply\/claim-draft/);
+      const claim = await api("/api/apply/claim-draft?next=/portal/profile", { cookie });
+      assert.match(claim.location ?? "", /\/apply\?notice=no_application/);
+
+      // ...and /apply must STOP there (200 page), not bounce back to /portal.
+      const apply = await api("/apply?notice=no_application", { cookie });
+      assert.equal(apply.status, 200);
+      assert.match(String(apply.body), /couldn.{1,6}t find your application/i);
+    });
+
+    it("a signed-in user WITH an application is sent from /apply to the portal", async () => {
+      const email = uniqueEmail("d-has-app");
+      await createApplication(await createUser(email));
+      const apply = await api("/apply", { cookie: await sessionCookie(email) });
+      assert.ok([302, 307, 308].includes(apply.status));
+      assert.match(apply.location ?? "", /\/portal\/profile/);
     });
   });
 
   // ------------------------------------------------------------------ 9
   describe("email synchronization after confirmation", () => {
-    it("the callback rejects a missing or invalid code", async () => {
+    it("the callback handles a missing code, and a code that cannot be used (other browser)", async () => {
       const missing = await api("/auth/callback");
       assert.match(missing.location ?? "", /error=missing_code/);
       const bogus = await api("/auth/callback?code=not-a-real-code");
-      assert.match(bogus.location ?? "", /error=confirmation_failed/);
+      assert.match(bogus.location ?? "", /\/login\?notice=confirm_link/);
     });
 
     it(

@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { escapeLikePattern } from "../../../../lib/db-helpers";
 import { getSupabaseAdmin } from "../../../../lib/supabase-server";
-import { createDraftToken } from "../../../../lib/draft-token";
 import {
   getClientIp,
   getEmailIdentifier,
@@ -12,7 +11,7 @@ import {
 export const runtime = "nodejs";
 
 const DRAFT_COOKIE = "makesb_application_draft";
-const DRAFT_MAX_AGE = 30 * 60;
+const DRAFT_MAX_AGE = 7 * 24 * 60 * 60;
 
 function draftCookieOptions() {
   return {
@@ -140,13 +139,11 @@ export async function POST(request) {
     return NextResponse.json({ code: "no_application" });
   }
 
+  // The cookie is only a convenience (same-browser sign-up). The draft is
+  // claimed by the account's CONFIRMED email, so confirming in another browser
+  // or on another device works too.
   const draft = activeDrafts[0];
-  const token = createDraftToken({
-    draftId: draft.id,
-    email: draft.email,
-    expiresAt: draft.expires_at,
-  });
-  const response = NextResponse.json({ code: "draft_ready", draftToken: token });
+  const response = NextResponse.json({ code: "draft_ready" });
   response.cookies.set(DRAFT_COOKIE, draft.id, draftCookieOptions());
   return response;
 }
