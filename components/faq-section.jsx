@@ -26,9 +26,10 @@ const questions = [
   [
     "Do you help with travel?",
     <>
-      Yes! Travel is reimbursed for all accepted participants, and makers from
-      other schools can also stay with us through dorm hosting. If you have
-      questions about getting to Santa Barbara, please contact{" "}
+      Yes, but not for all participants yet. We offer flights to Santa Barbara
+      for low-income students, and we are working hard to fly out everyone.
+      Makers from other schools can also stay with us through dorm hosting. If
+      you have questions about getting to Santa Barbara, please contact{" "}
       <a href="mailto:patrick_liu@ucsb.edu">patrick_liu@ucsb.edu</a>.
     </>,
   ],
