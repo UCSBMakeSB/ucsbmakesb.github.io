@@ -54,14 +54,39 @@ async function claimDraft(request) {
 
   const supabase = getSupabaseAdmin();
 
-  let draftId = request.cookies.get(DRAFT_COOKIE)?.value;
-  if (!draftId) {
-    // No draft cookie: the link was opened in another browser or on another
-    // device. The confirmed email is the proof of ownership, so claim the
-    // newest active draft saved for that address.
+  const userEmail = user.email?.toLowerCase() ?? "";
+  const isClaimable = (row) =>
+    Boolean(row) && !row.claimed_at && new Date(row.expires_at) > new Date();
+
+  // 1) The draft cookie, if this browser has one and it is this account's.
+  //    A cookie for a DIFFERENT email (left over from someone else's, or an
+  //    earlier, application in this browser) is ignored, never trusted.
+  const cookieId = request.cookies.get(DRAFT_COOKIE)?.value;
+  let cookieRow = null;
+  if (cookieId) {
+    const { data, error } = await supabase
+      .from("application_drafts")
+      .select("*")
+      .eq("id", cookieId)
+      .maybeSingle();
+    if (error) {
+      console.error("Application draft lookup failed:", error);
+      return NextResponse.json({ error: "Couldn't load your application draft." }, { status: 500 });
+    }
+    cookieRow = data;
+  }
+  const ownCookie = Boolean(cookieRow) && cookieRow.email === userEmail;
+
+  let draft = ownCookie && isClaimable(cookieRow) ? cookieRow : null;
+
+  // 2) Otherwise the confirmed email is the proof of ownership: claim the
+  //    newest active draft saved for that address. This is what makes the
+  //    emailed link work when it is opened in another browser or on another
+  //    device, where there is no draft cookie.
+  if (!draft) {
     const { data: byEmail, error: byEmailError } = await supabase
       .from("application_drafts")
-      .select("id, expires_at, claimed_at")
+      .select("*")
       .ilike("email", escapeLikePattern(user.email ?? ""))
       .is("claimed_at", null)
       .gt("expires_at", new Date().toISOString())
@@ -73,39 +98,19 @@ async function claimDraft(request) {
       console.error("Application draft lookup by email failed:", byEmailError);
       return NextResponse.json({ error: "Couldn't load your application draft." }, { status: 500 });
     }
+    draft = byEmail;
+  }
 
-    if (!byEmail) {
-      if (request.nextUrl?.searchParams.get("next")) {
-        return NextResponse.redirect(new URL("/apply?notice=no_application", request.url));
-      }
-      return NextResponse.json({ error: "No application draft found." }, { status: 404 });
+  if (!draft) {
+    if (ownCookie) return draftUnavailable(request, cookieRow.claimed_at ? "claimed" : "expired");
+    if (cookieId && !cookieRow) return draftUnavailable(request, "expired");
+    if (request.nextUrl?.searchParams.get("next")) {
+      return NextResponse.redirect(new URL("/apply?notice=no_application", request.url));
     }
-    draftId = byEmail.id;
+    return NextResponse.json({ error: "No application draft found." }, { status: 404 });
   }
 
-  const { data: draft, error: draftError } = await supabase
-    .from("application_drafts")
-    .select("*")
-    .eq("id", draftId)
-    .maybeSingle();
-
-  if (draftError) {
-    console.error("Application draft lookup failed:", draftError);
-    return NextResponse.json({ error: "Couldn't load your application draft." }, { status: 500 });
-  }
-
-  if (!draft) return draftUnavailable(request, "expired");
-  if (draft.claimed_at) return draftUnavailable(request, "claimed");
-  if (new Date(draft.expires_at) <= new Date()) return draftUnavailable(request, "expired");
-
-  // Check ownership BEFORE claiming, so a stranger holding someone's draft
-  // cookie can't lock the real owner out of their own draft.
-  if (draft.email !== user.email?.toLowerCase()) {
-    return NextResponse.json(
-      { error: "The account email must match the application email." },
-      { status: 403 },
-    );
-  }
+  const draftId = draft.id;
 
   // Atomic claim: only one concurrent request can flip claimed_at from null.
   const nowIso = new Date().toISOString();

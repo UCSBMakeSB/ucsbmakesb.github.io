@@ -264,12 +264,29 @@ describe("claim-draft: ownership and success", () => {
   const claim = (id, query = "") =>
     claimRoute.POST(jsonRequest(`/api/apply/claim-draft${query}`, withCookie(id)));
 
-  it("rejects an account whose email does not match the draft, leaving the draft claimable", async () => {
+  it("never claims another email's draft: the cookie is ignored, the draft stays claimable", async () => {
     const draft = addDraft({ email: "someone-else@ucsb.edu" });
     const response = await claim(draft.id);
-    assert.equal(response.status, 403);
+    assert.equal(response.status, 404);
     assert.equal(db.tables.application_drafts[0].claimed_at, null);
     assert.equal(db.tables.applications.length, 0);
+  });
+
+  it("a stale cookie for someone else's draft does not block the account's OWN draft (found by email)", async () => {
+    const other = addDraft({ email: "someone-else@ucsb.edu" });
+    const mine = addDraft({ email: user.email });
+    const response = await claim(other.id);
+    assert.equal(response.status, 200);
+    assert.equal(db.tables.applications.length, 1);
+    assert.equal(db.tables.applications[0].email, user.email);
+    assert.equal(db.tables.application_drafts.some((row) => row.id === mine.id), false);
+    assert.equal(db.tables.application_drafts.find((row) => row.id === other.id).claimed_at, null);
+  });
+
+  it("a stale cookie for someone else's draft, followed from the portal, ends on the /apply notice (no JSON, no loop)", async () => {
+    const other = addDraft({ email: "someone-else@ucsb.edu" });
+    const redirected = await claimRoute.GET(getRequest("/api/apply/claim-draft?next=/portal/profile", withCookie(other.id)));
+    assert.equal(redirectPath(redirected), "/apply?notice=no_application");
   });
 
   it("rejects an account whose email is NOT confirmed, even when the address matches", async () => {
