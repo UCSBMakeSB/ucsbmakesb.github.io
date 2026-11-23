@@ -64,17 +64,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="deadline-banner" aria-label="Application deadline">
-          <p>
-            <strong>Applications are due November 30.</strong>
-            <span>
-              Questions? <a href="mailto:team@makesb.org">team@makesb.org</a>
-            </span>
-          </p>
-          <ApplyLink className="apply-button">
-            Apply now <span aria-hidden="true">↗</span>
-          </ApplyLink>
-        </section>
+        
 
         {/* id is travel-funded (not "travel") because #travel is the Flights and housing section below. */}
         <section
@@ -86,6 +76,18 @@ export default function HomePage() {
             <strong>Travel is funded for all accepted participants.</strong>{" "}
             Spend a weekend in Santa Barbara building hardware from scratch.
           </p>
+        </section>
+
+        <section className="deadline-banner" aria-label="Application deadline">
+          <p>
+            <strong>Applications are due November 30.</strong>
+            <span>
+              Questions? <a href="mailto:team@makesb.org">team@makesb.org</a>
+            </span>
+          </p>
+          <ApplyLink className="apply-button">
+            Apply now <span aria-hidden="true">↗</span>
+          </ApplyLink>
         </section>
 
         <section

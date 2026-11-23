@@ -10,10 +10,10 @@ import { ContactEmail } from "./contact-email";
 const links = [
   ["about", "About"],
   ["perks", "Perks & Prizes"],
-  ["schedule", "Schedule"],
+  // ["schedule", "Schedule"],
   ["faqs", "FAQs"],
   ["sponsors", "Sponsors"],
-  ["team", "Meet Our Team"],
+  ["team", "Team"],
 ];
 
 export function Header({ fixed = false }) {
@@ -115,24 +115,27 @@ export function Header({ fixed = false }) {
         </nav>
       </details>
       <div className="header-actions">
-      <Link
-        className="header-sign-in"
-        href={isAuthenticated ? "/portal/" : "/login"}
-      >
-        {isAuthenticated ? "Access Portal" : "Portal Login"}
-      </Link>
+        <Link
+          className="header-sign-in"
+          href={isAuthenticated ? "/portal/" : "/login"}
+        >
+          {isAuthenticated ? "Access Portal" : "Portal Login"}
+        </Link>
         <ApplyLink className="header-apply" />
       </div>
     </header>
   );
 }
 
-export function Footer({ sponsorUrl = "mailto:patrick_liu@ucsb.edu?subject=MakeSB%202027%20Sponsorship" }) {
+export function Footer({
+  sponsorUrl = "mailto:patrick_liu@ucsb.edu?subject=MakeSB%202027%20Sponsorship",
+}) {
   return (
     <footer className="site-footer">
       <p> © 2026 MakeSB.com - All Rights Reserved. </p>
       <div className="footer-actions">
-        <ApplyLink />&emsp;&emsp;&emsp;&emsp;
+        <ApplyLink />
+        &emsp;&emsp;&emsp;&emsp;
         <a href={sponsorUrl}>Sponsor</a>
       </div>
       <ContactEmail />

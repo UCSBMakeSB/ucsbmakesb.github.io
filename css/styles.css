@@ -521,14 +521,15 @@ a[href]:not(
 }
 
 #travel-funded.page-section {
-  padding-bottom: 0;
+  padding-top: clamp(32px, 4vw, 56px);
+  padding-bottom: clamp(32px, 4vw, 56px);
   background: var(--layer1);
 }
 
 #travel-funded .travel-line {
   margin: 0 auto;
   color: color-mix(in srgb, var(--paper) 72%, transparent);
-  font-size: clamp(1.5rem, 1rem + 2.2vw, 2.6rem);
+  font-size: clamp(1.125rem, 0.75rem + 1.65vw, 1.95rem);
   font-weight: 300;
   line-height: 1.25;
 }

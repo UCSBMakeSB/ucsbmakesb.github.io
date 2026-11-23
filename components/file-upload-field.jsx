@@ -12,9 +12,11 @@ export function FileUploadField({
 }) {
   const [selectedFileName, setSelectedFileName] = useState("");
   const fileName = selectedFileName || existingFileName;
-  const label = fileName
-    ? `File: ${fileName} (Click to Reupload)`
-    : "Add File";
+  const label = selectedFileName
+    ? `File: ${selectedFileName} (Click to Reupload)`
+    : existingFileName
+      ? `File: ${existingFileName} (Click to Reupload)`
+      : "Add File";
 
   return (
     <label className="application-file-button" htmlFor={id}>

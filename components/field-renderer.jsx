@@ -462,7 +462,7 @@ export default function FieldRenderer({ field, portal = false }) {
             id={field.id}
             name={field.name}
             accept={field.accept}
-            required={required}
+            required={required && !field.existingFileName}
             ariaLabelledby={field.ariaLabelledby}
             existingFileName={field.existingFileName}
           />

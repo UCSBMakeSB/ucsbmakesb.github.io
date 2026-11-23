@@ -54,7 +54,9 @@ export default function Application() {
         const fields = Object.entries(data.fields ?? {}).map(
           ([field, message]) => `${field.replaceAll("_", " ")}: ${message}`,
         );
-        throw new Error(fields.join(" ") || data.error || "Couldn't save your application.");
+        throw new Error(
+          fields.join(" ") || data.error || "Couldn't save your application.",
+        );
       }
       setAccount(data.account);
       setFeedback("Application changes saved.");
@@ -70,7 +72,16 @@ export default function Application() {
     <main id="account-main" className="portal-main portal-application">
       <p className="portal-eyebrow">MakeSB 2027 / Your application</p>
       <h1>Application</h1>
-      <p className="portal-intro">Complete your application for MakeSB 2027.</p>
+      <p className="portal-intro">
+        Complete your application for MakeSB 2027. You can edit your submitted
+        application through November 30. For your application to be considered,
+        all required fields must be completed. We recommend that you also save
+        these responses in another place for safe keeping.
+        <br />
+        <br />
+        Note that changes are NOT saved by default. Before navigating away from
+        this page, be sure to click "Save" to store your changes.
+      </p>
       <form className="portal-application-form" onSubmit={submit}>
         {applicationGroups.map((group) => (
           <section className="portal-form-section" key={group.title}>
@@ -112,15 +123,25 @@ export default function Application() {
         </section>
         {feedback && (
           <p
-            className={feedback === "Application changes saved." ? "portal-success" : "portal-error"}
-            role={feedback === "Application changes saved." ? "status" : "alert"}
+            className={
+              feedback === "Application changes saved."
+                ? "portal-success"
+                : "portal-error"
+            }
+            role={
+              feedback === "Application changes saved." ? "status" : "alert"
+            }
           >
             {feedback}
           </p>
         )}
         <p>
-          You can edit your submitted application through November 30. Click Save
-          each time you make changes to update your application.
+          You can edit your submitted application through November 30. For your
+          application to be considered, all required fields must be completed.
+          <br />
+          <br />
+          Note that changes are NOT saved by default. Before navigating away
+          from this page, be sure to click "Save" to store your changes.
         </p>
         <button className="portal-button" type="submit" disabled={saving}>
           {saving ? "Saving..." : "Save"}

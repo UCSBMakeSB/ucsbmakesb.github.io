@@ -120,6 +120,20 @@ describe("cross-user application access", () => {
     assert.ok(db.storage.has(`resumes/applications/${bob.id}.pdf`), "bob's resume is untouched");
   });
 
+  it("PATCH /api/application allows saving without reuploading an existing required resume", async () => {
+    signInAs(alice);
+    const form = new FormData();
+    form.set("application_question_2", "Updated essay");
+
+    const response = await application.PATCH(
+      formRequest("/api/application", form, { method: "PATCH" }),
+    );
+
+    assert.equal(response.status, 200);
+    assert.equal(appFor(alice).application_question_2, "Updated essay");
+    assert.equal(appFor(alice).resume_path, `applications/${alice.id}.pdf`);
+  });
+
   it("a signed-in user with no application gets 404 and cannot touch anyone else's", async () => {
     const carol = addUser({ email: "carol@ucsb.edu" });
     signInAs(carol);
