@@ -3,8 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getSupabaseBrowser } from "../../lib/supabase-browser";
-
-const SECURE_PASSWORD = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{12,}$/;
+import { getPasswordError, PASSWORD_REQUIREMENTS } from "../../lib/password-policy.js";
 
 export default function AuthPage() {
   const [email, setEmail] = useState("");
@@ -88,16 +87,15 @@ export default function AuthPage() {
       setMessage("Email addresses do not match.");
       return;
     }
+    const passwordError = getPasswordError(password);
+    if (passwordError) {
+      setStatus("error");
+      setMessage(passwordError);
+      return;
+    }
     if (password !== confirmPassword) {
       setStatus("error");
       setMessage("Passwords do not match.");
-      return;
-    }
-    if (!SECURE_PASSWORD.test(password)) {
-      setStatus("error");
-      setMessage(
-        "Password must be at least 12 characters and include uppercase, lowercase, a number, and a symbol.",
-      );
       return;
     }
 
@@ -234,14 +232,13 @@ export default function AuthPage() {
               autoComplete="new-password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
+              aria-describedby="signup-password-help"
               required
-              minLength={12}
             />
           </label>
 
-          <p className="auth-password-help">
-            Use at least 12 characters with uppercase and lowercase letters, a
-            number, and a symbol.
+          <p className="auth-password-help" id="signup-password-help">
+            {PASSWORD_REQUIREMENTS}
           </p>
 
           <label className="auth-field" htmlFor="signup-confirm-password">
@@ -253,7 +250,6 @@ export default function AuthPage() {
               value={confirmPassword}
               onChange={(event) => setConfirmPassword(event.target.value)}
               required
-              minLength={12}
             />
           </label>
 
