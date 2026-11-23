@@ -141,7 +141,7 @@ describe("cross-user application access", () => {
     const response = await claimDraft.POST(
       jsonRequest("/api/apply/claim-draft", { cookies: { [DRAFT_COOKIE]: draft.id } }),
     );
-    assert.equal(response.status, 403);
+    assert.equal(response.status, 404);
     assert.equal(db.tables.application_drafts.length, 1);
     assert.equal(db.tables.application_drafts[0].claimed_at, null, "the owner's draft must stay claimable");
     assert.ok(db.storage.has("resumes/drafts/bobs.pdf"));
