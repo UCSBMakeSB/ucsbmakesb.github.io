@@ -484,7 +484,9 @@ describe("live: auth and application flows", { skip }, () => {
   describe("email synchronization after confirmation", () => {
     it("the callback handles a missing code, and a code that cannot be used (other browser)", async () => {
       const missing = await api("/auth/callback");
-      assert.match(missing.location ?? "", /error=missing_code/);
+      assert.match(missing.location ?? "", /\/auth\/recover\?notice=incomplete_link/);
+      const expired = await api("/auth/callback?error=missing_code&error_code=otp_expired");
+      assert.match(expired.location ?? "", /\/auth\/recover\?notice=link_expired/);
       const bogus = await api("/auth/callback?code=not-a-real-code");
       assert.match(bogus.location ?? "", /\/login\?notice=confirm_link/);
     });

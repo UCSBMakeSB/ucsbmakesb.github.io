@@ -21,7 +21,14 @@ export async function GET(request) {
   const recovery = next === "/auth/reset";
   const code = request.nextUrl.searchParams.get("code");
   if (!code) {
-    return NextResponse.redirect(new URL("/auth?error=missing_code", request.url));
+    const url = new URL("/auth/recover", request.url);
+    const missingCode = request.nextUrl.searchParams.get("error") === "missing_code";
+    const expired = request.nextUrl.searchParams.get("error_code") === "otp_expired";
+    url.searchParams.set(
+      "notice",
+      missingCode || expired ? "link_expired" : "incomplete_link",
+    );
+    return NextResponse.redirect(url);
   }
 
   const supabase = await getSupabaseServer();

@@ -25,9 +25,28 @@ describe("auth callback: email synchronization after confirmation", () => {
     alice.email = email;
   };
 
-  it("redirects to /auth?error=missing_code when no code is present", async () => {
+  it("redirects to /auth/recover when no code is present", async () => {
     const response = await callback("");
-    assert.equal(redirectPath(response), "/auth?error=missing_code");
+    assert.equal(
+      redirectPath(response),
+      "/auth/recover?notice=incomplete_link",
+    );
+  });
+
+  it("routes a missing-code callback with otp_expired to expired-link recovery", async () => {
+    const response = await callback("?error=missing_code&error_code=otp_expired");
+    assert.equal(
+      redirectPath(response),
+      "/auth/recover?notice=link_expired",
+    );
+  });
+
+  it("routes Supabase missing-code errors to expired-link recovery", async () => {
+    const response = await callback("?error=missing_code");
+    assert.equal(
+      redirectPath(response),
+      "/auth/recover?notice=link_expired",
+    );
   });
 
   it("a code that cannot be exchanged (e.g. opened in a different browser) goes to /login with a notice, not an error", async () => {

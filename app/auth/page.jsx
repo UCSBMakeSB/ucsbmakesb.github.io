@@ -48,11 +48,17 @@ export default function AuthPage() {
       }
 
       if (active) setAuthState("signed-out");
+      const recoveryEmail = new URLSearchParams(window.location.search).get("email");
       const response = await fetch("/api/apply/draft");
       const data = await response.json().catch(() => ({}));
       if (response.ok && active) {
         setEmail(data.email);
         setConfirmEmail(data.email);
+        setStatus("idle");
+      } else if (recoveryEmail && active) {
+        const normalizedEmail = recoveryEmail.trim().toLowerCase();
+        setEmail(normalizedEmail);
+        setConfirmEmail(normalizedEmail);
         setStatus("idle");
       } else if (active) {
         setStatus("idle");

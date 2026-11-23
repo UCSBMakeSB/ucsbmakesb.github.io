@@ -60,6 +60,28 @@ export function createClient() {
         db.resetRequests.push({ email, redirectTo: options.redirectTo });
         return { data: {}, error: null };
       },
+
+      async resend({ type, email, options = {} }) {
+        if (db.failures.has("auth.resend")) {
+          const error = db.failures.get("auth.resend");
+          db.failures.delete("auth.resend");
+          return { data: null, error };
+        }
+        db.confirmationRequests.push({
+          type,
+          email: email.toLowerCase(),
+          redirectTo: options.emailRedirectTo,
+        });
+        return { data: {}, error: null };
+      },
+
+      async signInWithOtp({ email, options = {} }) {
+        db.otpRequests.push({
+          email: email.toLowerCase(),
+          redirectTo: options.emailRedirectTo,
+        });
+        return { data: {}, error: null };
+      },
     },
   };
 }

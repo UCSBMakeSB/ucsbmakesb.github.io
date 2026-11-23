@@ -17,6 +17,8 @@ export const db = {
   calls: [], // log of side effects worth asserting on
   emailChanges: [],
   resetRequests: [],
+  confirmationRequests: [],
+  otpRequests: [],
   revalidated: [],
 };
 
@@ -32,6 +34,8 @@ export function resetDb() {
   db.calls.length = 0;
   db.emailChanges.length = 0;
   db.resetRequests.length = 0;
+  db.confirmationRequests.length = 0;
+  db.otpRequests.length = 0;
   db.revalidated.length = 0;
 }
 
@@ -360,6 +364,14 @@ export function createAdminClient() {
     storage: { from: storageBucket },
     auth: {
       admin: {
+        async listUsers({ page = 1, perPage = 50 } = {}) {
+          const users = [...db.users.values()].sort((a, b) => a.email.localeCompare(b.email));
+          const start = (page - 1) * perPage;
+          return {
+            data: { users: users.slice(start, start + perPage).map(publicUser) },
+            error: null,
+          };
+        },
         async updateUserById(id, attributes) {
           const failure = takeFailure("auth.admin.updateUserById");
           if (failure) return { data: null, error: failure };
