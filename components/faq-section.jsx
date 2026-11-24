@@ -7,10 +7,7 @@ const questions = [
     "When is MakeSB?",
     "January 15 to 17, 2027. It starts Friday evening and ends Sunday afternoon.",
   ],
-  [
-    "Where is it?",
-    "On UCSB’s main campus.",
-  ],
+  ["Where is it?", "On UCSB’s main campus."],
   [
     "Is there a cost to participate?",
     "Nothing! We provide sleeping accommodations, food, hardware, and other resources.",
@@ -26,9 +23,9 @@ const questions = [
   [
     "Do you help with travel?",
     <>
-      Yes! Travel is reimbursed for all accepted participants, and makers from
-      other schools can also stay with us through dorm hosting. If you have
-      questions about getting to Santa Barbara, please contact{" "}
+      Yes! Travel is reimbursed on a need basis, and makers from other schools
+      can tentatively stay with us through dorm hosting. To request help with
+      getting to Santa Barbara, please contact{" "}
       <a href="mailto:patrick_liu@ucsb.edu">patrick_liu@ucsb.edu</a>.
     </>,
   ],

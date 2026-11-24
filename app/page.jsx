@@ -67,7 +67,7 @@ export default function HomePage() {
         
 
         {/* id is travel-funded (not "travel") because #travel is the Flights and housing section below. */}
-        <section
+        {/* <section
           id="travel-funded"
           className="page-section"
           aria-label="Travel"
@@ -76,7 +76,7 @@ export default function HomePage() {
             <strong>Travel is funded for all accepted participants.</strong>{" "}
             Spend a weekend in Santa Barbara building hardware from scratch.
           </p>
-        </section>
+        </section> */}
 
         <section className="deadline-banner" aria-label="Application deadline">
           <p>
