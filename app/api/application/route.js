@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { getSupabaseAdmin, getSupabaseServer } from "../../../lib/supabase-server";
 import { revalidatePortalAccount } from "../../../lib/portal-data";
+import { countWords, MAX_QUESTION_WORDS } from "../../../lib/word-count";
 import {
   getResumeExtension,
   validateResume,
@@ -117,6 +118,8 @@ export async function PATCH(request) {
     const text = value.trim();
     if (REQUIRED_QUESTION_FIELDS.has(field) && !text) {
       errors[field] = "This field is required.";
+    } else if (countWords(text) > MAX_QUESTION_WORDS) {
+      errors[field] = `Must be ${MAX_QUESTION_WORDS.toLocaleString("en-US")} words or fewer.`;
     } else if (text.length > MAX_QUESTION_LENGTH) {
       errors[field] = `Must be ${MAX_QUESTION_LENGTH} characters or fewer.`;
     } else {

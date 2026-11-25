@@ -1,4 +1,5 @@
 import { Dropdown } from "./dropdown";
+import { EssayField } from "./essay-field";
 import { FileUploadField } from "./file-upload-field";
 import { SchoolCombobox } from "./school-combobox";
 
@@ -338,26 +339,17 @@ export default function FieldRenderer({ field, portal = false }) {
       );
     case "essay":
       return (
-        <label
-          className={portal ? "portal-field" : "application-form-field"}
-          htmlFor={field.id}
-        >
-          <span>{field.label}</span>
-          <RequirementText />
-          <textarea
-            id={field.id}
-            name={field.name}
-            defaultValue={field.defaultValue}
-            aria-label={field.ariaLabel}
-            required={required}
-            rows={field.rows ?? 8}
-            className={
-              portal
-                ? "portal-field-input portal-field-textarea"
-                : "application-form-input application-form-textarea"
-            }
-          />
-        </label>
+        <EssayField
+          id={field.id}
+          name={field.name}
+          label={field.label}
+          ariaLabel={field.ariaLabel}
+          defaultValue={field.defaultValue}
+          required={required}
+          rows={field.rows}
+          portal={portal}
+          requirementText={requirementText}
+        />
       );
     case "select":
       return (
