@@ -349,6 +349,7 @@ export default function FieldRenderer({ field, portal = false }) {
           rows={field.rows}
           portal={portal}
           requirementText={requirementText}
+          maxWords={field.maxWords}
         />
       );
     case "select":
