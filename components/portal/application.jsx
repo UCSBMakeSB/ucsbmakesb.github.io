@@ -13,6 +13,17 @@ export default function Application() {
   const { account, setAccount } = usePortalAccount();
   const [feedback, setFeedback] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const applicationReceived =
+    !saving &&
+    !hasUnsavedChanges &&
+    (!feedback || feedback === "Application changes saved.") &&
+    account.waiver &&
+    account.resume?.name &&
+    applicationQuestions.every(
+      (question) =>
+        question.requirement !== "required" || account[question.name]?.trim(),
+    );
 
   async function submit(event) {
     event.preventDefault();
@@ -33,6 +44,7 @@ export default function Application() {
     if (resume) submission.set("resume", resume);
 
     setSaving(true);
+    setHasUnsavedChanges(false);
     setFeedback(null);
     const previousAccount = account;
     const nextAccount = { ...account };
@@ -82,7 +94,11 @@ export default function Application() {
         Note that changes are NOT saved by default. Before navigating away from
         this page, be sure to click "Save" to store your changes.
       </p>
-      <form className="portal-application-form" onSubmit={submit}>
+      <form
+        className="portal-application-form"
+        onChange={() => setHasUnsavedChanges(true)}
+        onSubmit={submit}
+      >
         {applicationGroups.map((group) => (
           <section className="portal-form-section" key={group.title}>
             <div className="portal-card-heading">
@@ -121,7 +137,7 @@ export default function Application() {
             ))}
           </div>
         </section>
-        {feedback && (
+        {feedback && !applicationReceived && (
           <p
             className={
               feedback === "Application changes saved."
@@ -143,9 +159,19 @@ export default function Application() {
           Note that changes are NOT saved by default. Before navigating away
           from this page, be sure to click "Save" to store your changes.
         </p>
-        <button className="portal-button" type="submit" disabled={saving}>
-          {saving ? "Saving..." : "Save"}
-        </button>
+        <div className="portal-application-actions">
+          <button className="portal-button" type="submit" disabled={saving}>
+            {saving ? "Saving..." : "Save"}
+          </button>
+          <div className="portal-application-status" role="status">
+            {applicationReceived && (
+              <>
+                <span aria-hidden="true">✓</span> Application Received! Changes
+                are accepted until the 30th
+              </>
+            )}
+          </div>
+        </div>
       </form>
     </main>
   );

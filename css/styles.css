@@ -561,6 +561,8 @@ a[href]:not(
 
 #faqs.page-section {
   background: var(--layer4);
+  /* Leave room for the sticky deadline banner when following the FAQ link. */
+  scroll-margin-top: 110px;
 }
 
 #sponsors.page-section {
@@ -698,14 +700,30 @@ a[href]:not(
 
 .faq-layout {
   display: grid;
-  grid-template-columns: 240px minmax(0, 1fr);
-  gap: clamp(32px, 5vw, 72px);
-  align-items: start;
+  gap: 28px;
   max-width: 900px;
+}
+
+.faq-intro,
+.faq-questions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(24px, 5vw, 64px);
+}
+
+.faq-intro {
+  align-items: center;
+}
+
+.faq-questions {
+  align-items: start;
 }
 
 .faq-mascot {
   display: flex;
+  justify-self: center;
+  width: clamp(140px, 18vw, 200px);
+  flex-shrink: 0;
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
@@ -773,20 +791,32 @@ a[href]:not(
   }
 }
 
-@media (max-width: 700px) {
-  .faq-layout {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 28px;
+@media (width > 700px) {
+  .faq-mascot-art {
+    /* Center the 513-unit bird body within the 622-unit SVG. */
+    translate: 8.76% 0;
   }
+}
+
+@media (max-width: 700px) {
+  #faqs.page-section {
+    scroll-margin-top: 180px;
+  }
+
   .faq-intro {
     display: flex;
-    align-items: center;
     justify-content: space-between;
     gap: 20px;
   }
-  .faq-mascot {
-    width: 140px;
-    flex-shrink: 0;
+
+  .faq-questions {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
+
+  .faq-column + .faq-column {
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 250, 240, 0.16);
   }
 }
 

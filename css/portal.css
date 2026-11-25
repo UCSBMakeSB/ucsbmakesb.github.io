@@ -588,8 +588,18 @@
 .portal-application-form .application-checkbox {
   align-items: flex-start;
 }
-.portal-application-form .portal-button {
-  justify-self: start;
+.portal-application-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+.portal-application-status {
+  font-size: 14px;
+}
+.portal-application-status span {
+  color: #a3e6ab;
+  font-weight: 700;
 }
 .portal-form-section {
   border-top: 1px solid #74677e;

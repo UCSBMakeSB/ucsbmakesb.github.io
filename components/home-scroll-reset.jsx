@@ -4,6 +4,11 @@ import { useLayoutEffect } from "react";
 
 export function HomeScrollReset() {
   useLayoutEffect(() => {
+    if (window.location.hash) {
+      document.querySelector(":target")?.scrollIntoView({ behavior: "instant" });
+      return;
+    }
+
     const previousRestoration = window.history.scrollRestoration;
     const root = document.documentElement;
     const previousBehavior = root.style.scrollBehavior;
