@@ -36,7 +36,7 @@ describe("signup preflight states", () => {
     }
   });
 
-  it("draft_ready: an active draft sets a short-lived, httpOnly draft cookie", async () => {
+  it("draft_ready: an active draft sets an httpOnly draft cookie (and exposes no token)", async () => {
     const draft = addDraft({ email: "gaucho@ucsb.edu" });
     const response = await preflight("Gaucho@UCSB.edu");
     assert.deepEqual(await response.json(), { code: "draft_ready" });
@@ -46,14 +46,15 @@ describe("signup preflight states", () => {
     assert.equal(cookie.httpOnly, true);
     assert.equal(cookie.sameSite, "lax");
     assert.equal(cookie.path, "/");
-    assert.equal(cookie.maxAge, 30 * 60);
+    assert.equal(cookie.maxAge, 7 * 24 * 60 * 60);
   });
 
   it("draft_ready picks the newest ACTIVE draft when older ones are expired", async () => {
     addDraft({ email: "gaucho@ucsb.edu", expiresInMs: -60_000 });
     const active = addDraft({ email: "gaucho@ucsb.edu" });
     const response = await preflight("gaucho@ucsb.edu");
-    assert.deepEqual(await response.json(), { code: "draft_ready" });
+    const { code } = await response.json();
+    assert.equal(code, "draft_ready");
     assert.equal(response.cookies.get(DRAFT_COOKIE).value, active.id);
   });
 

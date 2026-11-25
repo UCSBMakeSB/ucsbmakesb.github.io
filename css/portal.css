@@ -197,12 +197,7 @@
   width: 100%;
   min-width: 0;
   padding: 44px clamp(24px, 5vw, 68px) 24px;
-  background: linear-gradient(
-    165deg,
-    var(--layer2),
-    var(--layer4) 38%,
-    var(--ink) 78%
-  );
+  background: var(--ink);
 }
 .portal-loading {
   min-height: calc(100vh - var(--portal-header-height));
@@ -539,6 +534,17 @@
   .portal-timeline-heading h2 {
     font-size: 30px;
   }
+}
+
+.portal-main h1.portal-duedate-banner {
+  width: min(760px, 100%);
+  box-sizing: border-box;
+  margin: 44px auto;
+  padding: 24px 32px;
+  text-align: center;
+  background: var(--panel);
+  border: 1px solid rgba(255, 250, 240, 0.28);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
 }
 
 .portal-main h1 {
@@ -883,6 +889,10 @@
   }
 }
 @media (max-width: 600px) {
+  .portal-main h1.portal-duedate-banner {
+    margin: 32px auto;
+    padding: 20px 16px;
+  }
   .portal-header {
     padding: 12px 20px;
     gap: 16px;

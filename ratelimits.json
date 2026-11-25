@@ -23,6 +23,14 @@
     "limit": 3,
     "window": "15 m"
   },
+  "recoveryIp": {
+    "limit": 20,
+    "window": "1 h"
+  },
+  "recoveryEmail": {
+    "limit": 5,
+    "window": "1 h"
+  },
   "passwordVerificationUser": {
     "limit": 5,
     "window": "15 m"

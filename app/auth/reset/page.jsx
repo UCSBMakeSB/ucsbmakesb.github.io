@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getSupabaseBrowser } from "../../../lib/supabase-browser";
-
-const SECURE_PASSWORD = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{12,}$/;
+import { getPasswordError, PASSWORD_REQUIREMENTS } from "../../../lib/password-policy.js";
 
 export default function ResetPasswordPage() {
   const [password, setPassword] = useState("");
@@ -39,11 +38,10 @@ export default function ResetPasswordPage() {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    if (!SECURE_PASSWORD.test(password)) {
+    const passwordError = getPasswordError(password);
+    if (passwordError) {
       setStatus("error");
-      setMessage(
-        "Password must be at least 12 characters and include uppercase, lowercase, a number, and a symbol.",
-      );
+      setMessage(passwordError);
       return;
     }
     if (password !== confirmPassword) {
@@ -105,13 +103,12 @@ export default function ResetPasswordPage() {
                 autoComplete="new-password"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
-                minLength={12}
+                aria-describedby="reset-password-help"
                 required
               />
             </label>
-            <p className="auth-password-help">
-              Use at least 12 characters with uppercase and lowercase letters, a
-              number, and a symbol.
+            <p className="auth-password-help" id="reset-password-help">
+              {PASSWORD_REQUIREMENTS}
             </p>
             <label className="auth-field" htmlFor="reset-confirm-password">
               <span>Confirm password</span>
@@ -121,7 +118,6 @@ export default function ResetPasswordPage() {
                 autoComplete="new-password"
                 value={confirmPassword}
                 onChange={(event) => setConfirmPassword(event.target.value)}
-                minLength={12}
                 required
               />
             </label>

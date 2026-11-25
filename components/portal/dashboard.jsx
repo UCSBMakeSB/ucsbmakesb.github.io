@@ -73,6 +73,7 @@ export function Dashboard() {
           </div>
         </div>
       </section>
+      <h1 className="portal-duedate-banner">Applications Due November 30!</h1>
       <PortalTimeline />
     </main>
   );

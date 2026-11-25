@@ -14,7 +14,6 @@ const FIELD_LABELS = {
   age: "Age",
   country: "Country of residence",
   school: "Institution",
-  schoolOther: "What school?",
   "food-allergies": "Food allergies or restrictions",
   waiver: "Waiver",
   experience: "Hackathon experience",
