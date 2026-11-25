@@ -4,33 +4,56 @@ import { useEffect, useId, useRef, useState } from "react";
 
 const questions = [
   [
-    "Is there a cost to participate in MakeSB?",
-    "Nothing! We provide sleeping accommodations, food, hardware, and other resources. All you have to do is get to Santa Barbara!",
+    "When is MakeSB?",
+    "January 15 to 17, 2027. It starts Friday evening and ends Sunday afternoon.",
+  ],
+  ["Where is it?", "On UCSB’s main campus."],
+  [
+    "Is there a cost to participate?",
+    "Nothing! We provide sleeping accommodations, food, hardware, and other resources.",
   ],
   [
     "I don't have any experience. Can I still participate?",
-    "Of course, and in fact we encourage it! We have structured Make Weeks around this! If any of the workshops interest you, attend!",
+    "Of course, and in fact we encourage it! MakeWeek workshops the week before cover CAD, electronics, and hardware prototyping, so come to any that interest you.",
   ],
   [
     "Can students from other schools attend?",
-    "Yes! MakeSB welcomes builders from across the Central Coast, not just UCSB students.",
-  ],
-  [
-    "Do I need a team?",
-    "No! We'll help you find a team or pair you up with other builders looking for teammates — you don't need to show up with one already formed.",
-  ],
-  [
-    "What should I bring?",
-    "Just yourself and a laptop! We provide meals, sleeping accommodations, and hardware to build with. If you'd like extra comfort, feel free to bring a sleeping bag or pillow, plus any personal items you need for the weekend.",
+    "Yes! MakeSB welcomes builders from across the Central Coast and beyond, not just UCSB students.",
   ],
   [
     "Can I get help with travel or other costs?",
     <>
       If travel costs or other financial barriers would keep you from attending
       MakeSB, you can request financial assistance through a separate process
-      after you’re accepted. If you have questions, email{" "}
+      after you’re accepted. Dorm hosting may also be available for participants
+      from other schools. If you have questions, email{" "}
       <a href="mailto:patrick_liu@ucsb.edu">patrick_liu@ucsb.edu</a>.
     </>,
+  ],
+  [
+    "Do I need a team?",
+    "No! Once you're accepted, you'll join our Discord, where you can introduce yourself and say you're looking for a team. You can also come to our team-forming sessions and socials, in person or online, to meet people and talk through your dream (or funniest) project ideas. If you don't have a team by late December, we'll place you in a team of 5. From there, your team picks a project you all find cool and unique.",
+  ],
+  [
+    "How do I apply as a team?",
+    <>
+      Everyone completes an individual application, then one person creates a
+      join code and the rest enter it. Teams are 4 to 5 people. For a bigger or
+      smaller team, email <a href="mailto:team@makesb.org">team@makesb.org</a>{" "}
+      and we'll decide case by case.
+    </>,
+  ],
+  [
+    "What should I bring?",
+    "Just yourself and a laptop! We provide meals, sleeping accommodations, and hardware to build with. If you'd like extra comfort, feel free to bring a sleeping bag or pillow, plus any personal items you need for the weekend.",
+  ],
+  [
+    "When will I hear back about my application?",
+    "Applications close November 30. Decisions (accepted, waitlisted, or not accepted) go out on a rolling basis over the following few weeks.",
+  ],
+  [
+    "What if I'm waitlisted?",
+    "Please opt in to the waitlist! Spots often open up when accepted participants can't make the trip, and we'll let you know as soon as you're in.",
   ],
   [
     "I have a question or idea. Who do I contact?",

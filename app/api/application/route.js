@@ -132,19 +132,6 @@ export async function PATCH(request) {
     }
   }
 
-  const resumeResult = validateResume(formData.get("resume"));
-  Object.assign(errors, resumeResult.errors);
-
-  if (Object.keys(errors).length > 0) {
-    return NextResponse.json(
-      { error: "Please fix the highlighted fields.", fields: errors },
-      { status: 400 },
-    );
-  }
-  if (Object.keys(updates).length === 0 && !resumeResult.file) {
-    return NextResponse.json({ error: "No application changes submitted." }, { status: 400 });
-  }
-
   const supabase = getSupabaseAdmin();
   const { data: currentApplication, error: currentError } = await supabase
     .from("applications")
@@ -161,6 +148,21 @@ export async function PATCH(request) {
   }
   if (!currentApplication) {
     return NextResponse.json({ error: "Application not found." }, { status: 404 });
+  }
+
+  const resumeResult = validateResume(formData.get("resume"), {
+    required: !currentApplication.resume_path,
+  });
+  Object.assign(errors, resumeResult.errors);
+
+  if (Object.keys(errors).length > 0) {
+    return NextResponse.json(
+      { error: "Please fix the highlighted fields.", fields: errors },
+      { status: 400 },
+    );
+  }
+  if (Object.keys(updates).length === 0 && !resumeResult.file) {
+    return NextResponse.json({ error: "No application changes submitted." }, { status: 400 });
   }
 
   let newResumePath;

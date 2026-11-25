@@ -13,7 +13,10 @@ import { getSupabaseAdmin } from "../../../../lib/supabase-server";
 export const runtime = "nodejs";
 
 const DRAFT_COOKIE = "makesb_application_draft";
-const DRAFT_MAX_AGE = 30 * 60;
+// A saved application waits this long for its account to be confirmed. The
+// confirmation email is often opened later, or on another device.
+const DRAFT_TTL_SECONDS = 7 * 24 * 60 * 60;
+const DRAFT_MAX_AGE = DRAFT_TTL_SECONDS;
 const RESUME_CONTENT_TYPES = {
   pdf: "application/pdf",
   doc: "application/msword",
@@ -196,6 +199,7 @@ export async function POST(request) {
     email: row.email,
     payload: row,
     resume_path: resumePath,
+    expires_at: new Date(Date.now() + DRAFT_TTL_SECONDS * 1000).toISOString(),
   });
 
   if (insertError) {

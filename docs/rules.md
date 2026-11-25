@@ -1,0 +1,9 @@
+# Organizational Rules
+
+1. Never work directly on the `main` branch. For all changes, create a new branch from `main` and submit a pull request for review.
+   - This will also create a new branch on Supabase, which allows you to test your changes without affecting the production database. In order to access your branch on Supabase, you will need to update the `SUPABASE_URL` and `SUPABASE_ANON_KEY` environment variables in `.env.local` to point to your branch (for local development). To not worry about this, you can instead create a **preview** deployment on Vercel, which will automatically create a new branch on Supabase for you. You can then use the preview deployment URL to test your changes without affecting the production database.
+2. Keep the `main` branch clean and stable. Only merge code that has been reviewed and tested.
+3. **NEVER** run `npm run test:e2e` on the `main` branch. This command will delete all data in the database and reset it to its initial state. Before running it on any branch, ensure that you are not connected to the production database but instead to the development database. Always double-check your database connection before running this command.
+   - Additionally, don't run this test on the production redis instance. You can create your own redis instance for testing for free at [Upstash](https://upstash.com/). You can then set the `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` environment variables in `.env.local` to point to your own redis instance for testing.
+4. Always write tests for new features and bug fixes. Ensure that all tests pass before submitting a pull request.
+5. If you use an LLM to generate code, double check the generated code for correctness, security vulnerabilities, and adherence to project standards. Do not blindly trust generated code.

@@ -1,8 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getSupabaseBrowser } from "../../lib/supabase-browser";
+
+const NOTICES = {
+  confirm_link:
+    "Your email address is confirmed. Sign in with the email and password you chose to continue your application.",
+  reset_link:
+    "That password reset link was opened in a different browser or has expired. Use \"Forgot your password?\" below to get a new one.",
+};
 
 function getSafeNextPath() {
   if (typeof window === "undefined") return "/portal";
@@ -17,6 +24,14 @@ export default function LoginPage() {
   const [resetMode, setResetMode] = useState(false);
   const [status, setStatus] = useState("idle");
   const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    const notice = new URLSearchParams(window.location.search).get("notice");
+    if (NOTICES[notice]) {
+      setStatus("success");
+      setMessage(NOTICES[notice]);
+    }
+  }, []);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -34,6 +49,11 @@ export default function LoginPage() {
         setMessage("Email or password is incorrect. Please try again.");
         return;
       }
+
+      // Link a saved application to this account by its confirmed email. This
+      // is what completes sign-up for someone who confirmed in a different
+      // browser. A 404/409 just means there is nothing to link.
+      await fetch("/api/apply/claim-draft", { method: "POST" }).catch(() => {});
 
       window.location.replace(getSafeNextPath());
     } catch (error) {

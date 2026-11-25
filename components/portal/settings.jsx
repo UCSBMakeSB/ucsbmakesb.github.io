@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
+import { getPasswordError, PASSWORD_REQUIREMENTS } from "../../lib/password-policy.js";
 import { usePortalAccount } from "./account";
 
 function PasswordField({ name, label, describedBy }) {
@@ -16,7 +17,6 @@ function PasswordField({ name, label, describedBy }) {
           name={name}
           type={visible ? "text" : "password"}
           autoComplete="new-password"
-          minLength={12}
           aria-describedby={describedBy}
           required
         />
@@ -50,6 +50,15 @@ export function AccountSettings() {
     const form = event.currentTarget;
     const values = Object.fromEntries(new FormData(form));
     setFeedback((previous) => ({ ...previous, [section]: null }));
+
+    const passwordError = section === "password" ? getPasswordError(values.newPassword ?? "") : null;
+    if (passwordError) {
+      setFeedback((previous) => ({
+        ...previous,
+        password: { error: true, text: passwordError },
+      }));
+      return;
+    }
 
     if (section === "password" && values.newPassword === values.currentPassword) {
       setFeedback((previous) => ({
@@ -274,8 +283,7 @@ export function AccountSettings() {
           <Status section="password" />
           <div className="portal-form-footer">
             <span id="password-hint">
-              Use at least 12 characters with uppercase and lowercase letters, a
-              number, and a symbol.
+              {PASSWORD_REQUIREMENTS}
             </span>
             <SaveButton section="password">
               Update password
