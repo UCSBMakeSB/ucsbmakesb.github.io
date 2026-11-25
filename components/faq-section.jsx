@@ -41,6 +41,9 @@ const questions = [
   ],
 ];
 
+const midpoint = Math.ceil(questions.length / 2);
+const questionColumns = [questions.slice(0, midpoint), questions.slice(midpoint)];
+
 export function FaqItem({ question, answer, inline = false }) {
   const [open, setOpen] = useState(false);
   const answerId = useId();
@@ -156,8 +159,12 @@ export function FaqSection() {
           </div>
         </div>
         <div className="faq-questions">
-          {questions.map(([question, answer]) => (
-            <FaqItem key={question} question={question} answer={answer} />
+          {questionColumns.map((column) => (
+            <div className="faq-column" key={column[0][0]}>
+              {column.map(([question, answer]) => (
+                <FaqItem key={question} question={question} answer={answer} />
+              ))}
+            </div>
           ))}
         </div>
       </div>
