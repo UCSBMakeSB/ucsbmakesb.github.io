@@ -561,6 +561,8 @@ a[href]:not(
 
 #faqs.page-section {
   background: var(--layer4);
+  /* Leave room for the sticky deadline banner when following the FAQ link. */
+  scroll-margin-top: 110px;
 }
 
 #sponsors.page-section {
@@ -789,7 +791,18 @@ a[href]:not(
   }
 }
 
+@media (width > 700px) {
+  .faq-mascot-art {
+    /* Center the 513-unit bird body within the 622-unit SVG. */
+    translate: 8.76% 0;
+  }
+}
+
 @media (max-width: 700px) {
+  #faqs.page-section {
+    scroll-margin-top: 180px;
+  }
+
   .faq-intro {
     display: flex;
     justify-content: space-between;
