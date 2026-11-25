@@ -21,11 +21,12 @@ const questions = [
     "Yes! MakeSB welcomes builders from across the Central Coast and beyond, not just UCSB students.",
   ],
   [
-    "Do you help with travel?",
+    "Can I get help with travel or other costs?",
     <>
-      Yes! Travel is reimbursed on a need basis, and makers from other schools
-      can tentatively stay with us through dorm hosting. To request help with
-      getting to Santa Barbara, please contact{" "}
+      If travel costs or other financial barriers would keep you from attending
+      MakeSB, you can request financial assistance through a separate process
+      after you’re accepted. Dorm hosting may also be available for participants
+      from other schools. If you have questions, email{" "}
       <a href="mailto:patrick_liu@ucsb.edu">patrick_liu@ucsb.edu</a>.
     </>,
   ],
