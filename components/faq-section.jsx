@@ -24,11 +24,11 @@ const questions = [
     "Just yourself and a laptop! We provide meals, sleeping accommodations, and hardware to build with. If you'd like extra comfort, feel free to bring a sleeping bag or pillow, plus any personal items you need for the weekend.",
   ],
   [
-    "Do you provide travel reimbursements?",
+    "Can I get help with travel or other costs?",
     <>
-      Yes, but not for all participants yet. We offer flights to Santa Barbara
-      for low-income students, and we are working hard to fly out everyone. If
-      attending MakeSB poses a financial burden, please contact{" "}
+      If travel costs or other financial barriers would keep you from attending
+      MakeSB, you can request financial assistance through a separate process
+      after you’re accepted. If you have questions, email{" "}
       <a href="mailto:patrick_liu@ucsb.edu">patrick_liu@ucsb.edu</a>.
     </>,
   ],
