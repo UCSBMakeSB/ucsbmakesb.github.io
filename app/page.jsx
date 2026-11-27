@@ -81,9 +81,6 @@ export default function HomePage() {
         <section className="deadline-banner" aria-label="Application deadline">
           <p>
             <strong>Applications are due November 30.</strong>
-            <span>
-              Questions? <a href="mailto:team@makesb.org">team@makesb.org</a>
-            </span>
           </p>
           <ApplyLink className="apply-button">
             Apply now <span aria-hidden="true">↗</span>
@@ -290,8 +287,7 @@ export default function HomePage() {
           <div className="page-section-inner">
             <h2 id="contact-title">Apply Here</h2>
             <p className="lead">
-              Applications are due <strong>November 30</strong>. Questions?
-              Email <a href="mailto:team@makesb.org">team@makesb.org</a>.
+              Applications are due <strong>November 30</strong>.
             </p>
             <ApplyLink className="apply-button">
               Apply to MakeSB <span aria-hidden="true">↗</span>

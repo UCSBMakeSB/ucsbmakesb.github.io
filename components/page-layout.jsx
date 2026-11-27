@@ -5,7 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { getSupabaseBrowser } from "../lib/supabase-browser";
 import { ApplyLink } from "./apply-link";
-import { ContactEmail } from "./contact-email";
 
 const links = [
   ["about", "About"],
@@ -138,7 +137,6 @@ export function Footer({
         &emsp;&emsp;&emsp;&emsp;
         <a href={sponsorUrl}>Sponsor</a>
       </div>
-      <ContactEmail />
     </footer>
   );
 }
