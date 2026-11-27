@@ -350,6 +350,7 @@ export default function FieldRenderer({ field, portal = false }) {
           portal={portal}
           requirementText={requirementText}
           maxWords={field.maxWords}
+          recommendedWords={field.recommendedWords}
         />
       );
     case "select":

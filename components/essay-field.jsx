@@ -16,6 +16,7 @@ export function EssayField({
   portal,
   requirementText,
   maxWords = MAX_QUESTION_WORDS,
+  recommendedWords,
 }) {
   const [words, setWords] = useState(() => countWords(defaultValue ?? ""));
   const over = words > maxWords;
@@ -27,7 +28,12 @@ export function EssayField({
       htmlFor={id}
     >
       <span>
-        {label} <span className="essay-max-words">(max {limit} words)</span>
+        {label}{" "}
+        {recommendedWords ? (
+          <span className="essay-max-words">
+            (recommended {recommendedWords.toLocaleString("en-US")} words)
+          </span>
+        ) : null}
       </span>
       <small className="application-field-requirement">{requirementText}</small>
       <textarea
@@ -51,7 +57,7 @@ export function EssayField({
         className={`essay-word-count${over ? " is-over" : ""}`}
         aria-live="polite"
       >
-        {words.toLocaleString("en-US")} / {limit} words
+        {words.toLocaleString("en-US")} / {limit} max words
         {over ? " (too long: shorten it before saving)" : ""}
       </small>
     </label>
