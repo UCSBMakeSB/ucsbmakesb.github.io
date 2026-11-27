@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import { ApplicationForm } from "../../components/application-form";
-import { FaqItem } from "../../components/faq-section";
 import { Header, Footer } from "../../components/page-layout";
 import { ScrollClippedForm } from "../../components/scroll-clipped-form";
 import FieldRenderer, { formFields } from "../../components/field-renderer";
@@ -9,24 +8,6 @@ import { getSupabaseAdmin, getSupabaseServer } from "../../lib/supabase-server";
 
 const sponsorUrl =
   "mailto:patrick_liu@ucsb.edu?subject=MakeSB%202027%20Sponsorship";
-
-const info = `Over 36+ hours, teams will design, prototype, and demo hardware projects using parts, tools, and resources provided at the event.
-
-Event Details
-Building Location: TBD
-Cost: Free
-Food and parts: Provided
-
-Participants will have access to resources such as 3D printing through the Library and IEEE Makerspace, electronics components, cameras, displays, drone/RC parts, ESP32s, and other hardware supplies. You may also bring your own parts, but completed projects are not allowed.
-
-Leading up to MakeSB, we will host MakeWeek, a series of hour-long workshops covering topics such as CAD, ESP32 development, electronics, and hardware prototyping.
-
-Teams are 4 to 5 people. Everyone completes an individual application, then one person creates a join code and the rest enter it. If you do not have a team, apply on your own and we will help place you. For a bigger or smaller team, email team@makesb.org and we will decide case by case.
-
-We are also looking for volunteers, mentors, faculty, industry guests, and alumni who are interested in helping students build and refine their projects.
-
-Prizes and Tracks will be released soon!
-`;
 
 const NOTICES = {
   draft_expired:
@@ -122,8 +103,6 @@ export default async function Apply({ searchParams }) {
               <div className="apply-bird-shadow" />
             </div>
           </div>
-
-          <FaqItem question="Have questions?" answer={info} inline />
 
           {!submissionsConfigured && (
             <p role="status">

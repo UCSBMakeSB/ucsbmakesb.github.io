@@ -26,7 +26,7 @@ const questions = [
       If travel costs or other financial barriers would keep you from attending
       MakeSB, you can request financial assistance through a separate process
       after you’re accepted. Dorm hosting may also be available for participants
-      from other schools. If you have questions, email{" "}
+      from other schools. For help with financial assistance or dorm hosting, email{" "}
       <a href="mailto:patrick_liu@ucsb.edu">patrick_liu@ucsb.edu</a>.
     </>,
   ],
