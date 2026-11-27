@@ -66,7 +66,7 @@ export default function HomePage() {
 
         
 
-        {/* id is travel-funded (not "travel") because #travel is the Flights and housing section below. */}
+        {/* id is travel-funded (not "travel") because #travel is the Travel and housing section below. */}
         {/* <section
           id="travel-funded"
           className="page-section"
@@ -195,24 +195,17 @@ export default function HomePage() {
           aria-labelledby="travel-title"
         >
           <div className="page-section-inner">
-            <h2 id="travel-title">Flights and housing</h2>
+            <h2 id="travel-title">Travel and housing</h2>
             <p className="lead">
               Traveling from another school? We want cost and distance to stand
               in the way as little as possible.
             </p>
             <ul className="feature-grid">
               <li>
-                <h3>Flights to Santa Barbara</h3>
+                <h3>Travel costs</h3>
                 <p>
-                  We offer flights to low-income students, and we are working to
-                  extend this support to all participants.
-                </p>
-              </li>
-              <li>
-                <h3>Travel reimbursement</h3>
-                <p>
-                  Participants from other schools may also receive travel
-                  reimbursement.
+                  There&apos;s a separate application process for this after
+                  decisions come out.
                 </p>
               </li>
               <li>
@@ -231,9 +224,7 @@ export default function HomePage() {
               </li>
             </ul>
             <p>
-              If cost is preventing you from attending, please contact{" "}
-              <a href="mailto:patrick_liu@ucsb.edu">patrick_liu@ucsb.edu</a>. We
-              will do our best to support you.
+              Questions? <a href="mailto:team@makesb.org">Email our team!</a>
             </p>
           </div>
         </section>
